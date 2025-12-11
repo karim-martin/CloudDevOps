@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes container orchestration - pods, deployments, services, and cluster management.">
+  <title>Kubernetes | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./" class="active">Overview</a></li><li><a href="./architecture.html">Architecture</a></li><li><a href="./pods-deployments.html">Pods & Deployments</a></li><li><a href="./services-networking.html">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html">Storage</a></li><li><a href="./helm.html">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li aria-current="page">Kubernetes</li></ol></nav>
+        <header class="article-header"><h1>Kubernetes</h1></header>
+
+        <div class="article-body">
+          <p>Kubernetes (K8s) is an open-source container orchestration platform for automating deployment, scaling, and management of containerized applications.</p>
+
+          <h2 id="topics">Topics</h2>
+          <div class="card-grid">
+            <a href="./architecture.html" class="card card-link"><h3 class="card-title">Architecture</h3><p class="card-description">Control plane, nodes, and components.</p></a>
+            <a href="./pods-deployments.html" class="card card-link"><h3 class="card-title">Pods & Deployments</h3><p class="card-description">Running and managing workloads.</p></a>
+            <a href="./services-networking.html" class="card card-link"><h3 class="card-title">Services & Networking</h3><p class="card-description">Exposing applications and networking.</p></a>
+            <a href="./configmaps-secrets.html" class="card card-link"><h3 class="card-title">ConfigMaps & Secrets</h3><p class="card-description">Managing configuration and secrets.</p></a>
+            <a href="./storage.html" class="card card-link"><h3 class="card-title">Storage</h3><p class="card-description">Persistent volumes and storage classes.</p></a>
+            <a href="./helm.html" class="card card-link"><h3 class="card-title">Helm Charts</h3><p class="card-description">Package manager for Kubernetes.</p></a>
+          </div>
+
+          <h2 id="kubectl">kubectl Quick Reference</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get pods</code></td><td>List pods</td></tr>
+                <tr><td><code>kubectl get pods -A</code></td><td>All namespaces</td></tr>
+                <tr><td><code>kubectl get all</code></td><td>List all resources</td></tr>
+                <tr><td><code>kubectl describe pod name</code></td><td>Pod details</td></tr>
+                <tr><td><code>kubectl logs pod</code></td><td>View logs</td></tr>
+                <tr><td><code>kubectl logs -f pod</code></td><td>Follow logs</td></tr>
+                <tr><td><code>kubectl exec -it pod -- bash</code></td><td>Shell into pod</td></tr>
+                <tr><td><code>kubectl apply -f file.yaml</code></td><td>Apply config</td></tr>
+                <tr><td><code>kubectl delete -f file.yaml</code></td><td>Delete resources</td></tr>
+                <tr><td><code>kubectl get nodes</code></td><td>List nodes</td></tr>
+                <tr><td><code>kubectl get svc</code></td><td>List services</td></tr>
+                <tr><td><code>kubectl get deploy</code></td><td>List deployments</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="quick-start">Quick Start Example</h2>
+          <pre><code class="language-yaml"># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+  type: LoadBalancer</code></pre>
+          <pre><code class="language-bash"># Apply and check
+kubectl apply -f deployment.yaml
+kubectl get pods
+kubectl get svc</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../docker/best-practices.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Docker Best Practices</span></a>
+          <a href="./architecture.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Architecture</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

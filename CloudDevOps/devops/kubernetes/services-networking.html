@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes Services and Networking - exposing applications and network policies.">
+  <title>Services & Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./architecture.html">Architecture</a></li><li><a href="./pods-deployments.html">Pods & Deployments</a></li><li><a href="./services-networking.html" class="active">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html">Storage</a></li><li><a href="./helm.html">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Kubernetes</a></li><li aria-current="page">Services & Networking</li></ol></nav>
+        <header class="article-header"><h1>Services & Networking</h1></header>
+
+        <div class="article-body">
+          <h2 id="service-types">Service Types</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>ClusterIP</strong></td><td>Internal IP, only accessible within cluster (default)</td></tr>
+                <tr><td><strong>NodePort</strong></td><td>Exposes on each node's IP at a static port</td></tr>
+                <tr><td><strong>LoadBalancer</strong></td><td>Exposes via cloud provider's load balancer</td></tr>
+                <tr><td><strong>ExternalName</strong></td><td>Maps to external DNS name</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="clusterip">ClusterIP Service</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: ClusterIP
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 8080</code></pre>
+
+          <h2 id="nodeport">NodePort Service</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: my-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 8080
+    nodePort: 30080  # 30000-32767</code></pre>
+
+          <h2 id="loadbalancer">LoadBalancer Service</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: my-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 8080</code></pre>
+
+          <h2 id="ingress">Ingress</h2>
+          <p>Ingress manages external HTTP/HTTPS access to services.</p>
+          <pre><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80
+  - host: api.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - myapp.example.com
+    secretName: tls-secret</code></pre>
+
+          <h2 id="dns">DNS</h2>
+          <p>Services are accessible via DNS within the cluster:</p>
+          <ul>
+            <li><code>service-name</code> - Same namespace</li>
+            <li><code>service-name.namespace</code> - Cross namespace</li>
+            <li><code>service-name.namespace.svc.cluster.local</code> - Full FQDN</li>
+          </ul>
+
+          <h2 id="commands">Service Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get svc</code></td><td>List services</td></tr>
+                <tr><td><code>kubectl describe svc name</code></td><td>Service details</td></tr>
+                <tr><td><code>kubectl expose deploy name --port=80</code></td><td>Create service</td></tr>
+                <tr><td><code>kubectl get endpoints</code></td><td>List endpoints</td></tr>
+                <tr><td><code>kubectl get ingress</code></td><td>List ingress</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./pods-deployments.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Pods & Deployments</span></a>
+          <a href="./configmaps-secrets.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">ConfigMaps & Secrets</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

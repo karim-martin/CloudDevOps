@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker Compose tutorial - define and run multi-container applications.">
+  <title>Docker Compose | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links">
+      <li><a href="./">Docker Overview</a></li>
+      <li><a href="./concepts.html">Core Concepts</a></li>
+      <li><a href="./dockerfile.html">Dockerfile</a></li>
+      <li><a href="./compose.html" class="active">Docker Compose</a></li>
+      <li><a href="./networking.html">Networking</a></li>
+      <li><a href="./volumes.html">Volumes & Storage</a></li>
+      <li><a href="./best-practices.html">Best Practices</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">DevOps</a></li>
+          <li><a href="./">Docker</a></li>
+          <li aria-current="page">Docker Compose</li>
+        </ol></nav>
+
+        <header class="article-header"><h1>Docker Compose</h1></header>
+
+        <div class="article-body">
+          <p>Docker Compose is a tool for defining and running multi-container applications.</p>
+
+          <h2 id="commands">Compose Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker compose up</code></td><td>Create and start containers</td></tr>
+                <tr><td><code>docker compose up -d</code></td><td>Start in detached mode</td></tr>
+                <tr><td><code>docker compose up --build</code></td><td>Build images before starting</td></tr>
+                <tr><td><code>docker compose down</code></td><td>Stop and remove containers</td></tr>
+                <tr><td><code>docker compose down -v</code></td><td>Also remove volumes</td></tr>
+                <tr><td><code>docker compose ps</code></td><td>List containers</td></tr>
+                <tr><td><code>docker compose logs</code></td><td>View logs</td></tr>
+                <tr><td><code>docker compose logs -f</code></td><td>Follow logs</td></tr>
+                <tr><td><code>docker compose exec service cmd</code></td><td>Execute command in service</td></tr>
+                <tr><td><code>docker compose build</code></td><td>Build images</td></tr>
+                <tr><td><code>docker compose pull</code></td><td>Pull images</td></tr>
+                <tr><td><code>docker compose restart</code></td><td>Restart services</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="example">Example: Web App with Database</h2>
+          <pre><code class="language-yaml"># docker-compose.yml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://user:pass@db:5432/mydb
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:</code></pre>
+
+          <h2 id="service-options">Common Service Options</h2>
+          <pre><code class="language-yaml">services:
+  app:
+    # Build from Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        - VERSION=1.0
+
+    # Or use image directly
+    image: nginx:latest
+
+    # Container name
+    container_name: my-app
+
+    # Port mapping
+    ports:
+      - "8080:80"      # host:container
+      - "443:443"
+
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - API_KEY=${API_KEY}  # from .env file
+
+    # Or from file
+    env_file:
+      - .env
+
+    # Volume mounts
+    volumes:
+      - ./data:/app/data           # bind mount
+      - app_data:/app/storage       # named volume
+      - /app/node_modules           # anonymous volume
+
+    # Dependencies
+    depends_on:
+      - db
+      - redis
+
+    # Restart policy
+    restart: always  # no, on-failure, unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+    # Networks
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  app_data:</code></pre>
+
+          <h2 id="env-files">Environment Files</h2>
+          <pre><code class="language-bash"># .env file
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=secret
+API_KEY=abc123</code></pre>
+
+          <pre><code class="language-yaml"># Reference in docker-compose.yml
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}</code></pre>
+
+          <h2 id="profiles">Profiles</h2>
+          <p>Run specific services based on profiles:</p>
+          <pre><code class="language-yaml">services:
+  web:
+    image: nginx
+
+  debug:
+    image: busybox
+    profiles:
+      - debug</code></pre>
+          <pre><code class="language-bash"># Run with debug profile
+docker compose --profile debug up</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./dockerfile.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Dockerfile</span></a>
+          <a href="./networking.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

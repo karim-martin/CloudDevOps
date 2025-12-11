@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Security and IAM - Workload Identity, network policies, and security best practices.">
+  <title>Security & IAM | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html" class="active">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Security & IAM</li></ol></nav>
+        <header class="article-header"><h1>Security & IAM</h1></header>
+
+        <div class="article-body">
+          <h2 id="workload-identity">Workload Identity</h2>
+          <p>Workload Identity allows pods to authenticate as Google Cloud service accounts without storing keys.</p>
+
+          <pre><code class="language-bash"># Enable Workload Identity on cluster
+gcloud container clusters update my-cluster \
+    --workload-pool=PROJECT_ID.svc.id.goog \
+    --zone=us-central1-a
+
+# Create GCP service account
+gcloud iam service-accounts create my-gsa
+
+# Grant GCP permissions
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:my-gsa@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+
+# Allow K8s SA to impersonate GCP SA
+gcloud iam service-accounts add-iam-policy-binding my-gsa@PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="serviceAccount:PROJECT_ID.svc.id.goog[NAMESPACE/KSA_NAME]"</code></pre>
+
+          <pre><code class="language-yaml"># Create Kubernetes Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-ksa
+  annotations:
+    iam.gke.io/gcp-service-account: my-gsa@PROJECT_ID.iam.gserviceaccount.com
+---
+# Use in pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  serviceAccountName: my-ksa
+  containers:
+  - name: app
+    image: myapp</code></pre>
+
+          <h2 id="network-policies">Network Policies</h2>
+          <pre><code class="language-yaml"># Deny all ingress by default
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+# Allow specific traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - port: 8080</code></pre>
+
+          <h2 id="rbac">RBAC</h2>
+          <pre><code class="language-yaml"># Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: production
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: production
+subjects:
+- kind: User
+  name: developer@example.com
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io</code></pre>
+
+          <h2 id="secrets">Secret Management</h2>
+          <pre><code class="language-bash"># Enable Secret Manager API
+gcloud services enable secretmanager.googleapis.com
+
+# Create secret
+echo -n "my-password" | gcloud secrets create db-password --data-file=-
+
+# Grant access to GCP SA
+gcloud secrets add-iam-policy-binding db-password \
+    --member="serviceAccount:my-gsa@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"</code></pre>
+
+          <h2 id="best-practices">Security Best Practices</h2>
+          <ul>
+            <li>Use Workload Identity instead of service account keys</li>
+            <li>Enable Network Policies</li>
+            <li>Use private clusters</li>
+            <li>Enable Binary Authorization</li>
+            <li>Run containers as non-root</li>
+            <li>Use read-only file systems where possible</li>
+            <li>Regularly update node images</li>
+            <li>Enable audit logging</li>
+          </ul>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Least Privilege</div>
+            <p>Always grant the minimum permissions needed. Use IAM conditions to further restrict access.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./networking-ingress.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Networking & Ingress</span></a>
+          <a href="./ci-cd.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">CI/CD</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deploy applications to GKE - deployments, services, and container registry.">
+  <title>Deploying Apps | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html" class="active">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Deploying Apps</li></ol></nav>
+        <header class="article-header"><h1>Deploying Applications to GKE</h1></header>
+
+        <div class="article-body">
+          <h2 id="artifact-registry">Step 1: Push Image to Artifact Registry</h2>
+          <pre><code class="language-bash"># Enable Artifact Registry API
+gcloud services enable artifactregistry.googleapis.com
+
+# Create repository
+gcloud artifacts repositories create my-repo \
+    --repository-format=docker \
+    --location=us-central1
+
+# Configure Docker authentication
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+# Tag and push image
+docker build -t us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v1 .
+docker push us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v1</code></pre>
+
+          <h2 id="deployment">Step 2: Create Deployment</h2>
+          <pre><code class="language-yaml"># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v1
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20</code></pre>
+
+          <h2 id="service">Step 3: Create Service</h2>
+          <pre><code class="language-yaml"># service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 8080</code></pre>
+
+          <h2 id="apply">Step 4: Apply Configuration</h2>
+          <pre><code class="language-bash"># Apply deployment and service
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+# Check status
+kubectl get deployments
+kubectl get pods
+kubectl get services
+
+# Get external IP
+kubectl get service myapp-service</code></pre>
+
+          <h2 id="update">Updating Your App</h2>
+          <pre><code class="language-bash"># Build and push new version
+docker build -t us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v2 .
+docker push us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v2
+
+# Update deployment
+kubectl set image deployment/myapp myapp=us-central1-docker.pkg.dev/PROJECT_ID/my-repo/myapp:v2
+
+# Watch rollout
+kubectl rollout status deployment/myapp
+
+# Rollback if needed
+kubectl rollout undo deployment/myapp</code></pre>
+
+          <h2 id="scaling">Scaling</h2>
+          <pre><code class="language-bash"># Manual scaling
+kubectl scale deployment myapp --replicas=5
+
+# Horizontal Pod Autoscaler
+kubectl autoscale deployment myapp --min=2 --max=10 --cpu-percent=50</code></pre>
+
+          <pre><code class="language-yaml"># HPA manifest
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Best Practice</div>
+            <p>Always set resource requests and limits for your containers. GKE uses these for scheduling and autoscaling decisions.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./cluster-setup.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cluster Setup</span></a>
+          <a href="./networking-ingress.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Networking & Ingress</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

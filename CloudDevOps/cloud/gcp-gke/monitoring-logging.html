@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Monitoring and Logging - Cloud Monitoring, Cloud Logging, and observability best practices.">
+  <title>Monitoring & Logging | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html" class="active">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Monitoring & Logging</li></ol></nav>
+        <header class="article-header"><h1>Monitoring & Logging</h1></header>
+
+        <div class="article-body">
+          <h2 id="cloud-monitoring">Cloud Monitoring</h2>
+          <p>GKE automatically sends metrics to Cloud Monitoring. View them in the GCP Console under Monitoring > Metrics Explorer.</p>
+
+          <h3>Key Metrics</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Metric</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>kubernetes.io/container/cpu/core_usage_time</td><td>CPU usage</td></tr>
+                <tr><td>kubernetes.io/container/memory/used_bytes</td><td>Memory usage</td></tr>
+                <tr><td>kubernetes.io/container/restart_count</td><td>Container restarts</td></tr>
+                <tr><td>kubernetes.io/pod/network/received_bytes_count</td><td>Network received</td></tr>
+                <tr><td>kubernetes.io/node/cpu/allocatable_utilization</td><td>Node CPU utilization</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="cloud-logging">Cloud Logging</h2>
+          <pre><code class="language-bash"># View logs via gcloud
+gcloud logging read 'resource.type="k8s_container"' --limit=10
+
+# Filter by pod
+gcloud logging read 'resource.type="k8s_container" AND resource.labels.pod_name="myapp-xxx"'
+
+# Filter by namespace
+gcloud logging read 'resource.type="k8s_container" AND resource.labels.namespace_name="production"'</code></pre>
+
+          <h3>Structured Logging</h3>
+          <p>Output logs as JSON for better parsing:</p>
+          <pre><code class="language-json">{"severity":"INFO","message":"User logged in","userId":"123","timestamp":"2024-01-15T10:30:00Z"}</code></pre>
+
+          <h2 id="alerting">Alerting</h2>
+          <pre><code class="language-bash"># Create alerting policy via gcloud
+gcloud alpha monitoring policies create \
+    --display-name="High CPU Alert" \
+    --condition-display-name="CPU > 80%" \
+    --condition-filter='resource.type="k8s_container" AND metric.type="kubernetes.io/container/cpu/limit_utilization"' \
+    --condition-threshold-value=0.8 \
+    --condition-threshold-duration=300s \
+    --notification-channels=CHANNEL_ID</code></pre>
+
+          <h2 id="dashboards">GKE Dashboard</h2>
+          <p>Access built-in dashboards:</p>
+          <ol>
+            <li>Go to Cloud Console > Monitoring > Dashboards</li>
+            <li>Select "GKE" from the dashboard list</li>
+            <li>View cluster, workload, and pod metrics</li>
+          </ol>
+
+          <h2 id="kubectl">Debugging with kubectl</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl logs pod-name</code></td><td>View pod logs</td></tr>
+                <tr><td><code>kubectl logs -f pod-name</code></td><td>Follow logs</td></tr>
+                <tr><td><code>kubectl logs pod-name -c container</code></td><td>Specific container</td></tr>
+                <tr><td><code>kubectl logs --previous pod-name</code></td><td>Previous container logs</td></tr>
+                <tr><td><code>kubectl describe pod pod-name</code></td><td>Pod events</td></tr>
+                <tr><td><code>kubectl top pods</code></td><td>Resource usage</td></tr>
+                <tr><td><code>kubectl top nodes</code></td><td>Node resource usage</td></tr>
+                <tr><td><code>kubectl get events --sort-by='.lastTimestamp'</code></td><td>Recent events</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="custom-metrics">Custom Metrics</h2>
+          <pre><code class="language-yaml"># Export custom metrics with Prometheus format
+# Then use Cloud Monitoring Prometheus sidecar
+
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+spec:
+  containers:
+  - name: app
+    image: myapp
+    ports:
+    - containerPort: 8080</code></pre>
+
+          <h2 id="uptime-checks">Uptime Checks</h2>
+          <pre><code class="language-bash"># Create uptime check
+gcloud monitoring uptime-checks create http \
+    --display-name="My App Health Check" \
+    --uri="https://app.example.com/health" \
+    --check-interval=60s \
+    --timeout=10s</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Observability Stack</div>
+            <p>For advanced observability, consider using Prometheus + Grafana deployed via Helm, or Google Cloud Managed Service for Prometheus.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./ci-cd.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">CI/CD</span></a>
+          <a href="../../" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Home</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

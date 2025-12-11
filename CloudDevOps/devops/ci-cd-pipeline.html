@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn CI/CD Pipeline fundamentals - Continuous Integration and Continuous Deployment for modern software delivery.">
+  <title>CI/CD Pipeline | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo">
+        <img src="../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">DevOps</h3>
+        <ul class="sidebar-links">
+          <li><a href="./overview.html">DevOps Overview</a></li>
+          <li><a href="./ci-cd-pipeline.html" class="active">CI/CD Pipeline</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./linux/">Linux Overview</a></li>
+          <li><a href="./linux/file-directory.html">File & Directory</a></li>
+          <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+          <li><a href="./linux/network-management.html">Network Management</a></li>
+          <li><a href="./linux/service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Version Control</h3>
+        <ul class="sidebar-links">
+          <li><a href="./networking-basics.html">Networking Basics</a></li>
+          <li><a href="./git.html">Git</a></li>
+          <li><a href="./github/">GitHub</a></li>
+          <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Containers</h3>
+        <ul class="sidebar-links">
+          <li><a href="./docker/">Docker Overview</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Orchestration</h3>
+        <ul class="sidebar-links">
+          <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Infrastructure as Code</h3>
+        <ul class="sidebar-links">
+          <li><a href="./terraform.html">Terraform</a></li>
+          <li><a href="./ansible.html">Ansible</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../">Home</a></li>
+            <li><a href="./">DevOps</a></li>
+            <li aria-current="page">CI/CD Pipeline</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>CI/CD Pipeline</h1>
+          <p class="article-meta">
+            <span class="reading-time">15 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <h2 id="what-is-cicd">What is CI/CD?</h2>
+          <p>
+            CI/CD stands for Continuous Integration and Continuous Delivery/Deployment. It's a method to
+            frequently deliver apps to customers by introducing automation into the stages of app development.
+          </p>
+
+          <h2 id="continuous-integration">Continuous Integration (CI)</h2>
+          <p>
+            CI is the practice of automatically integrating code changes from multiple contributors into a
+            shared repository several times a day.
+          </p>
+
+          <h3>Key CI Practices:</h3>
+          <ul>
+            <li>Maintain a single source repository</li>
+            <li>Automate the build process</li>
+            <li>Make builds self-testing</li>
+            <li>Everyone commits to the baseline every day</li>
+            <li>Keep the build fast</li>
+            <li>Test in a clone of the production environment</li>
+          </ul>
+
+          <h2 id="continuous-delivery">Continuous Delivery (CD)</h2>
+          <p>
+            Continuous Delivery ensures that code can be rapidly and safely deployed to production by
+            delivering every change to a production-like environment.
+          </p>
+
+          <h2 id="continuous-deployment">Continuous Deployment</h2>
+          <p>
+            Continuous Deployment goes one step further - every change that passes all stages of the production
+            pipeline is released to customers automatically.
+          </p>
+
+          <div class="callout callout-info">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Delivery vs Deployment
+            </div>
+            <p>
+              <strong>Continuous Delivery:</strong> Code is always ready to deploy, but deployment is manual.<br>
+              <strong>Continuous Deployment:</strong> Every passing change is automatically deployed to production.
+            </p>
+          </div>
+
+          <h2 id="pipeline-stages">Pipeline Stages</h2>
+          <p>A typical CI/CD pipeline includes these stages:</p>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">1</span> Source Stage</h3>
+            <p>The pipeline is triggered by a code change (commit, pull request, merge).</p>
+            <pre><code class="language-yaml"># GitHub Actions trigger example
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">2</span> Build Stage</h3>
+            <p>Compile the code, resolve dependencies, and create artifacts.</p>
+            <pre><code class="language-yaml">jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          npm install
+          npm run build</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">3</span> Test Stage</h3>
+            <p>Run automated tests (unit, integration, end-to-end).</p>
+            <pre><code class="language-yaml">      - name: Run Tests
+        run: npm test
+
+      - name: Run Integration Tests
+        run: npm run test:integration</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">4</span> Deploy Stage</h3>
+            <p>Deploy to staging or production environment.</p>
+            <pre><code class="language-yaml">  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Production
+        run: |
+          # Deployment commands here
+          echo "Deploying to production..."</code></pre>
+          </section>
+
+          <h2 id="cicd-tools">Popular CI/CD Tools</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Tool</th>
+                  <th>Type</th>
+                  <th>Best For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GitHub Actions</code></td>
+                  <td>Cloud-hosted</td>
+                  <td>GitHub repositories, easy setup</td>
+                </tr>
+                <tr>
+                  <td><code>Jenkins</code></td>
+                  <td>Self-hosted</td>
+                  <td>Highly customizable, plugins</td>
+                </tr>
+                <tr>
+                  <td><code>GitLab CI</code></td>
+                  <td>Both</td>
+                  <td>GitLab integration, DevSecOps</td>
+                </tr>
+                <tr>
+                  <td><code>CircleCI</code></td>
+                  <td>Cloud-hosted</td>
+                  <td>Fast builds, Docker support</td>
+                </tr>
+                <tr>
+                  <td><code>Azure DevOps</code></td>
+                  <td>Both</td>
+                  <td>Microsoft ecosystem</td>
+                </tr>
+                <tr>
+                  <td><code>ArgoCD</code></td>
+                  <td>Kubernetes</td>
+                  <td>GitOps, Kubernetes deployments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="best-practices">CI/CD Best Practices</h2>
+          <ul>
+            <li><strong>Fail Fast:</strong> Run quick tests first to get rapid feedback</li>
+            <li><strong>Keep Pipelines Fast:</strong> Aim for under 10 minutes for CI</li>
+            <li><strong>Use Caching:</strong> Cache dependencies to speed up builds</li>
+            <li><strong>Parallelize:</strong> Run independent jobs in parallel</li>
+            <li><strong>Version Everything:</strong> Infrastructure, configs, and code</li>
+            <li><strong>Security Scanning:</strong> Include security checks in the pipeline</li>
+            <li><strong>Monitor Pipelines:</strong> Track metrics and alert on failures</li>
+          </ul>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Pro Tip
+            </div>
+            <p>
+              Start simple! Begin with a basic pipeline that builds and tests your code.
+              Add more stages as your needs grow.
+            </p>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./overview.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">DevOps Overview</span>
+          </a>
+          <a href="./linux/" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Linux</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

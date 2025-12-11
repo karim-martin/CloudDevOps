@@ -1,0 +1,485 @@
+/* ========================================
+   Components CSS - UI Components
+   ======================================== */
+
+/* ----------------------------------------
+   Cards
+   ---------------------------------------- */
+.card {
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  transition: all var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
+}
+
+.card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.card-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+@media (min-width: 640px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large Cards (for main landing page) */
+.card-large {
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.card-large .card-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-lg);
+}
+
+.card-large .card-title {
+  font-size: var(--font-size-2xl);
+}
+
+.card-grid-large {
+  grid-template-columns: repeat(1, 1fr);
+  max-width: 800px;
+  margin: var(--spacing-2xl) auto;
+}
+
+@media (min-width: 640px) {
+  .card-grid-large {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ----------------------------------------
+   Buttons
+   ---------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  color: var(--color-text-inverse);
+}
+
+.btn-secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-dark);
+}
+
+/* ----------------------------------------
+   Code Blocks
+   ---------------------------------------- */
+.code-block {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.code-block pre {
+  margin: 0;
+  padding-right: var(--spacing-3xl);
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #334155;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.code-block-header + pre {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.copy-button {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-fast);
+}
+
+.code-block:hover .copy-button,
+pre:hover .copy-button {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-inverse);
+}
+
+.copy-button.copied {
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+/* Syntax highlighting colors */
+.code-keyword { color: #c792ea; }
+.code-string { color: #c3e88d; }
+.code-comment { color: #676e95; }
+.code-function { color: #82aaff; }
+.code-number { color: #f78c6c; }
+.code-variable { color: #f07178; }
+
+/* ----------------------------------------
+   Callouts / Alerts
+   ---------------------------------------- */
+.callout {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  border-left: 4px solid;
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.callout-title svg {
+  width: 20px;
+  height: 20px;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.callout-info {
+  background-color: #eff6ff;
+  border-color: var(--color-info);
+}
+
+.callout-info .callout-title {
+  color: var(--color-info);
+}
+
+.callout-tip {
+  background-color: #ecfdf5;
+  border-color: var(--color-success);
+}
+
+.callout-tip .callout-title {
+  color: var(--color-success);
+}
+
+.callout-warning {
+  background-color: #fffbeb;
+  border-color: var(--color-warning);
+}
+
+.callout-warning .callout-title {
+  color: var(--color-warning);
+}
+
+.callout-danger {
+  background-color: #fef2f2;
+  border-color: var(--color-error);
+}
+
+.callout-danger .callout-title {
+  color: var(--color-error);
+}
+
+/* ----------------------------------------
+   Tables (Cheatsheet style)
+   ---------------------------------------- */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: var(--spacing-lg);
+}
+
+.cheatsheet-table {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cheatsheet-table th {
+  background-color: var(--color-bg-tertiary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cheatsheet-table td:first-child {
+  white-space: nowrap;
+}
+
+.cheatsheet-table code {
+  background-color: var(--color-bg-code);
+  color: #e2e8f0;
+  padding: 0.2em 0.5em;
+}
+
+/* ----------------------------------------
+   Hero Section
+   ---------------------------------------- */
+.hero {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-primary), #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+  }
+
+  .hero-title {
+    font-size: 3rem;
+  }
+}
+
+/* ----------------------------------------
+   Section Headers
+   ---------------------------------------- */
+.section-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+/* ----------------------------------------
+   Tutorial Steps
+   ---------------------------------------- */
+.tutorial-step {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tutorial-step:last-child {
+  border-bottom: none;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  margin-right: var(--spacing-sm);
+}
+
+/* ----------------------------------------
+   Tags / Badges
+   ---------------------------------------- */
+.tag {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+
+.tag-primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* ----------------------------------------
+   Table of Contents
+   ---------------------------------------- */
+.toc {
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  max-height: calc(100vh - var(--header-height) - var(--spacing-2xl));
+  overflow-y: auto;
+}
+
+.toc-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-list li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.toc-list a {
+  display: block;
+  padding: var(--spacing-xs) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  border-left: 2px solid transparent;
+  padding-left: var(--spacing-sm);
+}
+
+.toc-list a:hover,
+.toc-list a.active {
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  text-decoration: none;
+}
+
+.toc-list .toc-h3 {
+  padding-left: var(--spacing-lg);
+}
+
+/* ----------------------------------------
+   Empty States
+   ---------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl);
+  color: var(--color-text-muted);
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-lg);
+  opacity: 0.5;
+}
+
+/* ----------------------------------------
+   Loading States
+   ---------------------------------------- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 25%,
+    var(--color-bg-tertiary) 50%,
+    var(--color-bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

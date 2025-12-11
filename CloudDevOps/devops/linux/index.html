@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Essential Linux skills for DevOps engineers - file management, networking, services, and more.">
+  <title>Linux | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo">
+        <img src="../../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../../devops/" class="nav-link active">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">DevOps</h3>
+        <ul class="sidebar-links">
+          <li><a href="../overview.html">DevOps Overview</a></li>
+          <li><a href="../ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./" class="active">Linux Overview</a></li>
+          <li><a href="./file-directory.html">File & Directory</a></li>
+          <li><a href="./vim-editor.html">Vim Editor</a></li>
+          <li><a href="./network-management.html">Network Management</a></li>
+          <li><a href="./service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Version Control</h3>
+        <ul class="sidebar-links">
+          <li><a href="../networking-basics.html">Networking Basics</a></li>
+          <li><a href="../git.html">Git</a></li>
+          <li><a href="../github/">GitHub</a></li>
+          <li><a href="../github/github-actions.html">GitHub Actions</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Containers</h3>
+        <ul class="sidebar-links">
+          <li><a href="../docker/">Docker Overview</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Orchestration</h3>
+        <ul class="sidebar-links">
+          <li><a href="../kubernetes/">Kubernetes Overview</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Infrastructure as Code</h3>
+        <ul class="sidebar-links">
+          <li><a href="../terraform.html">Terraform</a></li>
+          <li><a href="../ansible.html">Ansible</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../../">Home</a></li>
+            <li><a href="../">DevOps</a></li>
+            <li aria-current="page">Linux</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>Linux for DevOps</h1>
+          <p class="article-meta">
+            <span class="reading-time">5 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <p>
+            Linux is the foundation of most DevOps environments. Understanding Linux commands
+            and system administration is essential for any DevOps engineer.
+          </p>
+
+          <h2 id="why-linux">Why Linux for DevOps?</h2>
+          <ul>
+            <li>Most servers and cloud infrastructure run Linux</li>
+            <li>Containers (Docker) are based on Linux</li>
+            <li>Open source with vast community support</li>
+            <li>Powerful command-line tools for automation</li>
+            <li>Free and highly customizable</li>
+          </ul>
+
+          <h2 id="topics">Topics Covered</h2>
+
+          <div class="card-grid">
+            <a href="./file-directory.html" class="card card-link">
+              <h3 class="card-title">File & Directory</h3>
+              <p class="card-description">Navigate and manage the Linux filesystem.</p>
+            </a>
+
+            <a href="./vim-editor.html" class="card card-link">
+              <h3 class="card-title">Vim Editor</h3>
+              <p class="card-description">Master the powerful text editor.</p>
+            </a>
+
+            <a href="./network-management.html" class="card card-link">
+              <h3 class="card-title">Network Management</h3>
+              <p class="card-description">Configure and troubleshoot networking.</p>
+            </a>
+
+            <a href="./service-package-management.html" class="card card-link">
+              <h3 class="card-title">Service & Package Mgmt</h3>
+              <p class="card-description">Manage services and install packages.</p>
+            </a>
+          </div>
+
+          <h2 id="quick-reference">Quick Reference</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>pwd</code></td>
+                  <td>Print current working directory</td>
+                </tr>
+                <tr>
+                  <td><code>ls -la</code></td>
+                  <td>List all files with details</td>
+                </tr>
+                <tr>
+                  <td><code>cd /path</code></td>
+                  <td>Change directory</td>
+                </tr>
+                <tr>
+                  <td><code>cat file</code></td>
+                  <td>Display file contents</td>
+                </tr>
+                <tr>
+                  <td><code>grep pattern file</code></td>
+                  <td>Search for pattern in file</td>
+                </tr>
+                <tr>
+                  <td><code>chmod 755 file</code></td>
+                  <td>Change file permissions</td>
+                </tr>
+                <tr>
+                  <td><code>sudo command</code></td>
+                  <td>Run command as superuser</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Practice Makes Perfect
+            </div>
+            <p>
+              The best way to learn Linux is by doing. Set up a virtual machine or use
+              an online Linux terminal to practice these commands.
+            </p>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="../ci-cd-pipeline.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">CI/CD Pipeline</span>
+          </a>
+          <a href="./file-directory.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">File & Directory</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

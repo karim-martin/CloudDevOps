@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ansible automation - configuration management, application deployment, and orchestration.">
+  <title>Ansible | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../devops/" class="nav-link active">DevOps</a><a href="../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure as Code</h3><ul class="sidebar-links"><li><a href="./terraform.html">Terraform</a></li><li><a href="./ansible.html" class="active">Ansible</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../">Home</a></li><li><a href="./">DevOps</a></li><li aria-current="page">Ansible</li></ol></nav>
+        <header class="article-header"><h1>Ansible</h1></header>
+
+        <div class="article-body">
+          <p>Ansible is an agentless automation tool for configuration management, application deployment, and task automation.</p>
+
+          <h2 id="commands">Ansible Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>ansible all -m ping</code></td><td>Ping all hosts</td></tr>
+                <tr><td><code>ansible-playbook playbook.yml</code></td><td>Run playbook</td></tr>
+                <tr><td><code>ansible-playbook -i inventory playbook.yml</code></td><td>Specify inventory</td></tr>
+                <tr><td><code>ansible-playbook --check playbook.yml</code></td><td>Dry run</td></tr>
+                <tr><td><code>ansible-playbook -e "var=value" playbook.yml</code></td><td>Extra variables</td></tr>
+                <tr><td><code>ansible-galaxy install role</code></td><td>Install role</td></tr>
+                <tr><td><code>ansible-vault encrypt file</code></td><td>Encrypt file</td></tr>
+                <tr><td><code>ansible-vault decrypt file</code></td><td>Decrypt file</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="inventory">Inventory</h2>
+          <pre><code class="language-ini"># inventory.ini
+[webservers]
+web1.example.com
+web2.example.com
+
+[dbservers]
+db1.example.com ansible_user=admin
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3</code></pre>
+
+          <h2 id="playbook">Playbook Example</h2>
+          <pre><code class="language-yaml"># playbook.yml
+---
+- name: Configure web servers
+  hosts: webservers
+  become: yes
+  vars:
+    http_port: 80
+
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Copy config file
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted</code></pre>
+
+          <h2 id="modules">Common Modules</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Module</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><code>apt/yum/dnf</code></td><td>Package management</td></tr>
+                <tr><td><code>service/systemd</code></td><td>Service management</td></tr>
+                <tr><td><code>copy</code></td><td>Copy files</td></tr>
+                <tr><td><code>template</code></td><td>Jinja2 templates</td></tr>
+                <tr><td><code>file</code></td><td>File/directory management</td></tr>
+                <tr><td><code>user</code></td><td>User management</td></tr>
+                <tr><td><code>command/shell</code></td><td>Run commands</td></tr>
+                <tr><td><code>git</code></td><td>Git operations</td></tr>
+                <tr><td><code>docker_container</code></td><td>Docker management</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="roles">Roles Structure</h2>
+          <pre><code>roles/
+└── webserver/
+    ├── tasks/
+    │   └── main.yml
+    ├── handlers/
+    │   └── main.yml
+    ├── templates/
+    │   └── nginx.conf.j2
+    ├── files/
+    ├── vars/
+    │   └── main.yml
+    ├── defaults/
+    │   └── main.yml
+    └── meta/
+        └── main.yml</code></pre>
+
+          <h2 id="variables">Variables</h2>
+          <pre><code class="language-yaml"># vars/main.yml
+http_port: 80
+max_clients: 200
+
+# Using variables
+- name: Configure port
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  vars:
+    port: "{{ http_port }}"
+
+# Jinja2 template
+listen {{ http_port }};
+worker_connections {{ max_clients }};</code></pre>
+
+          <h2 id="conditionals">Conditionals and Loops</h2>
+          <pre><code class="language-yaml"># Conditional
+- name: Install on Debian
+  apt:
+    name: nginx
+  when: ansible_os_family == "Debian"
+
+# Loop
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - git
+    - curl</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Terraform vs Ansible</div>
+            <p><strong>Terraform:</strong> Best for provisioning infrastructure (VMs, networks, cloud resources).<br>
+            <strong>Ansible:</strong> Best for configuring servers and deploying applications.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./terraform.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Terraform</span></a>
+          <a href="../cloud/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>

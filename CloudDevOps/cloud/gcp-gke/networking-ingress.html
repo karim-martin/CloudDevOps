@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Networking and Ingress - load balancers, Ingress controllers, and SSL certificates.">
+  <title>Networking & Ingress | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html" class="active">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Networking & Ingress</li></ol></nav>
+        <header class="article-header"><h1>Networking & Ingress</h1></header>
+
+        <div class="article-body">
+          <h2 id="service-types">Service Types in GKE</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Description</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td>ClusterIP</td><td>Internal only</td><td>Backend services</td></tr>
+                <tr><td>NodePort</td><td>Static port on nodes</td><td>Development</td></tr>
+                <tr><td>LoadBalancer</td><td>External TCP/UDP LB</td><td>Single service exposure</td></tr>
+                <tr><td>Ingress</td><td>HTTP(S) load balancer</td><td>Multiple services, domains</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="ingress">GKE Ingress</h2>
+          <pre><code class="language-yaml"># ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "my-static-ip"
+spec:
+  ingressClassName: gce
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80</code></pre>
+
+          <h2 id="static-ip">Reserve Static IP</h2>
+          <pre><code class="language-bash"># Reserve global static IP
+gcloud compute addresses create my-static-ip --global
+
+# Get the IP address
+gcloud compute addresses describe my-static-ip --global</code></pre>
+
+          <h2 id="ssl">SSL/TLS with Managed Certificates</h2>
+          <pre><code class="language-yaml"># managed-cert.yaml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: my-cert
+spec:
+  domains:
+    - app.example.com
+---
+# ingress with SSL
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "my-static-ip"
+    networking.gke.io/managed-certificates: "my-cert"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80</code></pre>
+
+          <h2 id="https-redirect">HTTPS Redirect</h2>
+          <pre><code class="language-yaml">apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: my-frontend-config
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
+---
+# Add to ingress annotations
+annotations:
+  networking.gke.io/v1beta1.FrontendConfig: "my-frontend-config"</code></pre>
+
+          <h2 id="cloud-armor">Cloud Armor (WAF)</h2>
+          <pre><code class="language-bash"># Create security policy
+gcloud compute security-policies create my-policy
+
+# Add rules
+gcloud compute security-policies rules create 1000 \
+    --security-policy=my-policy \
+    --expression="origin.region_code == 'CN'" \
+    --action=deny-403
+
+# Apply to backend
+gcloud compute backend-services update BACKEND_NAME \
+    --security-policy=my-policy</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">DNS Setup</div>
+            <p>After creating your Ingress, point your domain's DNS A record to the static IP address. SSL certificate provisioning takes 10-15 minutes.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./deploying-apps.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Deploying Apps</span></a>
+          <a href="./security-iam.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Security & IAM</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

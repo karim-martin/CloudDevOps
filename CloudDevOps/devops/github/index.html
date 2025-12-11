@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub platform guide - repositories, pull requests, issues, and collaboration features.">
+  <title>GitHub | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+      <li><a href="../git.html">Git</a></li>
+      <li><a href="./" class="active">GitHub</a></li>
+      <li><a href="./github-actions.html">GitHub Actions</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">DevOps</a></li>
+          <li aria-current="page">GitHub</li>
+        </ol></nav>
+
+        <header class="article-header"><h1>GitHub</h1></header>
+
+        <div class="article-body">
+          <p>GitHub is a web-based platform for version control and collaboration using Git.</p>
+
+          <h2 id="key-features">Key Features</h2>
+          <ul>
+            <li><strong>Repositories</strong> - Store and manage code</li>
+            <li><strong>Branches</strong> - Work on features in isolation</li>
+            <li><strong>Pull Requests</strong> - Propose and review changes</li>
+            <li><strong>Issues</strong> - Track bugs and feature requests</li>
+            <li><strong>Actions</strong> - Automate workflows (CI/CD)</li>
+            <li><strong>Projects</strong> - Kanban-style project management</li>
+          </ul>
+
+          <h2 id="workflow">GitHub Workflow</h2>
+          <section class="tutorial-step">
+            <h3><span class="step-number">1</span> Fork Repository</h3>
+            <p>Create your own copy of a repository to make changes.</p>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">2</span> Clone Locally</h3>
+            <pre><code>git clone https://github.com/username/repo.git</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">3</span> Create Branch</h3>
+            <pre><code>git checkout -b feature/new-feature</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">4</span> Make Changes & Commit</h3>
+            <pre><code>git add .
+git commit -m "Add new feature"</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">5</span> Push to GitHub</h3>
+            <pre><code>git push origin feature/new-feature</code></pre>
+          </section>
+
+          <section class="tutorial-step">
+            <h3><span class="step-number">6</span> Create Pull Request</h3>
+            <p>Open a PR on GitHub to merge your changes into the main branch.</p>
+          </section>
+
+          <h2 id="cli">GitHub CLI (gh)</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>gh auth login</code></td><td>Authenticate with GitHub</td></tr>
+                <tr><td><code>gh repo clone owner/repo</code></td><td>Clone repository</td></tr>
+                <tr><td><code>gh repo create name</code></td><td>Create new repository</td></tr>
+                <tr><td><code>gh pr create</code></td><td>Create pull request</td></tr>
+                <tr><td><code>gh pr list</code></td><td>List pull requests</td></tr>
+                <tr><td><code>gh pr checkout 123</code></td><td>Checkout PR locally</td></tr>
+                <tr><td><code>gh issue create</code></td><td>Create issue</td></tr>
+                <tr><td><code>gh issue list</code></td><td>List issues</td></tr>
+                <tr><td><code>gh run list</code></td><td>List workflow runs</td></tr>
+                <tr><td><code>gh run view</code></td><td>View workflow run</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="best-practices">Best Practices</h2>
+          <ul>
+            <li>Write meaningful commit messages</li>
+            <li>Use branch protection rules</li>
+            <li>Require pull request reviews</li>
+            <li>Use issue templates</li>
+            <li>Add a README and LICENSE</li>
+            <li>Use .gitignore to exclude files</li>
+          </ul>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Next: GitHub Actions</div>
+            <p>Learn how to automate your workflows with GitHub Actions for CI/CD.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../git.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Git</span>
+          </a>
+          <a href="./github-actions.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">GitHub Actions</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CI/CD with GKE - automate deployments using Cloud Build and GitHub Actions.">
+  <title>CI/CD with GKE | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html" class="active">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">CI/CD</li></ol></nav>
+        <header class="article-header"><h1>CI/CD with GKE</h1></header>
+
+        <div class="article-body">
+          <h2 id="cloud-build">Cloud Build</h2>
+          <pre><code class="language-yaml"># cloudbuild.yaml
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/myapp:$COMMIT_SHA', '.']
+
+  # Push the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/myapp:$COMMIT_SHA']
+
+  # Deploy to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=k8s/
+      - --image=us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/myapp:$COMMIT_SHA
+      - --location=us-central1-a
+      - --cluster=my-cluster
+
+options:
+  logging: CLOUD_LOGGING_ONLY</code></pre>
+
+          <h3>Setup Cloud Build</h3>
+          <pre><code class="language-bash"># Enable Cloud Build API
+gcloud services enable cloudbuild.googleapis.com
+
+# Grant Cloud Build permissions
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+    --role="roles/container.developer"
+
+# Create trigger from GitHub
+gcloud builds triggers create github \
+    --repo-name=my-repo \
+    --repo-owner=username \
+    --branch-pattern="^main$" \
+    --build-config=cloudbuild.yaml</code></pre>
+
+          <h2 id="github-actions">GitHub Actions</h2>
+          <pre><code class="language-yaml"># .github/workflows/deploy.yml
+name: Deploy to GKE
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: my-cluster
+  GKE_ZONE: us-central1-a
+  IMAGE: myapp
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Build and Push
+      run: |
+        docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/$IMAGE:$GITHUB_SHA .
+        docker push us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/$IMAGE:$GITHUB_SHA
+
+    - name: Get GKE credentials
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    - name: Deploy to GKE
+      run: |
+        kubectl set image deployment/myapp myapp=us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/$IMAGE:$GITHUB_SHA
+        kubectl rollout status deployment/myapp</code></pre>
+
+          <h2 id="secrets-setup">GitHub Secrets Setup</h2>
+          <pre><code class="language-bash"># Create service account for GitHub Actions
+gcloud iam service-accounts create github-actions
+
+# Grant permissions
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/container.developer"
+
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+
+# Create key
+gcloud iam service-accounts keys create key.json \
+    --iam-account=github-actions@PROJECT_ID.iam.gserviceaccount.com
+
+# Add key.json content to GitHub secret GCP_SA_KEY</code></pre>
+
+          <h2 id="gitops">GitOps with Config Sync</h2>
+          <pre><code class="language-bash"># Enable Config Management
+gcloud container fleet config-management enable
+
+# Configure Config Sync
+cat &lt;&lt;EOF | kubectl apply -f -
+apiVersion: configmanagement.gke.io/v1
+kind: ConfigManagement
+metadata:
+  name: config-management
+spec:
+  git:
+    syncRepo: https://github.com/org/repo
+    syncBranch: main
+    policyDir: config
+  sourceFormat: unstructured
+EOF</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Best Practice</div>
+            <p>Use Workload Identity Federation instead of service account keys for GitHub Actions authentication when possible.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./security-iam.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Security & IAM</span></a>
+          <a href="./monitoring-logging.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Monitoring & Logging</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

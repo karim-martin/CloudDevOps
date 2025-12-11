@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Linux file and directory management commands - navigate, create, copy, move, and manage files.">
+  <title>File & Directory | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo">
+        <img src="../../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../../devops/" class="nav-link active">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./">Linux Overview</a></li>
+          <li><a href="./file-directory.html" class="active">File & Directory</a></li>
+          <li><a href="./vim-editor.html">Vim Editor</a></li>
+          <li><a href="./network-management.html">Network Management</a></li>
+          <li><a href="./service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../../">Home</a></li>
+            <li><a href="../">DevOps</a></li>
+            <li><a href="./">Linux</a></li>
+            <li aria-current="page">File & Directory</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>File & Directory Management</h1>
+          <p class="article-meta">
+            <span class="reading-time">12 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <h2 id="navigation">Navigation Commands</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>pwd</code></td>
+                  <td>Print working directory</td>
+                  <td><code>pwd</code> → /home/user</td>
+                </tr>
+                <tr>
+                  <td><code>cd</code></td>
+                  <td>Change directory</td>
+                  <td><code>cd /var/log</code></td>
+                </tr>
+                <tr>
+                  <td><code>cd ..</code></td>
+                  <td>Go up one directory</td>
+                  <td><code>cd ..</code></td>
+                </tr>
+                <tr>
+                  <td><code>cd ~</code></td>
+                  <td>Go to home directory</td>
+                  <td><code>cd ~</code></td>
+                </tr>
+                <tr>
+                  <td><code>cd -</code></td>
+                  <td>Go to previous directory</td>
+                  <td><code>cd -</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="listing">Listing Files</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ls</code></td>
+                  <td>List files in current directory</td>
+                </tr>
+                <tr>
+                  <td><code>ls -l</code></td>
+                  <td>Long format with details</td>
+                </tr>
+                <tr>
+                  <td><code>ls -a</code></td>
+                  <td>Show hidden files (starting with .)</td>
+                </tr>
+                <tr>
+                  <td><code>ls -la</code></td>
+                  <td>Long format including hidden files</td>
+                </tr>
+                <tr>
+                  <td><code>ls -lh</code></td>
+                  <td>Human-readable file sizes</td>
+                </tr>
+                <tr>
+                  <td><code>ls -R</code></td>
+                  <td>Recursive listing</td>
+                </tr>
+                <tr>
+                  <td><code>ls -lt</code></td>
+                  <td>Sort by modification time</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Example output of ls -la
+drwxr-xr-x  5 user group 4096 Dec 10 10:00 .
+drwxr-xr-x  3 user group 4096 Dec  9 09:00 ..
+-rw-r--r--  1 user group  220 Dec  8 08:00 .bashrc
+-rw-r--r--  1 user group 1024 Dec 10 10:00 file.txt
+drwxr-xr-x  2 user group 4096 Dec 10 09:00 documents</code></pre>
+
+          <h2 id="create">Creating Files and Directories</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>touch file.txt</code></td>
+                  <td>Create empty file or update timestamp</td>
+                </tr>
+                <tr>
+                  <td><code>mkdir dirname</code></td>
+                  <td>Create directory</td>
+                </tr>
+                <tr>
+                  <td><code>mkdir -p a/b/c</code></td>
+                  <td>Create nested directories</td>
+                </tr>
+                <tr>
+                  <td><code>echo "text" > file</code></td>
+                  <td>Create file with content</td>
+                </tr>
+                <tr>
+                  <td><code>cat > file</code></td>
+                  <td>Create file and type content (Ctrl+D to save)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="copy-move">Copying and Moving</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>cp source dest</code></td>
+                  <td>Copy file</td>
+                </tr>
+                <tr>
+                  <td><code>cp -r dir1 dir2</code></td>
+                  <td>Copy directory recursively</td>
+                </tr>
+                <tr>
+                  <td><code>cp -i source dest</code></td>
+                  <td>Interactive (prompt before overwrite)</td>
+                </tr>
+                <tr>
+                  <td><code>mv source dest</code></td>
+                  <td>Move or rename file/directory</td>
+                </tr>
+                <tr>
+                  <td><code>mv -i source dest</code></td>
+                  <td>Interactive move</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="delete">Deleting Files and Directories</h2>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              Caution
+            </div>
+            <p>
+              The <code>rm</code> command permanently deletes files. There is no trash bin!
+              Always double-check before using <code>rm -rf</code>.
+            </p>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>rm file</code></td>
+                  <td>Remove file</td>
+                </tr>
+                <tr>
+                  <td><code>rm -r dir</code></td>
+                  <td>Remove directory and contents</td>
+                </tr>
+                <tr>
+                  <td><code>rm -f file</code></td>
+                  <td>Force remove without confirmation</td>
+                </tr>
+                <tr>
+                  <td><code>rm -rf dir</code></td>
+                  <td>Force remove directory recursively</td>
+                </tr>
+                <tr>
+                  <td><code>rmdir dir</code></td>
+                  <td>Remove empty directory</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="permissions">File Permissions</h2>
+
+          <p>Linux uses a permission system with three types: read (r), write (w), execute (x) for three groups: owner, group, others.</p>
+
+          <pre><code class="language-bash"># Permission format: -rwxrwxrwx
+# First char: file type (- file, d directory, l link)
+# Next 3: owner permissions
+# Next 3: group permissions
+# Last 3: others permissions
+
+# Example
+-rw-r--r--  # owner: read/write, group: read, others: read</code></pre>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>chmod 755 file</code></td>
+                  <td>Set permissions using octal (rwxr-xr-x)</td>
+                </tr>
+                <tr>
+                  <td><code>chmod +x file</code></td>
+                  <td>Add execute permission</td>
+                </tr>
+                <tr>
+                  <td><code>chmod u+w file</code></td>
+                  <td>Add write permission for owner</td>
+                </tr>
+                <tr>
+                  <td><code>chmod g-w file</code></td>
+                  <td>Remove write permission for group</td>
+                </tr>
+                <tr>
+                  <td><code>chown user:group file</code></td>
+                  <td>Change file owner and group</td>
+                </tr>
+                <tr>
+                  <td><code>chown -R user dir</code></td>
+                  <td>Change owner recursively</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Octal Permission Values</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Number</th>
+                  <th>Permission</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td>No permission</td></tr>
+                <tr><td>1</td><td>Execute</td></tr>
+                <tr><td>2</td><td>Write</td></tr>
+                <tr><td>4</td><td>Read</td></tr>
+                <tr><td>5</td><td>Read + Execute (4+1)</td></tr>
+                <tr><td>6</td><td>Read + Write (4+2)</td></tr>
+                <tr><td>7</td><td>Read + Write + Execute (4+2+1)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="search">Finding Files</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>find /path -name "*.txt"</code></td>
+                  <td>Find files by name</td>
+                </tr>
+                <tr>
+                  <td><code>find . -type f</code></td>
+                  <td>Find files only</td>
+                </tr>
+                <tr>
+                  <td><code>find . -type d</code></td>
+                  <td>Find directories only</td>
+                </tr>
+                <tr>
+                  <td><code>find . -mtime -7</code></td>
+                  <td>Find files modified in last 7 days</td>
+                </tr>
+                <tr>
+                  <td><code>find . -size +100M</code></td>
+                  <td>Find files larger than 100MB</td>
+                </tr>
+                <tr>
+                  <td><code>locate filename</code></td>
+                  <td>Fast file search (uses database)</td>
+                </tr>
+                <tr>
+                  <td><code>which command</code></td>
+                  <td>Find location of a command</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="viewing">Viewing File Contents</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>cat file</code></td>
+                  <td>Display entire file</td>
+                </tr>
+                <tr>
+                  <td><code>less file</code></td>
+                  <td>View file with pagination</td>
+                </tr>
+                <tr>
+                  <td><code>head file</code></td>
+                  <td>Show first 10 lines</td>
+                </tr>
+                <tr>
+                  <td><code>head -n 20 file</code></td>
+                  <td>Show first 20 lines</td>
+                </tr>
+                <tr>
+                  <td><code>tail file</code></td>
+                  <td>Show last 10 lines</td>
+                </tr>
+                <tr>
+                  <td><code>tail -f file</code></td>
+                  <td>Follow file in real-time (logs)</td>
+                </tr>
+                <tr>
+                  <td><code>grep "pattern" file</code></td>
+                  <td>Search for pattern in file</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Linux Overview</span>
+          </a>
+          <a href="./vim-editor.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Vim Editor</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

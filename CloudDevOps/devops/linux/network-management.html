@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Linux network management commands - configure interfaces, troubleshoot connectivity, and manage network settings.">
+  <title>Network Management | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo">
+        <img src="../../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../../devops/" class="nav-link active">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./">Linux Overview</a></li>
+          <li><a href="./file-directory.html">File & Directory</a></li>
+          <li><a href="./vim-editor.html">Vim Editor</a></li>
+          <li><a href="./network-management.html" class="active">Network Management</a></li>
+          <li><a href="./service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../../">Home</a></li>
+            <li><a href="../">DevOps</a></li>
+            <li><a href="./">Linux</a></li>
+            <li aria-current="page">Network Management</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>Network Management</h1>
+          <p class="article-meta">
+            <span class="reading-time">10 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <h2 id="network-info">Network Information</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ip addr</code></td>
+                  <td>Show IP addresses and interfaces</td>
+                </tr>
+                <tr>
+                  <td><code>ip link</code></td>
+                  <td>Show network interfaces</td>
+                </tr>
+                <tr>
+                  <td><code>ip route</code></td>
+                  <td>Show routing table</td>
+                </tr>
+                <tr>
+                  <td><code>ifconfig</code></td>
+                  <td>Show interfaces (legacy)</td>
+                </tr>
+                <tr>
+                  <td><code>hostname</code></td>
+                  <td>Show system hostname</td>
+                </tr>
+                <tr>
+                  <td><code>hostname -I</code></td>
+                  <td>Show all IP addresses</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="connectivity">Testing Connectivity</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ping host</code></td>
+                  <td>Test connectivity to host</td>
+                </tr>
+                <tr>
+                  <td><code>ping -c 4 host</code></td>
+                  <td>Send 4 ping packets</td>
+                </tr>
+                <tr>
+                  <td><code>traceroute host</code></td>
+                  <td>Show route to host</td>
+                </tr>
+                <tr>
+                  <td><code>mtr host</code></td>
+                  <td>Combined ping and traceroute</td>
+                </tr>
+                <tr>
+                  <td><code>curl -I url</code></td>
+                  <td>Fetch HTTP headers</td>
+                </tr>
+                <tr>
+                  <td><code>wget url</code></td>
+                  <td>Download file from URL</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="dns">DNS Commands</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>nslookup domain</code></td>
+                  <td>Query DNS for domain</td>
+                </tr>
+                <tr>
+                  <td><code>dig domain</code></td>
+                  <td>DNS lookup with detailed info</td>
+                </tr>
+                <tr>
+                  <td><code>dig +short domain</code></td>
+                  <td>Short DNS lookup</td>
+                </tr>
+                <tr>
+                  <td><code>host domain</code></td>
+                  <td>Simple DNS lookup</td>
+                </tr>
+                <tr>
+                  <td><code>cat /etc/resolv.conf</code></td>
+                  <td>View DNS configuration</td>
+                </tr>
+                <tr>
+                  <td><code>cat /etc/hosts</code></td>
+                  <td>View local hosts file</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="ports">Port and Connection Info</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>netstat -tuln</code></td>
+                  <td>Show listening ports</td>
+                </tr>
+                <tr>
+                  <td><code>ss -tuln</code></td>
+                  <td>Show listening ports (modern)</td>
+                </tr>
+                <tr>
+                  <td><code>ss -s</code></td>
+                  <td>Socket statistics summary</td>
+                </tr>
+                <tr>
+                  <td><code>lsof -i :80</code></td>
+                  <td>Show process using port 80</td>
+                </tr>
+                <tr>
+                  <td><code>nc -zv host port</code></td>
+                  <td>Test if port is open</td>
+                </tr>
+                <tr>
+                  <td><code>telnet host port</code></td>
+                  <td>Connect to port (testing)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="firewall">Firewall (iptables/firewalld)</h2>
+
+          <h3>iptables</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>iptables -L</code></td>
+                  <td>List all rules</td>
+                </tr>
+                <tr>
+                  <td><code>iptables -A INPUT -p tcp --dport 80 -j ACCEPT</code></td>
+                  <td>Allow port 80</td>
+                </tr>
+                <tr>
+                  <td><code>iptables -A INPUT -s IP -j DROP</code></td>
+                  <td>Block IP address</td>
+                </tr>
+                <tr>
+                  <td><code>iptables -F</code></td>
+                  <td>Flush all rules</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>firewalld (RHEL/CentOS)</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>firewall-cmd --list-all</code></td>
+                  <td>Show current configuration</td>
+                </tr>
+                <tr>
+                  <td><code>firewall-cmd --add-port=80/tcp --permanent</code></td>
+                  <td>Open port 80</td>
+                </tr>
+                <tr>
+                  <td><code>firewall-cmd --reload</code></td>
+                  <td>Reload firewall rules</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>ufw (Ubuntu)</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ufw status</code></td>
+                  <td>Show firewall status</td>
+                </tr>
+                <tr>
+                  <td><code>ufw enable</code></td>
+                  <td>Enable firewall</td>
+                </tr>
+                <tr>
+                  <td><code>ufw allow 80/tcp</code></td>
+                  <td>Allow port 80</td>
+                </tr>
+                <tr>
+                  <td><code>ufw deny 22</code></td>
+                  <td>Deny port 22</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="ssh">SSH Commands</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ssh user@host</code></td>
+                  <td>Connect to remote host</td>
+                </tr>
+                <tr>
+                  <td><code>ssh -p 2222 user@host</code></td>
+                  <td>Connect on specific port</td>
+                </tr>
+                <tr>
+                  <td><code>ssh -i key.pem user@host</code></td>
+                  <td>Connect with private key</td>
+                </tr>
+                <tr>
+                  <td><code>ssh-keygen</code></td>
+                  <td>Generate SSH key pair</td>
+                </tr>
+                <tr>
+                  <td><code>ssh-copy-id user@host</code></td>
+                  <td>Copy public key to remote host</td>
+                </tr>
+                <tr>
+                  <td><code>scp file user@host:/path</code></td>
+                  <td>Copy file to remote host</td>
+                </tr>
+                <tr>
+                  <td><code>scp user@host:/path/file .</code></td>
+                  <td>Copy file from remote host</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              SSH Config
+            </div>
+            <p>
+              Create <code>~/.ssh/config</code> to save connection settings:
+            </p>
+            <pre><code>Host myserver
+    HostName 192.168.1.100
+    User admin
+    Port 22
+    IdentityFile ~/.ssh/mykey</code></pre>
+            <p>Then simply run: <code>ssh myserver</code></p>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./vim-editor.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Vim Editor</span>
+          </a>
+          <a href="./service-package-management.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Service & Package Mgmt</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

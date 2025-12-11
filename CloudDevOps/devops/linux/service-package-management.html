@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Linux service and package management - systemd, apt, yum, dnf commands for managing services and software.">
+  <title>Service & Package Management | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo">
+        <img src="../../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../../devops/" class="nav-link active">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./">Linux Overview</a></li>
+          <li><a href="./file-directory.html">File & Directory</a></li>
+          <li><a href="./vim-editor.html">Vim Editor</a></li>
+          <li><a href="./network-management.html">Network Management</a></li>
+          <li><a href="./service-package-management.html" class="active">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../../">Home</a></li>
+            <li><a href="../">DevOps</a></li>
+            <li><a href="./">Linux</a></li>
+            <li aria-current="page">Service & Package Mgmt</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>Service & Package Management</h1>
+          <p class="article-meta">
+            <span class="reading-time">12 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <h2 id="systemd">Service Management (systemd)</h2>
+          <p>
+            Most modern Linux distributions use systemd to manage services.
+            The <code>systemctl</code> command is used to control services.
+          </p>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>systemctl start service</code></td>
+                  <td>Start a service</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl stop service</code></td>
+                  <td>Stop a service</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl restart service</code></td>
+                  <td>Restart a service</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl reload service</code></td>
+                  <td>Reload configuration</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl status service</code></td>
+                  <td>Check service status</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl enable service</code></td>
+                  <td>Enable service on boot</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl disable service</code></td>
+                  <td>Disable service on boot</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl is-active service</code></td>
+                  <td>Check if service is running</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl is-enabled service</code></td>
+                  <td>Check if service is enabled</td>
+                </tr>
+                <tr>
+                  <td><code>systemctl list-units --type=service</code></td>
+                  <td>List all services</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Example: Managing nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx</code></pre>
+
+          <h2 id="journalctl">Viewing Logs (journalctl)</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>journalctl</code></td>
+                  <td>View all logs</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl -u service</code></td>
+                  <td>View logs for specific service</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl -f</code></td>
+                  <td>Follow logs in real-time</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl -u service -f</code></td>
+                  <td>Follow service logs</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl --since "1 hour ago"</code></td>
+                  <td>Logs from last hour</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl -p err</code></td>
+                  <td>Show only errors</td>
+                </tr>
+                <tr>
+                  <td><code>journalctl -b</code></td>
+                  <td>Logs since last boot</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="apt">Package Management: APT (Debian/Ubuntu)</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>apt update</code></td>
+                  <td>Update package index</td>
+                </tr>
+                <tr>
+                  <td><code>apt upgrade</code></td>
+                  <td>Upgrade all packages</td>
+                </tr>
+                <tr>
+                  <td><code>apt install package</code></td>
+                  <td>Install package</td>
+                </tr>
+                <tr>
+                  <td><code>apt remove package</code></td>
+                  <td>Remove package</td>
+                </tr>
+                <tr>
+                  <td><code>apt purge package</code></td>
+                  <td>Remove package and config</td>
+                </tr>
+                <tr>
+                  <td><code>apt autoremove</code></td>
+                  <td>Remove unused dependencies</td>
+                </tr>
+                <tr>
+                  <td><code>apt search keyword</code></td>
+                  <td>Search for packages</td>
+                </tr>
+                <tr>
+                  <td><code>apt show package</code></td>
+                  <td>Show package details</td>
+                </tr>
+                <tr>
+                  <td><code>apt list --installed</code></td>
+                  <td>List installed packages</td>
+                </tr>
+                <tr>
+                  <td><code>dpkg -i package.deb</code></td>
+                  <td>Install local .deb file</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Example: Installing nginx on Ubuntu
+sudo apt update
+sudo apt install nginx -y</code></pre>
+
+          <h2 id="yum-dnf">Package Management: YUM/DNF (RHEL/CentOS/Fedora)</h2>
+
+          <div class="callout callout-info">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              YUM vs DNF
+            </div>
+            <p>
+              DNF is the next-generation version of YUM. Fedora and RHEL 8+ use DNF by default.
+              Commands are mostly interchangeable.
+            </p>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>yum check-update</code></td>
+                  <td>Check for updates</td>
+                </tr>
+                <tr>
+                  <td><code>yum update</code></td>
+                  <td>Update all packages</td>
+                </tr>
+                <tr>
+                  <td><code>yum install package</code></td>
+                  <td>Install package</td>
+                </tr>
+                <tr>
+                  <td><code>yum remove package</code></td>
+                  <td>Remove package</td>
+                </tr>
+                <tr>
+                  <td><code>yum search keyword</code></td>
+                  <td>Search for packages</td>
+                </tr>
+                <tr>
+                  <td><code>yum info package</code></td>
+                  <td>Show package info</td>
+                </tr>
+                <tr>
+                  <td><code>yum list installed</code></td>
+                  <td>List installed packages</td>
+                </tr>
+                <tr>
+                  <td><code>yum clean all</code></td>
+                  <td>Clean cache</td>
+                </tr>
+                <tr>
+                  <td><code>rpm -ivh package.rpm</code></td>
+                  <td>Install local .rpm file</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Example: Installing nginx on RHEL/CentOS
+sudo yum install epel-release -y
+sudo yum install nginx -y</code></pre>
+
+          <h2 id="process">Process Management</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ps aux</code></td>
+                  <td>List all processes</td>
+                </tr>
+                <tr>
+                  <td><code>ps aux | grep name</code></td>
+                  <td>Find process by name</td>
+                </tr>
+                <tr>
+                  <td><code>top</code></td>
+                  <td>Interactive process viewer</td>
+                </tr>
+                <tr>
+                  <td><code>htop</code></td>
+                  <td>Enhanced process viewer</td>
+                </tr>
+                <tr>
+                  <td><code>kill PID</code></td>
+                  <td>Terminate process</td>
+                </tr>
+                <tr>
+                  <td><code>kill -9 PID</code></td>
+                  <td>Force kill process</td>
+                </tr>
+                <tr>
+                  <td><code>killall name</code></td>
+                  <td>Kill all processes by name</td>
+                </tr>
+                <tr>
+                  <td><code>pgrep name</code></td>
+                  <td>Find PID by name</td>
+                </tr>
+                <tr>
+                  <td><code>pkill name</code></td>
+                  <td>Kill by name</td>
+                </tr>
+                <tr>
+                  <td><code>nohup command &</code></td>
+                  <td>Run in background</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="system">System Information</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>uname -a</code></td>
+                  <td>System information</td>
+                </tr>
+                <tr>
+                  <td><code>cat /etc/os-release</code></td>
+                  <td>OS version info</td>
+                </tr>
+                <tr>
+                  <td><code>uptime</code></td>
+                  <td>System uptime</td>
+                </tr>
+                <tr>
+                  <td><code>free -h</code></td>
+                  <td>Memory usage</td>
+                </tr>
+                <tr>
+                  <td><code>df -h</code></td>
+                  <td>Disk usage</td>
+                </tr>
+                <tr>
+                  <td><code>du -sh dir</code></td>
+                  <td>Directory size</td>
+                </tr>
+                <tr>
+                  <td><code>lscpu</code></td>
+                  <td>CPU information</td>
+                </tr>
+                <tr>
+                  <td><code>lsblk</code></td>
+                  <td>Block devices</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./network-management.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Network Management</span>
+          </a>
+          <a href="../networking-basics.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Networking Basics</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

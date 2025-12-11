@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Helm Charts - the package manager for Kubernetes applications.">
+  <title>Helm Charts | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./architecture.html">Architecture</a></li><li><a href="./pods-deployments.html">Pods & Deployments</a></li><li><a href="./services-networking.html">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html">Storage</a></li><li><a href="./helm.html" class="active">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Kubernetes</a></li><li aria-current="page">Helm Charts</li></ol></nav>
+        <header class="article-header"><h1>Helm Charts</h1></header>
+
+        <div class="article-body">
+          <p>Helm is the package manager for Kubernetes. It uses Charts to define, install, and upgrade applications.</p>
+
+          <h2 id="commands">Helm Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>helm repo add name url</code></td><td>Add chart repository</td></tr>
+                <tr><td><code>helm repo update</code></td><td>Update repositories</td></tr>
+                <tr><td><code>helm search repo keyword</code></td><td>Search for charts</td></tr>
+                <tr><td><code>helm install name chart</code></td><td>Install chart</td></tr>
+                <tr><td><code>helm upgrade name chart</code></td><td>Upgrade release</td></tr>
+                <tr><td><code>helm uninstall name</code></td><td>Uninstall release</td></tr>
+                <tr><td><code>helm list</code></td><td>List releases</td></tr>
+                <tr><td><code>helm status name</code></td><td>Release status</td></tr>
+                <tr><td><code>helm history name</code></td><td>Release history</td></tr>
+                <tr><td><code>helm rollback name revision</code></td><td>Rollback release</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="install">Installing Charts</h2>
+          <pre><code class="language-bash"># Add repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Search for chart
+helm search repo nginx
+
+# Install chart
+helm install my-nginx bitnami/nginx
+
+# Install with custom values
+helm install my-nginx bitnami/nginx -f values.yaml
+
+# Install with inline values
+helm install my-nginx bitnami/nginx --set replicaCount=3
+
+# Install in namespace
+helm install my-nginx bitnami/nginx -n production --create-namespace
+
+# Dry run
+helm install my-nginx bitnami/nginx --dry-run</code></pre>
+
+          <h2 id="structure">Chart Structure</h2>
+          <pre><code>mychart/
+├── Chart.yaml          # Chart metadata
+├── values.yaml         # Default values
+├── charts/             # Dependencies
+├── templates/          # Kubernetes manifests
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── ingress.yaml
+│   ├── _helpers.tpl    # Template helpers
+│   └── NOTES.txt       # Post-install notes
+└── .helmignore</code></pre>
+
+          <h2 id="values">values.yaml</h2>
+          <pre><code class="language-yaml"># values.yaml
+replicaCount: 3
+
+image:
+  repository: nginx
+  tag: "1.25"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  host: myapp.example.com
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi</code></pre>
+
+          <h2 id="template">Template Example</h2>
+          <pre><code class="language-yaml"># templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "mychart.name" . }}
+  template:
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.port }}</code></pre>
+
+          <h2 id="create">Creating Charts</h2>
+          <pre><code class="language-bash"># Create new chart
+helm create mychart
+
+# Lint chart
+helm lint mychart
+
+# Template locally
+helm template mychart
+
+# Package chart
+helm package mychart
+
+# Install local chart
+helm install myrelease ./mychart</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./storage.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Storage</span></a>
+          <a href="../terraform.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Terraform</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

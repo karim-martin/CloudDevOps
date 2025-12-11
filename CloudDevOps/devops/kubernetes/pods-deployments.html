@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes Pods and Deployments - running and managing containerized workloads.">
+  <title>Pods & Deployments | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./architecture.html">Architecture</a></li><li><a href="./pods-deployments.html" class="active">Pods & Deployments</a></li><li><a href="./services-networking.html">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html">Storage</a></li><li><a href="./helm.html">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Kubernetes</a></li><li aria-current="page">Pods & Deployments</li></ol></nav>
+        <header class="article-header"><h1>Pods & Deployments</h1></header>
+
+        <div class="article-body">
+          <h2 id="pods">Pods</h2>
+          <p>A Pod is the smallest deployable unit in Kubernetes, containing one or more containers.</p>
+
+          <pre><code class="language-yaml"># pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"</code></pre>
+
+          <h3>Pod Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get pods</code></td><td>List pods</td></tr>
+                <tr><td><code>kubectl get pods -o wide</code></td><td>Show more details</td></tr>
+                <tr><td><code>kubectl describe pod name</code></td><td>Pod details</td></tr>
+                <tr><td><code>kubectl logs pod</code></td><td>View logs</td></tr>
+                <tr><td><code>kubectl logs pod -c container</code></td><td>Specific container logs</td></tr>
+                <tr><td><code>kubectl exec -it pod -- bash</code></td><td>Shell into pod</td></tr>
+                <tr><td><code>kubectl delete pod name</code></td><td>Delete pod</td></tr>
+                <tr><td><code>kubectl port-forward pod 8080:80</code></td><td>Forward local port</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="deployments">Deployments</h2>
+          <p>Deployments manage ReplicaSets and provide declarative updates for Pods.</p>
+
+          <pre><code class="language-yaml"># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20</code></pre>
+
+          <h3>Deployment Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl apply -f deploy.yaml</code></td><td>Create/update deployment</td></tr>
+                <tr><td><code>kubectl get deployments</code></td><td>List deployments</td></tr>
+                <tr><td><code>kubectl scale deploy name --replicas=5</code></td><td>Scale deployment</td></tr>
+                <tr><td><code>kubectl set image deploy/name container=image:tag</code></td><td>Update image</td></tr>
+                <tr><td><code>kubectl rollout status deploy/name</code></td><td>Rollout status</td></tr>
+                <tr><td><code>kubectl rollout history deploy/name</code></td><td>Rollout history</td></tr>
+                <tr><td><code>kubectl rollout undo deploy/name</code></td><td>Rollback</td></tr>
+                <tr><td><code>kubectl rollout restart deploy/name</code></td><td>Restart pods</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="probes">Health Probes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Probe</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>livenessProbe</strong></td><td>Is the container running? Restart if fails.</td></tr>
+                <tr><td><strong>readinessProbe</strong></td><td>Is the container ready to serve traffic?</td></tr>
+                <tr><td><strong>startupProbe</strong></td><td>Has the container started? For slow-starting apps.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="strategies">Deployment Strategies</h2>
+          <pre><code class="language-yaml">spec:
+  strategy:
+    type: RollingUpdate  # or Recreate
+    rollingUpdate:
+      maxSurge: 1        # Extra pods during update
+      maxUnavailable: 0  # Pods that can be unavailable</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./architecture.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Architecture</span></a>
+          <a href="./services-networking.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Services & Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

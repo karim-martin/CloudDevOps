@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Git version control tutorial and cheatsheet - commands, workflows, and best practices.">
+  <title>Git | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../devops/" class="nav-link active">DevOps</a><a href="../cloud/" class="nav-link">Cloud</a></nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+      <li><a href="./networking-basics.html">Networking Basics</a></li>
+      <li><a href="./git.html" class="active">Git</a></li>
+      <li><a href="./github/">GitHub</a></li>
+      <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li><a href="./">DevOps</a></li>
+          <li aria-current="page">Git</li>
+        </ol></nav>
+
+        <header class="article-header"><h1>Git Version Control</h1></header>
+
+        <div class="article-body">
+          <h2 id="config">Configuration</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git config --global user.name "Name"</code></td><td>Set username</td></tr>
+                <tr><td><code>git config --global user.email "email"</code></td><td>Set email</td></tr>
+                <tr><td><code>git config --list</code></td><td>View all settings</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="basics">Basic Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git init</code></td><td>Initialize new repository</td></tr>
+                <tr><td><code>git clone url</code></td><td>Clone repository</td></tr>
+                <tr><td><code>git status</code></td><td>Check status</td></tr>
+                <tr><td><code>git add file</code></td><td>Stage file</td></tr>
+                <tr><td><code>git add .</code></td><td>Stage all changes</td></tr>
+                <tr><td><code>git commit -m "msg"</code></td><td>Commit with message</td></tr>
+                <tr><td><code>git commit -am "msg"</code></td><td>Add and commit tracked files</td></tr>
+                <tr><td><code>git log</code></td><td>View commit history</td></tr>
+                <tr><td><code>git log --oneline</code></td><td>Compact history</td></tr>
+                <tr><td><code>git diff</code></td><td>Show unstaged changes</td></tr>
+                <tr><td><code>git diff --staged</code></td><td>Show staged changes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="branches">Branching</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git branch</code></td><td>List branches</td></tr>
+                <tr><td><code>git branch name</code></td><td>Create branch</td></tr>
+                <tr><td><code>git checkout name</code></td><td>Switch to branch</td></tr>
+                <tr><td><code>git checkout -b name</code></td><td>Create and switch</td></tr>
+                <tr><td><code>git switch name</code></td><td>Switch branch (newer)</td></tr>
+                <tr><td><code>git switch -c name</code></td><td>Create and switch (newer)</td></tr>
+                <tr><td><code>git merge name</code></td><td>Merge branch into current</td></tr>
+                <tr><td><code>git branch -d name</code></td><td>Delete merged branch</td></tr>
+                <tr><td><code>git branch -D name</code></td><td>Force delete branch</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="remote">Remote Operations</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git remote -v</code></td><td>View remotes</td></tr>
+                <tr><td><code>git remote add origin url</code></td><td>Add remote</td></tr>
+                <tr><td><code>git push origin branch</code></td><td>Push to remote</td></tr>
+                <tr><td><code>git push -u origin branch</code></td><td>Push and set upstream</td></tr>
+                <tr><td><code>git pull</code></td><td>Fetch and merge</td></tr>
+                <tr><td><code>git fetch</code></td><td>Fetch without merge</td></tr>
+                <tr><td><code>git push --force</code></td><td>Force push (careful!)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="undo">Undoing Changes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git checkout -- file</code></td><td>Discard changes in file</td></tr>
+                <tr><td><code>git restore file</code></td><td>Discard changes (newer)</td></tr>
+                <tr><td><code>git reset HEAD file</code></td><td>Unstage file</td></tr>
+                <tr><td><code>git restore --staged file</code></td><td>Unstage file (newer)</td></tr>
+                <tr><td><code>git reset --soft HEAD~1</code></td><td>Undo last commit, keep changes</td></tr>
+                <tr><td><code>git reset --hard HEAD~1</code></td><td>Undo last commit, discard changes</td></tr>
+                <tr><td><code>git revert commit</code></td><td>Create undo commit</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="stash">Stashing</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>git stash</code></td><td>Stash changes</td></tr>
+                <tr><td><code>git stash save "msg"</code></td><td>Stash with message</td></tr>
+                <tr><td><code>git stash list</code></td><td>List stashes</td></tr>
+                <tr><td><code>git stash pop</code></td><td>Apply and remove stash</td></tr>
+                <tr><td><code>git stash apply</code></td><td>Apply stash, keep it</td></tr>
+                <tr><td><code>git stash drop</code></td><td>Delete stash</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="workflow">Common Workflow</h2>
+          <pre><code class="language-bash"># Start new feature
+git checkout main
+git pull origin main
+git checkout -b feature/my-feature
+
+# Work on feature
+git add .
+git commit -m "Add feature"
+
+# Push to remote
+git push -u origin feature/my-feature
+
+# After PR is merged
+git checkout main
+git pull origin main
+git branch -d feature/my-feature</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Best Practices</div>
+            <ul>
+              <li>Write clear, descriptive commit messages</li>
+              <li>Commit often, push regularly</li>
+              <li>Use branches for new features</li>
+              <li>Pull before pushing to avoid conflicts</li>
+              <li>Never commit sensitive data</li>
+            </ul>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./networking-basics.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Networking Basics</span>
+          </a>
+          <a href="./github/" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">GitHub</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

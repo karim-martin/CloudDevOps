@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Understanding DevOps culture, principles, and practices for modern software development.">
+  <title>DevOps Overview | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo">
+        <img src="../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">DevOps</h3>
+        <ul class="sidebar-links">
+          <li><a href="./overview.html" class="active">DevOps Overview</a></li>
+          <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./linux/">Linux Overview</a></li>
+          <li><a href="./linux/file-directory.html">File & Directory</a></li>
+          <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+          <li><a href="./linux/network-management.html">Network Management</a></li>
+          <li><a href="./linux/service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Version Control</h3>
+        <ul class="sidebar-links">
+          <li><a href="./networking-basics.html">Networking Basics</a></li>
+          <li><a href="./git.html">Git</a></li>
+          <li><a href="./github/">GitHub</a></li>
+          <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Containers</h3>
+        <ul class="sidebar-links">
+          <li><a href="./docker/">Docker Overview</a></li>
+          <li><a href="./docker/concepts.html">Core Concepts</a></li>
+          <li><a href="./docker/dockerfile.html">Dockerfile</a></li>
+          <li><a href="./docker/compose.html">Docker Compose</a></li>
+          <li><a href="./docker/networking.html">Docker Networking</a></li>
+          <li><a href="./docker/volumes.html">Volumes & Storage</a></li>
+          <li><a href="./docker/best-practices.html">Best Practices</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Orchestration</h3>
+        <ul class="sidebar-links">
+          <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+          <li><a href="./kubernetes/architecture.html">Architecture</a></li>
+          <li><a href="./kubernetes/pods-deployments.html">Pods & Deployments</a></li>
+          <li><a href="./kubernetes/services-networking.html">Services & Networking</a></li>
+          <li><a href="./kubernetes/configmaps-secrets.html">ConfigMaps & Secrets</a></li>
+          <li><a href="./kubernetes/storage.html">Storage</a></li>
+          <li><a href="./kubernetes/helm.html">Helm Charts</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Infrastructure as Code</h3>
+        <ul class="sidebar-links">
+          <li><a href="./terraform.html">Terraform</a></li>
+          <li><a href="./ansible.html">Ansible</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../">Home</a></li>
+            <li><a href="./">DevOps</a></li>
+            <li aria-current="page">Overview</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>DevOps Overview</h1>
+          <p class="article-meta">
+            <span class="reading-time">10 min read</span>
+          </p>
+        </header>
+
+        <div class="article-body">
+          <h2 id="what-is-devops">What is DevOps?</h2>
+          <p>
+            DevOps is a cultural and professional movement that emphasizes collaboration between software developers
+            and IT operations teams. The goal is to automate and streamline the software delivery process.
+          </p>
+
+          <div class="callout callout-info">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Definition
+            </div>
+            <p>
+              DevOps = Development + Operations. It bridges the gap between writing code and running it in production.
+            </p>
+          </div>
+
+          <h2 id="core-principles">Core Principles</h2>
+
+          <h3 id="collaboration">1. Collaboration</h3>
+          <p>
+            Breaking down silos between development, operations, and other teams. Everyone works together
+            towards shared goals.
+          </p>
+
+          <h3 id="automation">2. Automation</h3>
+          <p>
+            Automating repetitive tasks like testing, deployment, and infrastructure provisioning.
+            This reduces human error and speeds up delivery.
+          </p>
+
+          <h3 id="continuous-improvement">3. Continuous Improvement</h3>
+          <p>
+            Constantly measuring, learning, and improving processes. Using feedback loops to identify
+            and fix issues quickly.
+          </p>
+
+          <h3 id="customer-focus">4. Customer Focus</h3>
+          <p>
+            Delivering value to customers faster through shorter development cycles and rapid feedback.
+          </p>
+
+          <h2 id="devops-lifecycle">The DevOps Lifecycle</h2>
+          <p>The DevOps lifecycle is often represented as an infinity loop:</p>
+
+          <ol>
+            <li><strong>Plan</strong> - Define features and requirements</li>
+            <li><strong>Code</strong> - Write and review code</li>
+            <li><strong>Build</strong> - Compile and package the application</li>
+            <li><strong>Test</strong> - Run automated tests</li>
+            <li><strong>Release</strong> - Prepare for deployment</li>
+            <li><strong>Deploy</strong> - Push to production</li>
+            <li><strong>Operate</strong> - Run and maintain the system</li>
+            <li><strong>Monitor</strong> - Track performance and issues</li>
+          </ol>
+
+          <h2 id="key-practices">Key DevOps Practices</h2>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead>
+                <tr>
+                  <th>Practice</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Continuous Integration (CI)</td>
+                  <td>Frequently merging code changes into a shared repository</td>
+                </tr>
+                <tr>
+                  <td>Continuous Delivery (CD)</td>
+                  <td>Automatically preparing code for release to production</td>
+                </tr>
+                <tr>
+                  <td>Infrastructure as Code</td>
+                  <td>Managing infrastructure through code and version control</td>
+                </tr>
+                <tr>
+                  <td>Monitoring & Logging</td>
+                  <td>Tracking application and infrastructure performance</td>
+                </tr>
+                <tr>
+                  <td>Microservices</td>
+                  <td>Building applications as small, independent services</td>
+                </tr>
+                <tr>
+                  <td>Containerization</td>
+                  <td>Packaging applications with their dependencies</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="benefits">Benefits of DevOps</h2>
+          <ul>
+            <li><strong>Faster Delivery</strong> - Ship features and fixes more quickly</li>
+            <li><strong>Improved Quality</strong> - Catch bugs earlier through automation</li>
+            <li><strong>Better Collaboration</strong> - Teams work together effectively</li>
+            <li><strong>Increased Reliability</strong> - More stable and resilient systems</li>
+            <li><strong>Scalability</strong> - Easily scale infrastructure and applications</li>
+          </ul>
+
+          <h2 id="tools-overview">Common DevOps Tools</h2>
+          <p>Throughout this guide, you'll learn about these essential tools:</p>
+
+          <ul>
+            <li><strong>Version Control:</strong> Git, GitHub</li>
+            <li><strong>CI/CD:</strong> GitHub Actions, Jenkins, GitLab CI</li>
+            <li><strong>Containers:</strong> Docker, Podman</li>
+            <li><strong>Orchestration:</strong> Kubernetes, Docker Swarm</li>
+            <li><strong>Infrastructure:</strong> Terraform, Ansible, Pulumi</li>
+            <li><strong>Monitoring:</strong> Prometheus, Grafana, ELK Stack</li>
+          </ul>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Next Steps
+            </div>
+            <p>
+              Ready to dive in? Continue to the CI/CD Pipeline section to learn about automating your software delivery.
+            </p>
+          </div>
+        </div>
+
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">DevOps Home</span>
+          </a>
+          <a href="./ci-cd-pipeline.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">CI/CD Pipeline</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

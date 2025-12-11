@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Networking fundamentals for DevOps - TCP/IP, DNS, HTTP, ports, and protocols.">
+  <title>Networking Basics | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo">
+        <img src="../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+      <li><a href="./overview.html">DevOps Overview</a></li>
+      <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+    </ul></div>
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Linux</h3><ul class="sidebar-links">
+      <li><a href="./linux/">Linux Overview</a></li>
+    </ul></div>
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+      <li><a href="./networking-basics.html" class="active">Networking Basics</a></li>
+      <li><a href="./git.html">Git</a></li>
+      <li><a href="./github/">GitHub</a></li>
+    </ul></div>
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Containers</h3><ul class="sidebar-links">
+      <li><a href="./docker/">Docker</a></li>
+      <li><a href="./kubernetes/">Kubernetes</a></li>
+    </ul></div>
+    <div class="sidebar-section"><h3 class="sidebar-section-title">IaC</h3><ul class="sidebar-links">
+      <li><a href="./terraform.html">Terraform</a></li>
+      <li><a href="./ansible.html">Ansible</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li><a href="./">DevOps</a></li>
+          <li aria-current="page">Networking Basics</li>
+        </ol></nav>
+
+        <header class="article-header">
+          <h1>Networking Basics</h1>
+        </header>
+
+        <div class="article-body">
+          <h2 id="osi-model">OSI Model</h2>
+          <p>The OSI (Open Systems Interconnection) model has 7 layers:</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Layer</th><th>Name</th><th>Examples</th></tr></thead>
+              <tbody>
+                <tr><td>7</td><td>Application</td><td>HTTP, HTTPS, FTP, SSH, DNS</td></tr>
+                <tr><td>6</td><td>Presentation</td><td>SSL/TLS, JPEG, GIF</td></tr>
+                <tr><td>5</td><td>Session</td><td>NetBIOS, RPC</td></tr>
+                <tr><td>4</td><td>Transport</td><td>TCP, UDP</td></tr>
+                <tr><td>3</td><td>Network</td><td>IP, ICMP, ARP</td></tr>
+                <tr><td>2</td><td>Data Link</td><td>Ethernet, MAC</td></tr>
+                <tr><td>1</td><td>Physical</td><td>Cables, Hubs</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="ip-addressing">IP Addressing</h2>
+          <h3>IPv4</h3>
+          <p>32-bit address, written as four octets (e.g., <code>192.168.1.1</code>)</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Class</th><th>Range</th><th>Private Range</th></tr></thead>
+              <tbody>
+                <tr><td>A</td><td>1.0.0.0 - 126.255.255.255</td><td>10.0.0.0/8</td></tr>
+                <tr><td>B</td><td>128.0.0.0 - 191.255.255.255</td><td>172.16.0.0/12</td></tr>
+                <tr><td>C</td><td>192.0.0.0 - 223.255.255.255</td><td>192.168.0.0/16</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>CIDR Notation</h3>
+          <pre><code>192.168.1.0/24   # 256 addresses (192.168.1.0 - 192.168.1.255)
+10.0.0.0/16      # 65,536 addresses
+172.16.0.0/12    # 1,048,576 addresses</code></pre>
+
+          <h2 id="tcp-udp">TCP vs UDP</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>TCP</th><th>UDP</th></tr></thead>
+              <tbody>
+                <tr><td>Connection-oriented</td><td>Connectionless</td></tr>
+                <tr><td>Reliable delivery</td><td>Best-effort delivery</td></tr>
+                <tr><td>Ordered packets</td><td>No ordering</td></tr>
+                <tr><td>Error checking</td><td>Minimal error checking</td></tr>
+                <tr><td>Slower</td><td>Faster</td></tr>
+                <tr><td>HTTP, SSH, FTP</td><td>DNS, DHCP, streaming</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="common-ports">Common Ports</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Port</th><th>Service</th><th>Protocol</th></tr></thead>
+              <tbody>
+                <tr><td>20, 21</td><td>FTP</td><td>TCP</td></tr>
+                <tr><td>22</td><td>SSH</td><td>TCP</td></tr>
+                <tr><td>23</td><td>Telnet</td><td>TCP</td></tr>
+                <tr><td>25</td><td>SMTP</td><td>TCP</td></tr>
+                <tr><td>53</td><td>DNS</td><td>TCP/UDP</td></tr>
+                <tr><td>80</td><td>HTTP</td><td>TCP</td></tr>
+                <tr><td>443</td><td>HTTPS</td><td>TCP</td></tr>
+                <tr><td>3306</td><td>MySQL</td><td>TCP</td></tr>
+                <tr><td>5432</td><td>PostgreSQL</td><td>TCP</td></tr>
+                <tr><td>6379</td><td>Redis</td><td>TCP</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="dns">DNS (Domain Name System)</h2>
+          <p>DNS translates domain names to IP addresses.</p>
+          <h3>DNS Record Types</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Purpose</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>A</td><td>IPv4 address</td><td>example.com → 93.184.216.34</td></tr>
+                <tr><td>AAAA</td><td>IPv6 address</td><td>example.com → 2001:db8::1</td></tr>
+                <tr><td>CNAME</td><td>Alias</td><td>www.example.com → example.com</td></tr>
+                <tr><td>MX</td><td>Mail server</td><td>example.com → mail.example.com</td></tr>
+                <tr><td>TXT</td><td>Text record</td><td>SPF, DKIM verification</td></tr>
+                <tr><td>NS</td><td>Name server</td><td>DNS server for domain</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="http">HTTP/HTTPS</h2>
+          <h3>HTTP Methods</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Method</th><th>Purpose</th><th>Idempotent</th></tr></thead>
+              <tbody>
+                <tr><td>GET</td><td>Retrieve resource</td><td>Yes</td></tr>
+                <tr><td>POST</td><td>Create resource</td><td>No</td></tr>
+                <tr><td>PUT</td><td>Update/replace resource</td><td>Yes</td></tr>
+                <tr><td>PATCH</td><td>Partial update</td><td>No</td></tr>
+                <tr><td>DELETE</td><td>Remove resource</td><td>Yes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>HTTP Status Codes</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td>200</td><td>OK</td></tr>
+                <tr><td>201</td><td>Created</td></tr>
+                <tr><td>301</td><td>Moved Permanently</td></tr>
+                <tr><td>302</td><td>Found (Redirect)</td></tr>
+                <tr><td>400</td><td>Bad Request</td></tr>
+                <tr><td>401</td><td>Unauthorized</td></tr>
+                <tr><td>403</td><td>Forbidden</td></tr>
+                <tr><td>404</td><td>Not Found</td></tr>
+                <tr><td>500</td><td>Internal Server Error</td></tr>
+                <tr><td>502</td><td>Bad Gateway</td></tr>
+                <tr><td>503</td><td>Service Unavailable</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./linux/service-package-management.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Service & Package Mgmt</span>
+          </a>
+          <a href="./git.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Git</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

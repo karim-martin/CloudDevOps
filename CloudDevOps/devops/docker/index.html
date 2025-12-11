@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker containerization guide - learn containers, images, Dockerfile, and Docker Compose.">
+  <title>Docker | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links">
+      <li><a href="./" class="active">Docker Overview</a></li>
+      <li><a href="./concepts.html">Core Concepts</a></li>
+      <li><a href="./dockerfile.html">Dockerfile</a></li>
+      <li><a href="./compose.html">Docker Compose</a></li>
+      <li><a href="./networking.html">Networking</a></li>
+      <li><a href="./volumes.html">Volumes & Storage</a></li>
+      <li><a href="./best-practices.html">Best Practices</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">DevOps</a></li>
+          <li aria-current="page">Docker</li>
+        </ol></nav>
+
+        <header class="article-header"><h1>Docker</h1></header>
+
+        <div class="article-body">
+          <p>Docker is a platform for developing, shipping, and running applications in containers.</p>
+
+          <h2 id="what-is-docker">What is Docker?</h2>
+          <p>Containers package an application with all its dependencies, ensuring it runs consistently across environments.</p>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Containers vs VMs</div>
+            <p><strong>Containers</strong> share the host OS kernel and are lightweight.<br>
+            <strong>VMs</strong> include a full OS and are heavier but more isolated.</p>
+          </div>
+
+          <h2 id="topics">Topics Covered</h2>
+          <div class="card-grid">
+            <a href="./concepts.html" class="card card-link">
+              <h3 class="card-title">Core Concepts</h3>
+              <p class="card-description">Images, containers, registries, and layers.</p>
+            </a>
+            <a href="./dockerfile.html" class="card card-link">
+              <h3 class="card-title">Dockerfile</h3>
+              <p class="card-description">Build custom images with Dockerfile.</p>
+            </a>
+            <a href="./compose.html" class="card card-link">
+              <h3 class="card-title">Docker Compose</h3>
+              <p class="card-description">Multi-container applications.</p>
+            </a>
+            <a href="./networking.html" class="card card-link">
+              <h3 class="card-title">Networking</h3>
+              <p class="card-description">Container networking and communication.</p>
+            </a>
+            <a href="./volumes.html" class="card card-link">
+              <h3 class="card-title">Volumes & Storage</h3>
+              <p class="card-description">Persist data with volumes.</p>
+            </a>
+            <a href="./best-practices.html" class="card card-link">
+              <h3 class="card-title">Best Practices</h3>
+              <p class="card-description">Security and optimization tips.</p>
+            </a>
+          </div>
+
+          <h2 id="quick-start">Quick Start Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker run image</code></td><td>Run a container</td></tr>
+                <tr><td><code>docker ps</code></td><td>List running containers</td></tr>
+                <tr><td><code>docker ps -a</code></td><td>List all containers</td></tr>
+                <tr><td><code>docker images</code></td><td>List images</td></tr>
+                <tr><td><code>docker pull image</code></td><td>Download image</td></tr>
+                <tr><td><code>docker build -t name .</code></td><td>Build image</td></tr>
+                <tr><td><code>docker stop id</code></td><td>Stop container</td></tr>
+                <tr><td><code>docker rm id</code></td><td>Remove container</td></tr>
+                <tr><td><code>docker rmi image</code></td><td>Remove image</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="example">Quick Example</h2>
+          <pre><code class="language-bash"># Run nginx container
+docker run -d -p 8080:80 --name web nginx
+
+# View running containers
+docker ps
+
+# View logs
+docker logs web
+
+# Stop and remove
+docker stop web
+docker rm web</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../github/github-actions.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">GitHub Actions</span>
+          </a>
+          <a href="./concepts.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Core Concepts</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

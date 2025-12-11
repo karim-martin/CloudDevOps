@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker best practices - security, optimization, and production-ready containers.">
+  <title>Docker Best Practices | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links"><li><a href="./">Docker Overview</a></li><li><a href="./concepts.html">Core Concepts</a></li><li><a href="./dockerfile.html">Dockerfile</a></li><li><a href="./compose.html">Docker Compose</a></li><li><a href="./networking.html">Networking</a></li><li><a href="./volumes.html">Volumes & Storage</a></li><li><a href="./best-practices.html" class="active">Best Practices</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Docker</a></li><li aria-current="page">Best Practices</li></ol></nav>
+        <header class="article-header"><h1>Docker Best Practices</h1></header>
+
+        <div class="article-body">
+          <h2 id="image-size">Reduce Image Size</h2>
+          <ul>
+            <li>Use minimal base images (alpine, slim, distroless)</li>
+            <li>Use multi-stage builds</li>
+            <li>Combine RUN commands to reduce layers</li>
+            <li>Remove unnecessary files after installation</li>
+            <li>Use .dockerignore</li>
+          </ul>
+          <pre><code class="language-dockerfile"># Bad - multiple layers
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get clean
+
+# Good - single layer, cleanup
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*</code></pre>
+
+          <h2 id="security">Security</h2>
+          <ul>
+            <li>Don't run as root</li>
+            <li>Use specific image tags, not <code>latest</code></li>
+            <li>Scan images for vulnerabilities</li>
+            <li>Don't store secrets in images</li>
+            <li>Use read-only filesystems when possible</li>
+          </ul>
+          <pre><code class="language-dockerfile"># Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+# Use specific version
+FROM node:20.10.0-alpine
+
+# Read-only container
+docker run --read-only --tmpfs /tmp myapp</code></pre>
+
+          <h2 id="caching">Optimize Build Cache</h2>
+          <pre><code class="language-dockerfile"># Good - copy dependency files first
+COPY package*.json ./
+RUN npm ci
+
+# Then copy source (changes more often)
+COPY . .</code></pre>
+
+          <h2 id="health">Health Checks</h2>
+          <pre><code class="language-dockerfile">HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1</code></pre>
+
+          <h2 id="logging">Logging</h2>
+          <ul>
+            <li>Log to stdout/stderr, not files</li>
+            <li>Use structured logging (JSON)</li>
+            <li>Configure log rotation</li>
+          </ul>
+          <pre><code class="language-bash"># Configure logging driver
+docker run --log-driver json-file \
+  --log-opt max-size=10m \
+  --log-opt max-file=3 \
+  myapp</code></pre>
+
+          <h2 id="checklist">Production Checklist</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Category</th><th>Check</th></tr></thead>
+              <tbody>
+                <tr><td>Image</td><td>Use specific tags, minimal base image</td></tr>
+                <tr><td>Security</td><td>Non-root user, no secrets in image</td></tr>
+                <tr><td>Resources</td><td>Set memory and CPU limits</td></tr>
+                <tr><td>Health</td><td>Health check defined</td></tr>
+                <tr><td>Logging</td><td>Stdout/stderr, rotation configured</td></tr>
+                <tr><td>Restart</td><td>Restart policy set</td></tr>
+                <tr><td>Storage</td><td>Volumes for persistent data</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-yaml"># Production-ready docker-compose
+services:
+  app:
+    image: myapp:1.2.3
+    user: "1000:1000"
+    read_only: true
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./volumes.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Volumes & Storage</span></a>
+          <a href="../kubernetes/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Kubernetes</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

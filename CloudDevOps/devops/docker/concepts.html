@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker core concepts - images, containers, registries, layers, and architecture.">
+  <title>Docker Core Concepts | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links">
+      <li><a href="./">Docker Overview</a></li>
+      <li><a href="./concepts.html" class="active">Core Concepts</a></li>
+      <li><a href="./dockerfile.html">Dockerfile</a></li>
+      <li><a href="./compose.html">Docker Compose</a></li>
+      <li><a href="./networking.html">Networking</a></li>
+      <li><a href="./volumes.html">Volumes & Storage</a></li>
+      <li><a href="./best-practices.html">Best Practices</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">DevOps</a></li>
+          <li><a href="./">Docker</a></li>
+          <li aria-current="page">Core Concepts</li>
+        </ol></nav>
+
+        <header class="article-header"><h1>Docker Core Concepts</h1></header>
+
+        <div class="article-body">
+          <h2 id="images">Images</h2>
+          <p>A Docker image is a read-only template containing instructions for creating a container. Images are built in layers.</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker images</code></td><td>List images</td></tr>
+                <tr><td><code>docker pull nginx:latest</code></td><td>Download image</td></tr>
+                <tr><td><code>docker build -t myapp:1.0 .</code></td><td>Build image from Dockerfile</td></tr>
+                <tr><td><code>docker tag image:tag new:tag</code></td><td>Tag image</td></tr>
+                <tr><td><code>docker push image:tag</code></td><td>Push to registry</td></tr>
+                <tr><td><code>docker rmi image</code></td><td>Remove image</td></tr>
+                <tr><td><code>docker image prune</code></td><td>Remove unused images</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="containers">Containers</h2>
+          <p>A container is a runnable instance of an image. Containers are isolated but share the host OS kernel.</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker run image</code></td><td>Create and start container</td></tr>
+                <tr><td><code>docker run -d image</code></td><td>Run in background (detached)</td></tr>
+                <tr><td><code>docker run -it image bash</code></td><td>Interactive terminal</td></tr>
+                <tr><td><code>docker run -p 8080:80 image</code></td><td>Map ports</td></tr>
+                <tr><td><code>docker run --name myapp image</code></td><td>Name container</td></tr>
+                <tr><td><code>docker run -e VAR=value image</code></td><td>Set environment variable</td></tr>
+                <tr><td><code>docker ps</code></td><td>List running containers</td></tr>
+                <tr><td><code>docker ps -a</code></td><td>List all containers</td></tr>
+                <tr><td><code>docker stop container</code></td><td>Stop container</td></tr>
+                <tr><td><code>docker start container</code></td><td>Start stopped container</td></tr>
+                <tr><td><code>docker restart container</code></td><td>Restart container</td></tr>
+                <tr><td><code>docker rm container</code></td><td>Remove container</td></tr>
+                <tr><td><code>docker rm -f container</code></td><td>Force remove running container</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="interacting">Interacting with Containers</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker exec -it container bash</code></td><td>Execute command in container</td></tr>
+                <tr><td><code>docker logs container</code></td><td>View logs</td></tr>
+                <tr><td><code>docker logs -f container</code></td><td>Follow logs</td></tr>
+                <tr><td><code>docker inspect container</code></td><td>View container details</td></tr>
+                <tr><td><code>docker cp file container:/path</code></td><td>Copy file to container</td></tr>
+                <tr><td><code>docker cp container:/path file</code></td><td>Copy file from container</td></tr>
+                <tr><td><code>docker stats</code></td><td>View resource usage</td></tr>
+                <tr><td><code>docker top container</code></td><td>View running processes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="registries">Registries</h2>
+          <p>A registry stores Docker images. Docker Hub is the default public registry.</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Registry</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>Docker Hub</td><td>Default public registry</td></tr>
+                <tr><td>GitHub Container Registry</td><td>ghcr.io</td></tr>
+                <tr><td>Amazon ECR</td><td>AWS container registry</td></tr>
+                <tr><td>Google Container Registry</td><td>GCP container registry</td></tr>
+                <tr><td>Azure Container Registry</td><td>Azure container registry</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Login to registry
+docker login
+
+# Pull from registry
+docker pull nginx:latest
+
+# Tag for push
+docker tag myapp:latest username/myapp:latest
+
+# Push to registry
+docker push username/myapp:latest</code></pre>
+
+          <h2 id="layers">Image Layers</h2>
+          <p>Images are built in layers. Each instruction in a Dockerfile creates a layer. Layers are cached and reused.</p>
+          <pre><code class="language-dockerfile"># Each instruction creates a layer
+FROM ubuntu:22.04          # Base layer
+RUN apt-get update         # Layer 2
+RUN apt-get install nginx  # Layer 3
+COPY app /var/www          # Layer 4
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Layer Caching</div>
+            <p>Docker caches layers. If a layer hasn't changed, it's reused from cache. Order your Dockerfile with least-changing instructions first for faster builds.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Docker Overview</span></a>
+          <a href="./dockerfile.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Dockerfile</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

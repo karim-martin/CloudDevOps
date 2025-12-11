@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes architecture - control plane, worker nodes, and core components.">
+  <title>Kubernetes Architecture | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./architecture.html" class="active">Architecture</a></li><li><a href="./pods-deployments.html">Pods & Deployments</a></li><li><a href="./services-networking.html">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html">Storage</a></li><li><a href="./helm.html">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Kubernetes</a></li><li aria-current="page">Architecture</li></ol></nav>
+        <header class="article-header"><h1>Kubernetes Architecture</h1></header>
+
+        <div class="article-body">
+          <h2 id="control-plane">Control Plane Components</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Component</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>kube-apiserver</strong></td><td>API server, frontend for the control plane</td></tr>
+                <tr><td><strong>etcd</strong></td><td>Key-value store for all cluster data</td></tr>
+                <tr><td><strong>kube-scheduler</strong></td><td>Assigns pods to nodes</td></tr>
+                <tr><td><strong>kube-controller-manager</strong></td><td>Runs controller processes</td></tr>
+                <tr><td><strong>cloud-controller-manager</strong></td><td>Cloud-specific control logic</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="node-components">Node Components</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Component</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>kubelet</strong></td><td>Agent that runs on each node, manages pods</td></tr>
+                <tr><td><strong>kube-proxy</strong></td><td>Network proxy, maintains network rules</td></tr>
+                <tr><td><strong>Container Runtime</strong></td><td>Runs containers (containerd, CRI-O)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="objects">Kubernetes Objects</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Object</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Pod</strong></td><td>Smallest deployable unit, one or more containers</td></tr>
+                <tr><td><strong>ReplicaSet</strong></td><td>Maintains a stable set of replica pods</td></tr>
+                <tr><td><strong>Deployment</strong></td><td>Declarative updates for pods and ReplicaSets</td></tr>
+                <tr><td><strong>Service</strong></td><td>Exposes pods as a network service</td></tr>
+                <tr><td><strong>Namespace</strong></td><td>Virtual cluster for resource isolation</td></tr>
+                <tr><td><strong>ConfigMap</strong></td><td>Non-confidential configuration data</td></tr>
+                <tr><td><strong>Secret</strong></td><td>Sensitive data like passwords, tokens</td></tr>
+                <tr><td><strong>PersistentVolume</strong></td><td>Storage resource in the cluster</td></tr>
+                <tr><td><strong>Ingress</strong></td><td>HTTP/HTTPS routing to services</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="namespaces">Namespaces</h2>
+          <pre><code class="language-bash"># List namespaces
+kubectl get namespaces
+
+# Create namespace
+kubectl create namespace dev
+
+# Set default namespace
+kubectl config set-context --current --namespace=dev
+
+# Get resources in namespace
+kubectl get pods -n kube-system</code></pre>
+
+          <h3>Default Namespaces</h3>
+          <ul>
+            <li><code>default</code> - Default namespace for objects</li>
+            <li><code>kube-system</code> - System components</li>
+            <li><code>kube-public</code> - Publicly accessible data</li>
+            <li><code>kube-node-lease</code> - Node heartbeat data</li>
+          </ul>
+
+          <h2 id="labels">Labels and Selectors</h2>
+          <pre><code class="language-yaml">metadata:
+  labels:
+    app: nginx
+    environment: production
+    tier: frontend</code></pre>
+          <pre><code class="language-bash"># Get pods by label
+kubectl get pods -l app=nginx
+
+# Multiple labels
+kubectl get pods -l app=nginx,tier=frontend</code></pre>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Kubernetes Overview</span></a>
+          <a href="./pods-deployments.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Pods & Deployments</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

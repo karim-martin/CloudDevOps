@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes Storage - PersistentVolumes, PersistentVolumeClaims, and StorageClasses.">
+  <title>Kubernetes Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Kubernetes</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./architecture.html">Architecture</a></li><li><a href="./pods-deployments.html">Pods & Deployments</a></li><li><a href="./services-networking.html">Services & Networking</a></li><li><a href="./configmaps-secrets.html">ConfigMaps & Secrets</a></li><li><a href="./storage.html" class="active">Storage</a></li><li><a href="./helm.html">Helm Charts</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Kubernetes</a></li><li aria-current="page">Storage</li></ol></nav>
+        <header class="article-header"><h1>Kubernetes Storage</h1></header>
+
+        <div class="article-body">
+          <h2 id="concepts">Storage Concepts</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Resource</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>PersistentVolume (PV)</strong></td><td>Cluster storage resource provisioned by admin</td></tr>
+                <tr><td><strong>PersistentVolumeClaim (PVC)</strong></td><td>User request for storage</td></tr>
+                <tr><td><strong>StorageClass</strong></td><td>Dynamic provisioning template</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="pv">PersistentVolume</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/pv</code></pre>
+
+          <h2 id="pvc">PersistentVolumeClaim</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard</code></pre>
+
+          <h2 id="using-pvc">Using PVC in Pod</h2>
+          <pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: app
+    image: myapp
+    volumeMounts:
+    - name: data
+      mountPath: /app/data
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: my-pvc</code></pre>
+
+          <h2 id="storageclass">StorageClass</h2>
+          <pre><code class="language-yaml">apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+provisioner: kubernetes.io/gce-pd  # Cloud specific
+parameters:
+  type: pd-ssd
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer</code></pre>
+
+          <h2 id="access-modes">Access Modes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Mode</th><th>Abbreviation</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>ReadWriteOnce</td><td>RWO</td><td>Single node read-write</td></tr>
+                <tr><td>ReadOnlyMany</td><td>ROX</td><td>Multiple nodes read-only</td></tr>
+                <tr><td>ReadWriteMany</td><td>RWX</td><td>Multiple nodes read-write</td></tr>
+                <tr><td>ReadWriteOncePod</td><td>RWOP</td><td>Single pod read-write</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="commands">Storage Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get pv</code></td><td>List PersistentVolumes</td></tr>
+                <tr><td><code>kubectl get pvc</code></td><td>List PersistentVolumeClaims</td></tr>
+                <tr><td><code>kubectl get storageclass</code></td><td>List StorageClasses</td></tr>
+                <tr><td><code>kubectl describe pvc name</code></td><td>PVC details</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./configmaps-secrets.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">ConfigMaps & Secrets</span></a>
+          <a href="./helm.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Helm Charts</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

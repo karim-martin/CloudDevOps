@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker networking - bridge, host, overlay networks and container communication.">
+  <title>Docker Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links"><li><a href="./">Docker Overview</a></li><li><a href="./concepts.html">Core Concepts</a></li><li><a href="./dockerfile.html">Dockerfile</a></li><li><a href="./compose.html">Docker Compose</a></li><li><a href="./networking.html" class="active">Networking</a></li><li><a href="./volumes.html">Volumes & Storage</a></li><li><a href="./best-practices.html">Best Practices</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Docker</a></li><li aria-current="page">Networking</li></ol></nav>
+        <header class="article-header"><h1>Docker Networking</h1></header>
+
+        <div class="article-body">
+          <h2 id="network-types">Network Types</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Driver</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>bridge</code></td><td>Default. Isolated network on single host</td></tr>
+                <tr><td><code>host</code></td><td>Share host's network stack</td></tr>
+                <tr><td><code>none</code></td><td>No networking</td></tr>
+                <tr><td><code>overlay</code></td><td>Multi-host networking (Swarm)</td></tr>
+                <tr><td><code>macvlan</code></td><td>Assign MAC address to container</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="commands">Network Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker network ls</code></td><td>List networks</td></tr>
+                <tr><td><code>docker network create name</code></td><td>Create network</td></tr>
+                <tr><td><code>docker network inspect name</code></td><td>View network details</td></tr>
+                <tr><td><code>docker network connect net container</code></td><td>Connect container to network</td></tr>
+                <tr><td><code>docker network disconnect net container</code></td><td>Disconnect from network</td></tr>
+                <tr><td><code>docker network rm name</code></td><td>Remove network</td></tr>
+                <tr><td><code>docker network prune</code></td><td>Remove unused networks</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="bridge">Bridge Network</h2>
+          <pre><code class="language-bash"># Create custom bridge network
+docker network create my-network
+
+# Run container on network
+docker run -d --name web --network my-network nginx
+
+# Run another container - can communicate by name
+docker run -d --name api --network my-network myapi
+
+# Inside 'api' container, can reach 'web' by hostname
+curl http://web:80</code></pre>
+
+          <h2 id="port-mapping">Port Mapping</h2>
+          <pre><code class="language-bash"># Map host port to container port
+docker run -p 8080:80 nginx     # host:container
+
+# Map to specific interface
+docker run -p 127.0.0.1:8080:80 nginx
+
+# Map random host port
+docker run -P nginx             # Uses EXPOSE ports
+
+# Multiple ports
+docker run -p 80:80 -p 443:443 nginx</code></pre>
+
+          <h2 id="dns">Container DNS</h2>
+          <p>Containers on the same user-defined network can resolve each other by name.</p>
+          <pre><code class="language-yaml"># docker-compose.yml
+services:
+  web:
+    image: nginx
+    networks:
+      - frontend
+
+  api:
+    image: myapi
+    networks:
+      - frontend
+      - backend
+
+  db:
+    image: postgres
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Best Practice</div>
+            <p>Always use user-defined bridge networks instead of the default bridge. They provide automatic DNS resolution between containers.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./compose.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Docker Compose</span></a>
+          <a href="./volumes.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Volumes & Storage</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Cluster Setup - create and configure Google Kubernetes Engine clusters.">
+  <title>Cluster Setup | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html">Introduction</a></li><li><a href="./cluster-setup.html" class="active">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Cluster Setup</li></ol></nav>
+        <header class="article-header"><h1>GKE Cluster Setup</h1></header>
+
+        <div class="article-body">
+          <h2 id="create-autopilot">Create Autopilot Cluster</h2>
+          <p>Autopilot is the simplest option - Google manages everything.</p>
+          <pre><code class="language-bash"># Create Autopilot cluster
+gcloud container clusters create-auto my-cluster \
+    --region=us-central1 \
+    --project=YOUR_PROJECT_ID</code></pre>
+
+          <h2 id="create-standard">Create Standard Cluster</h2>
+          <pre><code class="language-bash"># Create Standard cluster
+gcloud container clusters create my-cluster \
+    --zone=us-central1-a \
+    --num-nodes=3 \
+    --machine-type=e2-medium \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=5 \
+    --project=YOUR_PROJECT_ID</code></pre>
+
+          <h2 id="connect">Connect to Cluster</h2>
+          <pre><code class="language-bash"># Get credentials
+gcloud container clusters get-credentials my-cluster \
+    --zone=us-central1-a \
+    --project=YOUR_PROJECT_ID
+
+# Verify connection
+kubectl get nodes
+kubectl cluster-info</code></pre>
+
+          <h2 id="node-pools">Node Pools</h2>
+          <pre><code class="language-bash"># Create node pool
+gcloud container node-pools create high-memory \
+    --cluster=my-cluster \
+    --zone=us-central1-a \
+    --machine-type=e2-highmem-4 \
+    --num-nodes=2
+
+# List node pools
+gcloud container node-pools list --cluster=my-cluster --zone=us-central1-a
+
+# Resize node pool
+gcloud container clusters resize my-cluster \
+    --zone=us-central1-a \
+    --node-pool=default-pool \
+    --num-nodes=5</code></pre>
+
+          <h2 id="cluster-options">Common Cluster Options</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>--zone</code></td><td>Zonal cluster (single zone)</td></tr>
+                <tr><td><code>--region</code></td><td>Regional cluster (multi-zone)</td></tr>
+                <tr><td><code>--machine-type</code></td><td>VM type for nodes</td></tr>
+                <tr><td><code>--num-nodes</code></td><td>Nodes per zone</td></tr>
+                <tr><td><code>--enable-autoscaling</code></td><td>Enable node autoscaling</td></tr>
+                <tr><td><code>--enable-ip-alias</code></td><td>VPC-native cluster</td></tr>
+                <tr><td><code>--enable-private-nodes</code></td><td>Private cluster</td></tr>
+                <tr><td><code>--workload-pool</code></td><td>Enable Workload Identity</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="recommended">Recommended Production Setup</h2>
+          <pre><code class="language-bash">gcloud container clusters create prod-cluster \
+    --region=us-central1 \
+    --num-nodes=2 \
+    --machine-type=e2-standard-4 \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10 \
+    --enable-ip-alias \
+    --enable-autorepair \
+    --enable-autoupgrade \
+    --workload-pool=PROJECT_ID.svc.id.goog \
+    --release-channel=regular</code></pre>
+
+          <h2 id="manage">Manage Cluster</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>gcloud container clusters list</code></td><td>List clusters</td></tr>
+                <tr><td><code>gcloud container clusters describe name</code></td><td>Cluster details</td></tr>
+                <tr><td><code>gcloud container clusters update name</code></td><td>Update cluster</td></tr>
+                <tr><td><code>gcloud container clusters delete name</code></td><td>Delete cluster</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Cost Warning</div>
+            <p>GKE clusters incur costs even when idle. Delete unused clusters to avoid charges.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./introduction.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Introduction</span></a>
+          <a href="./deploying-apps.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Deploying Apps</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Docker volumes and storage - persist data, bind mounts, and volume management.">
+  <title>Docker Volumes & Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">Docker</h3><ul class="sidebar-links"><li><a href="./">Docker Overview</a></li><li><a href="./concepts.html">Core Concepts</a></li><li><a href="./dockerfile.html">Dockerfile</a></li><li><a href="./compose.html">Docker Compose</a></li><li><a href="./networking.html">Networking</a></li><li><a href="./volumes.html" class="active">Volumes & Storage</a></li><li><a href="./best-practices.html">Best Practices</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">DevOps</a></li><li><a href="./">Docker</a></li><li aria-current="page">Volumes & Storage</li></ol></nav>
+        <header class="article-header"><h1>Volumes & Storage</h1></header>
+
+        <div class="article-body">
+          <h2 id="storage-types">Storage Types</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Description</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Volumes</strong></td><td>Managed by Docker</td><td>Production data persistence</td></tr>
+                <tr><td><strong>Bind Mounts</strong></td><td>Host filesystem path</td><td>Development, config files</td></tr>
+                <tr><td><strong>tmpfs</strong></td><td>Memory only</td><td>Sensitive data, temp files</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="volume-commands">Volume Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>docker volume ls</code></td><td>List volumes</td></tr>
+                <tr><td><code>docker volume create name</code></td><td>Create volume</td></tr>
+                <tr><td><code>docker volume inspect name</code></td><td>View volume details</td></tr>
+                <tr><td><code>docker volume rm name</code></td><td>Remove volume</td></tr>
+                <tr><td><code>docker volume prune</code></td><td>Remove unused volumes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="using-volumes">Using Volumes</h2>
+          <pre><code class="language-bash"># Create named volume
+docker volume create mydata
+
+# Run with volume
+docker run -v mydata:/app/data nginx
+
+# Using --mount (more explicit)
+docker run --mount source=mydata,target=/app/data nginx
+
+# Anonymous volume
+docker run -v /app/data nginx</code></pre>
+
+          <h2 id="bind-mounts">Bind Mounts</h2>
+          <pre><code class="language-bash"># Mount host directory
+docker run -v /host/path:/container/path nginx
+
+# Mount current directory
+docker run -v $(pwd):/app nginx
+
+# Read-only mount
+docker run -v $(pwd):/app:ro nginx
+
+# Using --mount
+docker run --mount type=bind,source=/host/path,target=/container/path nginx</code></pre>
+
+          <h2 id="compose-volumes">Volumes in Docker Compose</h2>
+          <pre><code class="language-yaml">version: '3.8'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      # Named volume
+      - postgres_data:/var/lib/postgresql/data
+      # Bind mount
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Anonymous volume (for node_modules etc)
+      - /var/lib/postgresql/data
+
+  web:
+    build: .
+    volumes:
+      - ./src:/app/src:ro
+      - node_modules:/app/node_modules
+
+volumes:
+  postgres_data:
+  node_modules:</code></pre>
+
+          <h2 id="backup">Backup and Restore</h2>
+          <pre><code class="language-bash"># Backup volume to tar
+docker run --rm -v mydata:/data -v $(pwd):/backup \
+  ubuntu tar cvf /backup/backup.tar /data
+
+# Restore from tar
+docker run --rm -v mydata:/data -v $(pwd):/backup \
+  ubuntu tar xvf /backup/backup.tar -C /</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Data Persistence</div>
+            <p>Container filesystems are ephemeral. Always use volumes for data that needs to persist beyond the container lifecycle.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./networking.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Networking</span></a>
+          <a href="./best-practices.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Best Practices</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

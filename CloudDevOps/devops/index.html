@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DevOps learning path covering CI/CD, Linux, Git, Docker, Kubernetes, Terraform, and Ansible.">
+  <title>DevOps | CloudDevOps</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo">
+        <img src="../assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">DevOps</h3>
+        <ul class="sidebar-links">
+          <li><a href="./overview.html">DevOps Overview</a></li>
+          <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Linux</h3>
+        <ul class="sidebar-links">
+          <li><a href="./linux/">Linux Overview</a></li>
+          <li><a href="./linux/file-directory.html">File & Directory</a></li>
+          <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+          <li><a href="./linux/network-management.html">Network Management</a></li>
+          <li><a href="./linux/service-package-management.html">Service & Package Mgmt</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Version Control</h3>
+        <ul class="sidebar-links">
+          <li><a href="./networking-basics.html">Networking Basics</a></li>
+          <li><a href="./git.html">Git</a></li>
+          <li><a href="./github/">GitHub</a></li>
+          <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Containers</h3>
+        <ul class="sidebar-links">
+          <li><a href="./docker/">Docker Overview</a></li>
+          <li><a href="./docker/concepts.html">Core Concepts</a></li>
+          <li><a href="./docker/dockerfile.html">Dockerfile</a></li>
+          <li><a href="./docker/compose.html">Docker Compose</a></li>
+          <li><a href="./docker/networking.html">Docker Networking</a></li>
+          <li><a href="./docker/volumes.html">Volumes & Storage</a></li>
+          <li><a href="./docker/best-practices.html">Best Practices</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Orchestration</h3>
+        <ul class="sidebar-links">
+          <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+          <li><a href="./kubernetes/architecture.html">Architecture</a></li>
+          <li><a href="./kubernetes/pods-deployments.html">Pods & Deployments</a></li>
+          <li><a href="./kubernetes/services-networking.html">Services & Networking</a></li>
+          <li><a href="./kubernetes/configmaps-secrets.html">ConfigMaps & Secrets</a></li>
+          <li><a href="./kubernetes/storage.html">Storage</a></li>
+          <li><a href="./kubernetes/helm.html">Helm Charts</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Infrastructure as Code</h3>
+        <ul class="sidebar-links">
+          <li><a href="./terraform.html">Terraform</a></li>
+          <li><a href="./ansible.html">Ansible</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="../">Home</a></li>
+            <li aria-current="page">DevOps</li>
+          </ol>
+        </nav>
+
+        <header class="article-header">
+          <h1>DevOps Learning Path</h1>
+          <p class="text-secondary text-lg">
+            Master the tools and practices that enable teams to deliver software faster and more reliably.
+          </p>
+        </header>
+
+        <div class="article-body">
+          <p>
+            DevOps is a set of practices that combines software development (Dev) and IT operations (Ops).
+            It aims to shorten the development lifecycle and deliver high-quality software continuously.
+          </p>
+
+          <h2>Topics Covered</h2>
+
+          <div class="card-grid">
+            <a href="./overview.html" class="card card-link">
+              <h3 class="card-title">DevOps Overview</h3>
+              <p class="card-description">Understanding DevOps culture, principles, and practices.</p>
+            </a>
+
+            <a href="./ci-cd-pipeline.html" class="card card-link">
+              <h3 class="card-title">CI/CD Pipeline</h3>
+              <p class="card-description">Continuous Integration and Continuous Deployment fundamentals.</p>
+            </a>
+
+            <a href="./linux/" class="card card-link">
+              <h3 class="card-title">Linux</h3>
+              <p class="card-description">Essential Linux skills for DevOps engineers.</p>
+            </a>
+
+            <a href="./networking-basics.html" class="card card-link">
+              <h3 class="card-title">Networking Basics</h3>
+              <p class="card-description">TCP/IP, DNS, HTTP, and networking fundamentals.</p>
+            </a>
+
+            <a href="./git.html" class="card card-link">
+              <h3 class="card-title">Git</h3>
+              <p class="card-description">Version control with Git - from basics to advanced workflows.</p>
+            </a>
+
+            <a href="./github/" class="card card-link">
+              <h3 class="card-title">GitHub & Actions</h3>
+              <p class="card-description">GitHub features and automating workflows with GitHub Actions.</p>
+            </a>
+
+            <a href="./docker/" class="card card-link">
+              <h3 class="card-title">Docker</h3>
+              <p class="card-description">Containerization concepts, Dockerfile, Compose, and best practices.</p>
+            </a>
+
+            <a href="./kubernetes/" class="card card-link">
+              <h3 class="card-title">Kubernetes</h3>
+              <p class="card-description">Container orchestration - pods, deployments, services, and more.</p>
+            </a>
+
+            <a href="./terraform.html" class="card card-link">
+              <h3 class="card-title">Terraform</h3>
+              <p class="card-description">Infrastructure as Code for provisioning cloud resources.</p>
+            </a>
+
+            <a href="./ansible.html" class="card card-link">
+              <h3 class="card-title">Ansible</h3>
+              <p class="card-description">Configuration management and automation.</p>
+            </a>
+          </div>
+
+          <h2>Learning Path</h2>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Recommended Order
+            </div>
+            <p>
+              If you're new to DevOps, we recommend following the topics in order:
+              Start with Linux fundamentals, then move to Git, Docker, Kubernetes, and finally IaC tools.
+            </p>
+          </div>
+
+          <ol>
+            <li><strong>DevOps Overview</strong> - Understand the culture and principles</li>
+            <li><strong>Linux</strong> - Master the command line</li>
+            <li><strong>Networking</strong> - Understand how systems communicate</li>
+            <li><strong>Git & GitHub</strong> - Version control and collaboration</li>
+            <li><strong>CI/CD</strong> - Automate your pipeline</li>
+            <li><strong>Docker</strong> - Containerize applications</li>
+            <li><strong>Kubernetes</strong> - Orchestrate containers at scale</li>
+            <li><strong>Terraform & Ansible</strong> - Automate infrastructure</li>
+          </ol>
+        </div>
+
+        <!-- Page Navigation -->
+        <nav class="page-navigation" aria-label="Page navigation">
+          <a href="./overview.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">DevOps Overview</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <p class="copyright">CloudDevOps - Learning Journey</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

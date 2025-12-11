@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Introduction to GKE - what is Google Kubernetes Engine and why use it.">
+  <title>Introduction to GKE | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav"><div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links"><li><a href="./">GKE Overview</a></li><li><a href="./introduction.html" class="active">Introduction</a></li><li><a href="./cluster-setup.html">Cluster Setup</a></li><li><a href="./deploying-apps.html">Deploying Apps</a></li><li><a href="./networking-ingress.html">Networking & Ingress</a></li><li><a href="./security-iam.html">Security & IAM</a></li><li><a href="./ci-cd.html">CI/CD</a></li><li><a href="./monitoring-logging.html">Monitoring & Logging</a></li></ul></div></nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">GKE</a></li><li aria-current="page">Introduction</li></ol></nav>
+        <header class="article-header"><h1>Introduction to GKE</h1></header>
+
+        <div class="article-body">
+          <h2 id="what-is-gke">What is GKE?</h2>
+          <p>Google Kubernetes Engine (GKE) is a managed Kubernetes service that lets you deploy, manage, and scale containerized applications on Google Cloud infrastructure.</p>
+
+          <h2 id="traditional-vs-gke">Traditional Hosting vs GKE</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Traditional (VMs)</th><th>GKE (Kubernetes)</th></tr></thead>
+              <tbody>
+                <tr><td>Manual scaling</td><td>Auto-scaling based on load</td></tr>
+                <tr><td>Downtime during updates</td><td>Rolling updates, zero downtime</td></tr>
+                <tr><td>Manual load balancing</td><td>Built-in load balancing</td></tr>
+                <tr><td>Server management required</td><td>Managed infrastructure</td></tr>
+                <tr><td>Environment inconsistency</td><td>Consistent container environments</td></tr>
+                <tr><td>Complex deployments</td><td>Declarative deployments</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="benefits">Why Use GKE?</h2>
+          <ul>
+            <li><strong>Managed Control Plane:</strong> Google manages the Kubernetes master nodes</li>
+            <li><strong>Auto-scaling:</strong> Scale pods and nodes automatically based on demand</li>
+            <li><strong>Auto-repair:</strong> Unhealthy nodes are automatically replaced</li>
+            <li><strong>Auto-upgrade:</strong> Kubernetes versions upgraded automatically</li>
+            <li><strong>Integrated Logging:</strong> Cloud Logging and Monitoring built-in</li>
+            <li><strong>Security:</strong> Container-Optimized OS, Workload Identity</li>
+            <li><strong>Global Load Balancing:</strong> Distribute traffic globally</li>
+          </ul>
+
+          <h2 id="cluster-modes">GKE Cluster Modes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Mode</th><th>Description</th><th>Best For</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Autopilot</strong></td><td>Fully managed, pay per pod</td><td>Simplicity, cost optimization</td></tr>
+                <tr><td><strong>Standard</strong></td><td>More control, manage node pools</td><td>Custom configurations</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="architecture">GKE Architecture</h2>
+          <ul>
+            <li><strong>Control Plane:</strong> Managed by Google, runs Kubernetes master components</li>
+            <li><strong>Node Pools:</strong> Groups of VMs that run your workloads</li>
+            <li><strong>Pods:</strong> Your containerized applications</li>
+            <li><strong>Services:</strong> Expose pods to network traffic</li>
+          </ul>
+
+          <h2 id="gcp-services">Key GCP Services for GKE</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Service</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Artifact Registry</td><td>Store container images</td></tr>
+                <tr><td>Cloud Build</td><td>CI/CD pipelines</td></tr>
+                <tr><td>Cloud Load Balancing</td><td>Distribute traffic</td></tr>
+                <tr><td>Cloud Monitoring</td><td>Metrics and alerting</td></tr>
+                <tr><td>Cloud Logging</td><td>Centralized logging</td></tr>
+                <tr><td>Secret Manager</td><td>Manage secrets</td></tr>
+                <tr><td>Cloud SQL</td><td>Managed databases</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="getting-started">Getting Started</h2>
+          <pre><code class="language-bash"># Install gcloud CLI
+# https://cloud.google.com/sdk/docs/install
+
+# Initialize gcloud
+gcloud init
+
+# Set default project
+gcloud config set project YOUR_PROJECT_ID
+
+# Enable GKE API
+gcloud services enable container.googleapis.com
+
+# Install kubectl
+gcloud components install kubectl</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Free Tier</div>
+            <p>GKE offers one free zonal cluster per billing account. New GCP users get $300 in free credits.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">GKE Overview</span></a>
+          <a href="./cluster-setup.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cluster Setup</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

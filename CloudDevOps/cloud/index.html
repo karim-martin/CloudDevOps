@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud learning path - GCP GKE end-to-end guide for deploying applications to Kubernetes.">
+  <title>Cloud | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav"><a href="../devops/" class="nav-link">DevOps</a><a href="../cloud/" class="nav-link active">Cloud</a></nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <aside class="sidebar"><nav class="sidebar-nav">
+    <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+      <li><a href="./" class="active">Cloud Overview</a></li>
+    </ul></div>
+    <div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links">
+      <li><a href="./gcp-gke/">GKE Overview</a></li>
+      <li><a href="./gcp-gke/introduction.html">Introduction</a></li>
+      <li><a href="./gcp-gke/cluster-setup.html">Cluster Setup</a></li>
+      <li><a href="./gcp-gke/deploying-apps.html">Deploying Apps</a></li>
+      <li><a href="./gcp-gke/networking-ingress.html">Networking & Ingress</a></li>
+      <li><a href="./gcp-gke/security-iam.html">Security & IAM</a></li>
+      <li><a href="./gcp-gke/ci-cd.html">CI/CD</a></li>
+      <li><a href="./gcp-gke/monitoring-logging.html">Monitoring & Logging</a></li>
+    </ul></div>
+  </nav></aside>
+
+  <div class="page-wrapper">
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li aria-current="page">Cloud</li>
+        </ol></nav>
+
+        <header class="article-header">
+          <h1>Cloud Learning Path</h1>
+          <p class="text-secondary text-lg">Master cloud platforms and deploy applications at scale.</p>
+        </header>
+
+        <div class="article-body">
+          <p>This section covers cloud platforms and services, with a focus on Google Cloud Platform (GCP) and Google Kubernetes Engine (GKE).</p>
+
+          <h2>GCP GKE End-to-End</h2>
+          <p>A comprehensive guide for developers who want to learn how to deploy and manage applications on Google Kubernetes Engine, from zero to production.</p>
+
+          <div class="card-grid">
+            <a href="./gcp-gke/introduction.html" class="card card-link">
+              <h3 class="card-title">Introduction to GKE</h3>
+              <p class="card-description">What is GKE and why use it? Perfect for developers new to Kubernetes.</p>
+            </a>
+
+            <a href="./gcp-gke/cluster-setup.html" class="card card-link">
+              <h3 class="card-title">Cluster Setup</h3>
+              <p class="card-description">Create and configure GKE clusters using Console and gcloud CLI.</p>
+            </a>
+
+            <a href="./gcp-gke/deploying-apps.html" class="card card-link">
+              <h3 class="card-title">Deploying Applications</h3>
+              <p class="card-description">Deploy your first app to GKE with deployments and services.</p>
+            </a>
+
+            <a href="./gcp-gke/networking-ingress.html" class="card card-link">
+              <h3 class="card-title">Networking & Ingress</h3>
+              <p class="card-description">Load balancers, Ingress controllers, and SSL/TLS configuration.</p>
+            </a>
+
+            <a href="./gcp-gke/security-iam.html" class="card card-link">
+              <h3 class="card-title">Security & IAM</h3>
+              <p class="card-description">Workload Identity, IAM, network policies, and security best practices.</p>
+            </a>
+
+            <a href="./gcp-gke/ci-cd.html" class="card card-link">
+              <h3 class="card-title">CI/CD with GKE</h3>
+              <p class="card-description">Automate deployments with Cloud Build and GitHub Actions.</p>
+            </a>
+
+            <a href="./gcp-gke/monitoring-logging.html" class="card card-link">
+              <h3 class="card-title">Monitoring & Logging</h3>
+              <p class="card-description">Cloud Monitoring, Cloud Logging, and observability.</p>
+            </a>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Prerequisites</div>
+            <p>Before starting the GKE section, you should be familiar with:</p>
+            <ul>
+              <li>Basic Linux commands</li>
+              <li>Docker containers</li>
+              <li>Kubernetes fundamentals (from the DevOps section)</li>
+            </ul>
+          </div>
+
+          <h2>Learning Path</h2>
+          <ol>
+            <li><strong>Introduction</strong> - Understand GKE and its benefits</li>
+            <li><strong>Cluster Setup</strong> - Create your first cluster</li>
+            <li><strong>Deploy Apps</strong> - Deploy and manage workloads</li>
+            <li><strong>Networking</strong> - Expose apps to the internet</li>
+            <li><strong>Security</strong> - Secure your cluster and workloads</li>
+            <li><strong>CI/CD</strong> - Automate your deployments</li>
+            <li><strong>Monitoring</strong> - Observe and troubleshoot</li>
+          </ol>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../devops/ansible.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Ansible</span>
+          </a>
+          <a href="./gcp-gke/" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">GKE Overview</span>
+          </a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>
