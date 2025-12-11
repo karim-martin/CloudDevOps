@@ -399,6 +399,12 @@
   display: block;
 }
 
+.layout-landing .sidebar {
+  /* Keep sidebar hidden on landing page - mobile menu only */
+  position: fixed;
+  left: -100%;
+}
+
 .layout-landing .main-content {
   max-width: var(--max-page-width);
   margin: 0 auto;
