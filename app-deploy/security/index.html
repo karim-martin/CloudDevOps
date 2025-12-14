@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Security - Workload Identity, Cloud Armor, and Identity-Aware Proxy.">
+  <title>Security | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./workload-identity.html">Workload Identity</a></li>
+        <li><a href="./cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Security</li></ol></nav>
+        <header class="article-header"><h1>Security</h1></header>
+
+        <div class="article-body">
+          <p>Secure your GKE application with Workload Identity for GCP service access, Cloud Armor for WAF protection, and Identity-Aware Proxy for authenticated access.</p>
+
+          <h2>What You'll Configure</h2>
+          <div class="card-grid">
+            <a href="./workload-identity.html" class="card card-link">
+              <h3 class="card-title">Workload Identity</h3>
+              <p class="card-description">Allow pods to access GCP services without storing service account keys.</p>
+            </a>
+            <a href="./cloud-armor-iap.html" class="card card-link">
+              <h3 class="card-title">Cloud Armor & IAP</h3>
+              <p class="card-description">Protect with WAF rules, rate limiting, and Google authentication.</p>
+            </a>
+          </div>
+
+          <h2>Security Architecture</h2>
+          <pre><code>┌──────────────────────────────────────────────────────────────────┐
+│                         Internet                                 │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                    Cloud Armor (WAF)                             │
+│  • DDoS Protection    • Rate Limiting    • Geo-blocking          │
+│  • OWASP Rules        • IP Allowlists    • Bot Protection        │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│              Identity-Aware Proxy (Optional)                     │
+│  • Google Authentication  • Context-Aware Access                 │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                    Load Balancer (HTTPS)                         │
+│  • SSL Termination    • Certificate Management                   │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                         GKE Cluster                              │
+│  ┌─────────────────────────────────────────────────────────┐     │
+│  │                    Workload Identity                     │     │
+│  │  ┌─────────────┐         ┌──────────────────────────┐   │     │
+│  │  │ K8s Service │ ──────▶ │ GCP Service Account      │   │     │
+│  │  │ Account     │         │ (Cloud SQL, Storage)     │   │     │
+│  │  └─────────────┘         └──────────────────────────┘   │     │
+│  └─────────────────────────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2>Security Layers</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Layer</th><th>Component</th><th>Protection</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Edge</strong></td><td>Cloud Armor</td><td>DDoS, WAF, rate limiting, geo-blocking</td></tr>
+                <tr><td><strong>Authentication</strong></td><td>Identity-Aware Proxy</td><td>Google login, context-aware access</td></tr>
+                <tr><td><strong>Transport</strong></td><td>HTTPS/TLS</td><td>Encryption in transit</td></tr>
+                <tr><td><strong>Network</strong></td><td>VPC Firewall</td><td>Ingress/egress rules, private nodes</td></tr>
+                <tr><td><strong>Identity</strong></td><td>Workload Identity</td><td>No key files, automatic rotation</td></tr>
+                <tr><td><strong>Data</strong></td><td>Encryption</td><td>At-rest encryption (default in GCP)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Security Best Practices</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Practice</th><th>Implementation</th></tr></thead>
+              <tbody>
+                <tr><td>Least Privilege</td><td>Grant minimal IAM roles to service accounts</td></tr>
+                <tr><td>No Service Account Keys</td><td>Use Workload Identity instead of JSON keys</td></tr>
+                <tr><td>Private Nodes</td><td>GKE nodes without public IPs, use Cloud NAT</td></tr>
+                <tr><td>Network Policies</td><td>Restrict pod-to-pod communication</td></tr>
+                <tr><td>Secret Management</td><td>Use Secret Manager instead of K8s Secrets</td></tr>
+                <tr><td>Image Security</td><td>Scan images, use trusted base images</td></tr>
+                <tr><td>HTTPS Only</td><td>Redirect HTTP to HTTPS, use HSTS</td></tr>
+                <tr><td>Regular Updates</td><td>Enable auto-upgrade for GKE nodes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Quick Security Checklist</h2>
+          <pre><code class="language-bash"># Check Workload Identity is enabled
+gcloud container clusters describe app-cluster \
+    --region=us-central1 \
+    --format='value(workloadIdentityConfig.workloadPool)'
+
+# Verify KSA to GSA binding
+kubectl get serviceaccount app-ksa -n app -o yaml | grep iam.gke.io/gcp-service-account
+
+# Check Cloud Armor policy is attached
+gcloud compute backend-services describe BACKEND_NAME --global \
+    --format='value(securityPolicy)'
+
+# Verify SSL/TLS configuration
+gcloud compute ssl-policies describe app-ssl-policy
+
+# Check node pool has no external IPs
+gcloud container node-pools describe default-pool \
+    --cluster=app-cluster \
+    --region=us-central1 \
+    --format='value(config.oauthScopes)'</code></pre>
+
+          <h2>Network Policies (Optional)</h2>
+          <p>Restrict pod-to-pod traffic within the cluster.</p>
+          <pre><code class="language-yaml"># k8s/security/network-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+  namespace: app
+spec:
+  podSelector:
+    matchLabels:
+      app: dotnet-api
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow traffic from frontend pods
+  - from:
+    - podSelector:
+        matchLabels:
+          app: react-frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow traffic from Ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 8080</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Defense in Depth</div>
+            <p>Security is layered. Cloud Armor protects at the edge, Workload Identity secures service access, and Network Policies control internal traffic. Each layer adds protection even if another fails.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Secrets Management</div>
+            <p>Kubernetes Secrets are base64 encoded, not encrypted. For production, consider using Google Secret Manager with Workload Identity to access secrets securely.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../networking/ssl-https.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">SSL/HTTPS</span></a>
+          <a href="./workload-identity.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Workload Identity</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

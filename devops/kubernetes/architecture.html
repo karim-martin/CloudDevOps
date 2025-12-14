@@ -10,7 +10,8 @@
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
   <div class="sidebar-overlay"></div>
 
   <div class="page-wrapper">
@@ -97,6 +98,120 @@ kubectl get pods -l app=nginx
 
 # Multiple labels
 kubectl get pods -l app=nginx,tier=frontend</code></pre>
+
+          <h2 id="requests-limits">Requests & Limits</h2>
+          <p>Resource requests and limits control how much CPU and memory a container can use.</p>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>requests</strong></td><td>Guaranteed resources; used for scheduling decisions</td></tr>
+                <tr><td><strong>limits</strong></td><td>Maximum resources; container is throttled/killed if exceeded</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-yaml"># pod-with-resources.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-demo
+spec:
+  containers:
+  - name: app
+    image: nginx
+    resources:
+      requests:
+        memory: "64Mi"    # 64 MiB guaranteed
+        cpu: "250m"       # 0.25 CPU cores guaranteed
+      limits:
+        memory: "128Mi"   # Max 128 MiB (OOMKilled if exceeded)
+        cpu: "500m"       # Max 0.5 CPU cores (throttled if exceeded)</code></pre>
+
+          <h3>Resource Units</h3>
+          <ul>
+            <li><strong>CPU:</strong> <code>1</code> = 1 vCPU/Core, <code>100m</code> = 0.1 CPU (millicores)</li>
+            <li><strong>Memory:</strong> <code>128Mi</code> (mebibytes), <code>1Gi</code> (gibibytes), <code>256M</code> (megabytes)</li>
+          </ul>
+
+          <h2 id="resourcequota">ResourceQuota</h2>
+          <p>ResourceQuota limits the total resource consumption per namespace. Prevents any single team/project from consuming all cluster resources.</p>
+
+          <pre><code class="language-yaml"># resourcequota.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: dev
+spec:
+  hard:
+    requests.cpu: "4"           # Total CPU requests
+    requests.memory: 8Gi        # Total memory requests
+    limits.cpu: "8"             # Total CPU limits
+    limits.memory: 16Gi         # Total memory limits
+    pods: "20"                  # Max pods in namespace
+    persistentvolumeclaims: "10"
+    services: "10"
+    secrets: "20"
+    configmaps: "20"</code></pre>
+
+          <h3>ResourceQuota Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get resourcequota -n dev</code></td><td>List quotas in namespace</td></tr>
+                <tr><td><code>kubectl describe resourcequota compute-quota -n dev</code></td><td>Show usage vs limits</td></tr>
+                <tr><td><code>kubectl create quota my-quota --hard=pods=10,cpu=4 -n dev</code></td><td>Create quota</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="limitrange">LimitRange</h2>
+          <p>LimitRange sets default and maximum resource constraints for containers in a namespace. Applied automatically if not specified in pod spec.</p>
+
+          <pre><code class="language-yaml"># limitrange.yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: resource-limits
+  namespace: dev
+spec:
+  limits:
+  - type: Container
+    default:           # Default limits (if not specified)
+      cpu: "500m"
+      memory: "256Mi"
+    defaultRequest:    # Default requests (if not specified)
+      cpu: "100m"
+      memory: "128Mi"
+    max:               # Maximum allowed
+      cpu: "2"
+      memory: "2Gi"
+    min:               # Minimum required
+      cpu: "50m"
+      memory: "64Mi"
+  - type: PersistentVolumeClaim
+    max:
+      storage: "10Gi"
+    min:
+      storage: "1Gi"</code></pre>
+
+          <h3>LimitRange Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get limitrange -n dev</code></td><td>List LimitRanges</td></tr>
+                <tr><td><code>kubectl describe limitrange resource-limits -n dev</code></td><td>Show limit details</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <p><strong>Best Practice:</strong> Use LimitRange to set defaults, and ResourceQuota to cap total namespace usage. This ensures all pods have resource definitions and prevents resource exhaustion.</p>
+          </div>
         </div>
 
         <nav class="page-navigation">

@@ -10,7 +10,8 @@
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
   <div class="sidebar-overlay"></div>
 
   <div class="page-wrapper">
@@ -73,6 +74,69 @@ spec:
   ports:
   - port: 80
     targetPort: 8080</code></pre>
+
+          <h2 id="headless">Headless Service</h2>
+          <p>A Headless Service has no cluster IP (<code>clusterIP: None</code>). DNS returns Pod IPs directly instead of a single service IP. Used for StatefulSets and direct pod discovery.</p>
+
+          <pre><code class="language-yaml"># headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-headless
+spec:
+  clusterIP: None      # Makes it headless
+  selector:
+    app: mydb
+  ports:
+  - port: 3306
+    targetPort: 3306</code></pre>
+
+          <h3>Use Cases</h3>
+          <ul>
+            <li><strong>StatefulSets</strong> - Each pod gets a stable DNS name (pod-0.service.namespace.svc.cluster.local)</li>
+            <li><strong>Client-side load balancing</strong> - Application chooses which pod to connect to</li>
+            <li><strong>Database clusters</strong> - Direct connection to specific replicas</li>
+          </ul>
+
+          <h3>DNS Resolution</h3>
+          <pre><code class="language-bash"># Regular service returns single IP
+nslookup my-service
+# Returns: 10.96.0.10
+
+# Headless service returns all pod IPs
+nslookup my-headless
+# Returns:
+# 10.244.0.5
+# 10.244.1.3
+# 10.244.2.7</code></pre>
+
+          <h2 id="externalname">ExternalName Service</h2>
+          <p>ExternalName maps a service to an external DNS name. No proxying occurs; DNS returns a CNAME record. Used to reference external services from within the cluster.</p>
+
+          <pre><code class="language-yaml"># externalname-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-db
+  namespace: production
+spec:
+  type: ExternalName
+  externalName: database.example.com</code></pre>
+
+          <h3>Use Cases</h3>
+          <ul>
+            <li><strong>External databases</strong> - RDS, Cloud SQL, external MySQL</li>
+            <li><strong>Third-party APIs</strong> - Reference external services by internal name</li>
+            <li><strong>Migration</strong> - Gradually move services outside the cluster</li>
+          </ul>
+
+          <pre><code class="language-bash"># Access external service using internal DNS
+curl http://external-db.production.svc.cluster.local
+# Resolves to database.example.com</code></pre>
+
+          <div class="callout callout-info">
+            <p><strong>Note:</strong> ExternalName services don't have selectors, ports, or endpoints. They simply provide DNS aliasing.</p>
+          </div>
 
           <h2 id="ingress">Ingress</h2>
           <p>Ingress manages external HTTP/HTTPS access to services.</p>

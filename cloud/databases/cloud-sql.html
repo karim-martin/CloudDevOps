@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud SQL - Managed MySQL, PostgreSQL, and SQL Server for container workloads.">
+  <title>Cloud SQL | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-sql.html" class="active">Cloud SQL</a></li>
+        <li><a href="./firestore.html">Firestore</a></li>
+        <li><a href="./memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Databases</a></li><li aria-current="page">Cloud SQL</li></ol></nav>
+        <header class="article-header"><h1>Cloud SQL</h1></header>
+
+        <div class="article-body">
+          <p>Cloud SQL is a fully managed relational database service supporting MySQL, PostgreSQL, and SQL Server with automatic backups, replication, and patches.</p>
+
+          <h2 id="create-instance">Create Instance</h2>
+          <h3>MySQL</h3>
+          <pre><code class="language-bash"># Create MySQL instance
+gcloud sql instances create my-mysql \
+    --database-version=MYSQL_8_0 \
+    --tier=db-custom-2-4096 \
+    --region=us-central1 \
+    --root-password=CHANGE_ME \
+    --storage-type=SSD \
+    --storage-size=20GB \
+    --storage-auto-increase \
+    --availability-type=REGIONAL \
+    --network=projects/PROJECT_ID/global/networks/my-vpc \
+    --no-assign-ip</code></pre>
+
+          <h3>PostgreSQL</h3>
+          <pre><code class="language-bash"># Create PostgreSQL instance
+gcloud sql instances create my-postgres \
+    --database-version=POSTGRES_15 \
+    --tier=db-custom-2-4096 \
+    --region=us-central1 \
+    --root-password=CHANGE_ME \
+    --storage-type=SSD \
+    --storage-size=20GB \
+    --availability-type=REGIONAL \
+    --network=projects/PROJECT_ID/global/networks/my-vpc \
+    --no-assign-ip</code></pre>
+
+          <h3>SQL Server</h3>
+          <pre><code class="language-bash"># Create SQL Server instance
+gcloud sql instances create my-sqlserver \
+    --database-version=SQLSERVER_2019_STANDARD \
+    --tier=db-custom-2-4096 \
+    --region=us-central1 \
+    --root-password=CHANGE_ME \
+    --storage-type=SSD \
+    --storage-size=20GB</code></pre>
+
+          <h2 id="private-ip">Private IP Configuration</h2>
+          <pre><code class="language-bash"># Enable private IP for existing instance
+gcloud sql instances patch my-instance \
+    --network=projects/PROJECT_ID/global/networks/my-vpc \
+    --no-assign-ip
+
+# Get private IP address
+gcloud sql instances describe my-instance \
+    --format='value(ipAddresses.filter(type:PRIVATE).ipAddress)'</code></pre>
+
+          <h2 id="databases-users">Create Database & Users</h2>
+          <pre><code class="language-bash"># Create database
+gcloud sql databases create mydb --instance=my-instance
+
+# Create user
+gcloud sql users create myuser \
+    --instance=my-instance \
+    --password=user_password
+
+# List databases
+gcloud sql databases list --instance=my-instance
+
+# List users
+gcloud sql users list --instance=my-instance</code></pre>
+
+          <h2 id="connect-gke">Connect from GKE</h2>
+          <h3>Option 1: Private IP (Recommended)</h3>
+          <pre><code class="language-yaml"># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        env:
+        - name: DB_HOST
+          value: "10.x.x.x"  # Cloud SQL private IP
+        - name: DB_NAME
+          value: "mydb"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password</code></pre>
+
+          <h3>Option 2: Cloud SQL Auth Proxy</h3>
+          <pre><code class="language-yaml"># deployment-with-proxy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    spec:
+      serviceAccountName: my-ksa  # With Workload Identity
+      containers:
+      - name: app
+        env:
+        - name: DB_HOST
+          value: "127.0.0.1"
+        - name: DB_PORT
+          value: "5432"
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
+        args:
+        - "--structured-logs"
+        - "--auto-iam-authn"
+        - "PROJECT_ID:us-central1:my-instance"
+        securityContext:
+          runAsNonRoot: true</code></pre>
+
+          <h2 id="connect-cloudrun">Connect from Cloud Run</h2>
+          <pre><code class="language-bash"># Deploy with Cloud SQL connection
+gcloud run deploy my-service \
+    --image=my-image \
+    --add-cloudsql-instances=PROJECT_ID:us-central1:my-instance \
+    --set-env-vars="DB_HOST=/cloudsql/PROJECT_ID:us-central1:my-instance"</code></pre>
+
+          <pre><code class="language-python"># Python connection (Cloud Run)
+import sqlalchemy
+
+def connect():
+    connection_name = "/cloudsql/PROJECT_ID:us-central1:my-instance"
+
+    # PostgreSQL
+    engine = sqlalchemy.create_engine(
+        f"postgresql+pg8000://{user}:{password}@/{database}"
+        f"?unix_sock={connection_name}/.s.PGSQL.5432"
+    )
+
+    # MySQL
+    engine = sqlalchemy.create_engine(
+        f"mysql+pymysql://{user}:{password}@/{database}"
+        f"?unix_socket={connection_name}"
+    )</code></pre>
+
+          <h2 id="backups">Backups</h2>
+          <pre><code class="language-bash"># Enable automated backups
+gcloud sql instances patch my-instance \
+    --backup-start-time=02:00 \
+    --enable-bin-log  # For point-in-time recovery (MySQL)
+
+# Create on-demand backup
+gcloud sql backups create --instance=my-instance
+
+# List backups
+gcloud sql backups list --instance=my-instance
+
+# Restore from backup
+gcloud sql backups restore BACKUP_ID \
+    --restore-instance=my-instance</code></pre>
+
+          <h2 id="high-availability">High Availability</h2>
+          <pre><code class="language-bash"># Create HA instance
+gcloud sql instances create my-ha-instance \
+    --database-version=POSTGRES_15 \
+    --tier=db-custom-4-8192 \
+    --region=us-central1 \
+    --availability-type=REGIONAL  # HA with standby
+
+# Add read replica
+gcloud sql instances create my-replica \
+    --master-instance-name=my-instance \
+    --region=us-east1  # Can be different region</code></pre>
+
+          <h2 id="connection-strings">Connection Strings</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Database</th><th>Connection String</th></tr></thead>
+              <tbody>
+                <tr><td>PostgreSQL</td><td><code>Host=IP;Database=db;Username=user;Password=pass</code></td></tr>
+                <tr><td>MySQL</td><td><code>Server=IP;Database=db;User=user;Password=pass</code></td></tr>
+                <tr><td>SQL Server</td><td><code>Server=IP;Database=db;User Id=user;Password=pass</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List instances
+gcloud sql instances list
+
+# Describe instance
+gcloud sql instances describe my-instance
+
+# Start/stop instance
+gcloud sql instances patch my-instance --activation-policy=NEVER  # Stop
+gcloud sql instances patch my-instance --activation-policy=ALWAYS # Start
+
+# Resize instance
+gcloud sql instances patch my-instance --tier=db-custom-4-8192
+
+# Delete instance
+gcloud sql instances delete my-instance</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Private IP Requires VPC</div>
+            <p>Private IP connections require your Cloud SQL instance to be in the same VPC as your GKE cluster or connected via VPC peering. Configure private services access before creating the instance.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Connection Pooling</div>
+            <p>For high-concurrency workloads, use connection pooling (PgBouncer for PostgreSQL, ProxySQL for MySQL) to avoid hitting connection limits.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Databases Overview</span></a>
+          <a href="./firestore.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Firestore</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

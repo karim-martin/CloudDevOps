@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure GKE Ingress with path-based routing to frontend and backend services.">
+  <title>Ingress | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./ingress.html" class="active">Ingress</a></li>
+        <li><a href="./ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Networking</a></li><li aria-current="page">Ingress</li></ol></nav>
+        <header class="article-header"><h1>Ingress</h1></header>
+
+        <div class="article-body">
+          <p>Configure GKE Ingress to expose your application with a Google Cloud Load Balancer, path-based routing, and static IP address.</p>
+
+          <h2 id="backendconfig">BackendConfig</h2>
+          <p>Configure health checks and timeouts for the load balancer backends.</p>
+          <pre><code class="language-yaml"># k8s/networking/backend-config.yaml
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: app-backend-config
+  namespace: app
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /health
+    port: 8080
+  timeoutSec: 30
+  connectionDraining:
+    drainingTimeoutSec: 60
+  logging:
+    enable: true
+    sampleRate: 1.0</code></pre>
+
+          <h2 id="service-annotations">Update Services with BackendConfig</h2>
+          <p>Add BackendConfig annotation to your services.</p>
+          <pre><code class="language-yaml"># Update k8s/frontend/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend
+  namespace: app
+  labels:
+    app: react-frontend
+  annotations:
+    cloud.google.com/backend-config: '{"default": "app-backend-config"}'
+    cloud.google.com/neg: '{"ingress": true}'  # Network Endpoint Groups
+spec:
+  type: ClusterIP
+  selector:
+    app: react-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+---
+# Update k8s/backend/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-api
+  namespace: app
+  labels:
+    app: dotnet-api
+  annotations:
+    cloud.google.com/backend-config: '{"default": "app-backend-config"}'
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: ClusterIP
+  selector:
+    app: dotnet-api
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http</code></pre>
+
+          <h2 id="ingress-yaml">Ingress Resource</h2>
+          <pre><code class="language-yaml"># k8s/networking/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "app-ip"
+    # Will add these after SSL setup:
+    # networking.gke.io/managed-certificates: "app-certificate"
+    # kubernetes.io/ingress.allow-http: "false"
+spec:
+  defaultBackend:
+    service:
+      name: react-frontend
+      port:
+        number: 80
+  rules:
+  - host: app.example.com  # Replace with your domain
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080
+      - path: /api/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-frontend
+            port:
+              number: 80</code></pre>
+
+          <h2 id="ingress-no-host">Ingress Without Domain (IP Only)</h2>
+          <p>For testing or if you don't have a domain yet:</p>
+          <pre><code class="language-yaml"># k8s/networking/ingress-ip-only.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "app-ip"
+spec:
+  defaultBackend:
+    service:
+      name: react-frontend
+      port:
+        number: 80
+  rules:
+  - http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080
+      - path: /api/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-frontend
+            port:
+              number: 80</code></pre>
+
+          <h2 id="deploy-ingress">Deploy Ingress</h2>
+          <pre><code class="language-bash"># Apply BackendConfig
+kubectl apply -f k8s/networking/backend-config.yaml
+
+# Update services with annotations
+kubectl apply -f k8s/frontend/service.yaml
+kubectl apply -f k8s/backend/service.yaml
+
+# Apply Ingress
+kubectl apply -f k8s/networking/ingress.yaml
+
+# Watch Ingress status
+kubectl get ingress app-ingress -n app -w
+
+# Get Ingress details
+kubectl describe ingress app-ingress -n app</code></pre>
+
+          <h2 id="verify-ingress">Verify Ingress</h2>
+          <pre><code class="language-bash"># Check Ingress has an IP address
+kubectl get ingress app-ingress -n app
+# NAME          CLASS    HOSTS            ADDRESS        PORTS   AGE
+# app-ingress   &lt;none&gt;   app.example.com  34.120.x.x     80      5m
+
+# Get the static IP
+gcloud compute addresses describe app-ip --global --format='value(address)'
+
+# Check backend health in GCP Console or CLI
+gcloud compute backend-services list --filter="name~k8s"
+
+# Check backend health status
+gcloud compute backend-services get-health BACKEND_SERVICE_NAME --global
+
+# Test with curl (HTTP)
+curl -H "Host: app.example.com" http://34.120.x.x/
+curl -H "Host: app.example.com" http://34.120.x.x/api/health</code></pre>
+
+          <h2 id="dns-setup">DNS Configuration</h2>
+          <pre><code class="language-bash"># Get your static IP
+STATIC_IP=$(gcloud compute addresses describe app-ip --global --format='value(address)')
+echo "Configure DNS A record: app.example.com -> $STATIC_IP"
+
+# Option 1: Using Cloud DNS
+gcloud dns record-sets create app.example.com \
+    --zone="example-zone" \
+    --type="A" \
+    --ttl="300" \
+    --rrdatas="$STATIC_IP"
+
+# Option 2: Using external DNS provider
+# Add an A record in your DNS provider's console:
+# Name: app (or @ for root)
+# Type: A
+# Value: 34.120.x.x (your static IP)
+# TTL: 300</code></pre>
+
+          <h2 id="path-types">Path Types Explained</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Path Type</th><th>Behavior</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td><code>Prefix</code></td><td>Matches URL path prefix</td><td><code>/api</code> matches <code>/api</code>, <code>/api/</code>, <code>/api/users</code></td></tr>
+                <tr><td><code>Exact</code></td><td>Exact path match only</td><td><code>/api</code> matches only <code>/api</code></td></tr>
+                <tr><td><code>ImplementationSpecific</code></td><td>Depends on IngressClass</td><td>GCE uses prefix matching</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Command / Solution</th></tr></thead>
+              <tbody>
+                <tr><td>No IP assigned</td><td><code>kubectl describe ingress app-ingress -n app</code> - check Events</td></tr>
+                <tr><td>502 Bad Gateway</td><td>Backend pods not ready or health check failing</td></tr>
+                <tr><td>404 Not Found</td><td>Check path rules and service names</td></tr>
+                <tr><td>Backend unhealthy</td><td>Verify health check path returns 200 OK</td></tr>
+                <tr><td>Slow provisioning</td><td>GCE load balancer can take 5-10 minutes to provision</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Debug backend health
+kubectl get pods -n app -o wide
+
+# Check if pods pass health checks
+kubectl logs -l app=react-frontend -n app
+kubectl logs -l app=dotnet-api -n app
+
+# Test health endpoints directly
+kubectl port-forward service/react-frontend 8081:80 -n app &
+curl http://localhost:8081/health
+
+kubectl port-forward service/dotnet-api 8082:8080 -n app &
+curl http://localhost:8082/health
+
+# Check NEG status
+gcloud compute network-endpoint-groups list
+
+# View load balancer components
+gcloud compute forwarding-rules list
+gcloud compute target-http-proxies list
+gcloud compute url-maps list</code></pre>
+
+          <h2 id="multiple-hosts">Multiple Hosts (Optional)</h2>
+          <pre><code class="language-yaml"># Ingress with multiple domains
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: multi-host-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "app-ip"
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-frontend
+            port:
+              number: 80
+  - host: api.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Network Endpoint Groups (NEG)</div>
+            <p>The <code>cloud.google.com/neg</code> annotation enables container-native load balancing. Traffic goes directly to pod IPs instead of through NodePorts, improving performance and enabling better health checking.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Health Check Requirements</div>
+            <p>The load balancer health check must return HTTP 200. Ensure your /health endpoint exists and returns 200 OK. The health check runs from Google's infrastructure, not from within your cluster.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Networking Overview</span></a>
+          <a href="./ssl-https.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">SSL/HTTPS</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

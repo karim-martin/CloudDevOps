@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Armor - DDoS protection and WAF for GCP.">
+  <title>Cloud Armor | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./iam.html">IAM</a></li>
+        <li><a href="./secret-manager.html">Secret Manager</a></li>
+        <li><a href="./cloud-armor.html" class="active">Cloud Armor</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud Armor</h1></header>
+        <div class="article-body">
+          <p>Cloud Armor provides DDoS protection and WAF (Web Application Firewall) for applications behind a load balancer.</p>
+
+          <h2>Create Security Policy</h2>
+          <pre><code class="language-bash"># Create policy
+gcloud compute security-policies create my-policy \
+    --description="WAF policy"
+
+# Apply to backend service
+gcloud compute backend-services update my-backend \
+    --security-policy=my-policy \
+    --global</code></pre>
+
+          <h2>IP Allow/Deny Rules</h2>
+          <pre><code class="language-bash"># Allow specific IPs
+gcloud compute security-policies rules create 1000 \
+    --security-policy=my-policy \
+    --src-ip-ranges="203.0.113.0/24" \
+    --action=allow
+
+# Block specific IPs
+gcloud compute security-policies rules create 2000 \
+    --security-policy=my-policy \
+    --src-ip-ranges="198.51.100.0/24" \
+    --action=deny-403
+
+# Block by country
+gcloud compute security-policies rules create 3000 \
+    --security-policy=my-policy \
+    --expression="origin.region_code == 'CN'" \
+    --action=deny-403</code></pre>
+
+          <h2>WAF Rules (OWASP)</h2>
+          <pre><code class="language-bash"># Enable OWASP ModSecurity rules
+gcloud compute security-policies rules create 1000 \
+    --security-policy=my-policy \
+    --expression="evaluatePreconfiguredExpr('xss-v33-stable')" \
+    --action=deny-403
+
+# SQL injection protection
+gcloud compute security-policies rules create 1001 \
+    --security-policy=my-policy \
+    --expression="evaluatePreconfiguredExpr('sqli-v33-stable')" \
+    --action=deny-403
+
+# All OWASP rules
+# xss-v33-stable         - Cross-site scripting
+# sqli-v33-stable        - SQL injection
+# lfi-v33-stable         - Local file inclusion
+# rfi-v33-stable         - Remote file inclusion
+# rce-v33-stable         - Remote code execution
+# methodenforcement-v33-stable - Method enforcement
+# scannerdetection-v33-stable  - Scanner detection
+# protocolattack-v33-stable    - Protocol attacks
+# sessionfixation-v33-stable   - Session fixation</code></pre>
+
+          <h2>Rate Limiting</h2>
+          <pre><code class="language-bash"># Rate limit by IP
+gcloud compute security-policies rules create 4000 \
+    --security-policy=my-policy \
+    --src-ip-ranges="*" \
+    --action=rate-based-ban \
+    --rate-limit-threshold-count=100 \
+    --rate-limit-threshold-interval-sec=60 \
+    --ban-duration-sec=300 \
+    --conform-action=allow \
+    --exceed-action=deny-429 \
+    --enforce-on-key=IP</code></pre>
+
+          <h2>GKE BackendConfig</h2>
+          <pre><code class="language-yaml">apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: armor-config
+spec:
+  securityPolicy:
+    name: my-policy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  annotations:
+    cloud.google.com/backend-config: '{"default": "armor-config"}'
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: my-app</code></pre>
+
+          <h2>Custom Rules (CEL)</h2>
+          <pre><code class="language-bash"># Block requests with specific header
+gcloud compute security-policies rules create 5000 \
+    --security-policy=my-policy \
+    --expression="request.headers['user-agent'].contains('BadBot')" \
+    --action=deny-403
+
+# Block requests to specific path
+gcloud compute security-policies rules create 5001 \
+    --security-policy=my-policy \
+    --expression="request.path.matches('/admin.*')" \
+    --action=deny-403
+
+# Allow only specific methods
+gcloud compute security-policies rules create 5002 \
+    --security-policy=my-policy \
+    --expression="!request.method.matches('GET|POST|PUT|DELETE')" \
+    --action=deny-405</code></pre>
+
+          <h2>Adaptive Protection</h2>
+          <pre><code class="language-bash"># Enable adaptive protection (ML-based)
+gcloud compute security-policies update my-policy \
+    --enable-layer7-ddos-defense \
+    --layer7-ddos-defense-rule-visibility=STANDARD</code></pre>
+
+          <h2>View and Manage</h2>
+          <pre><code class="language-bash"># List policies
+gcloud compute security-policies list
+
+# Describe policy
+gcloud compute security-policies describe my-policy
+
+# List rules
+gcloud compute security-policies rules list --security-policy=my-policy
+
+# Delete rule
+gcloud compute security-policies rules delete 1000 \
+    --security-policy=my-policy
+
+# Delete policy
+gcloud compute security-policies delete my-policy</code></pre>
+
+          <h2>Logging</h2>
+          <pre><code class="language-bash"># View blocked requests in Cloud Logging
+resource.type="http_load_balancer"
+jsonPayload.enforcedSecurityPolicy.outcome="DENY"
+
+# View all Cloud Armor events
+resource.type="http_load_balancer"
+jsonPayload.enforcedSecurityPolicy.name="my-policy"</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

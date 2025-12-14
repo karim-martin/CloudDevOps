@@ -10,7 +10,8 @@
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
   <div class="sidebar-overlay"></div>
 
   <div class="page-wrapper">
@@ -141,6 +142,182 @@ spec:
     rollingUpdate:
       maxSurge: 1        # Extra pods during update
       maxUnavailable: 0  # Pods that can be unavailable</code></pre>
+
+          <h2 id="replicaset">ReplicaSet</h2>
+          <p>A ReplicaSet ensures a specified number of pod replicas are running. Deployments manage ReplicaSets automatically.</p>
+
+          <pre><code class="language-yaml"># replicaset.yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports:
+        - containerPort: 80</code></pre>
+
+          <h3>ReplicaSet Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get rs</code></td><td>List ReplicaSets</td></tr>
+                <tr><td><code>kubectl describe rs name</code></td><td>ReplicaSet details</td></tr>
+                <tr><td><code>kubectl scale rs name --replicas=5</code></td><td>Scale ReplicaSet</td></tr>
+                <tr><td><code>kubectl delete rs name</code></td><td>Delete ReplicaSet</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <p><strong>Note:</strong> Use Deployments instead of ReplicaSets directly. Deployments provide rolling updates and rollback capabilities.</p>
+          </div>
+
+          <h2 id="daemonset">DaemonSet</h2>
+          <p>A DaemonSet ensures a copy of a Pod runs on all (or selected) nodes. Use cases: log collectors, monitoring agents, network plugins.</p>
+
+          <pre><code class="language-yaml"># daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-daemonset
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: fluentd
+  template:
+    metadata:
+      labels:
+        name: fluentd
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: fluentd
+        image: fluentd:v1.16
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log</code></pre>
+
+          <h3>DaemonSet Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get ds</code></td><td>List DaemonSets</td></tr>
+                <tr><td><code>kubectl get ds -n kube-system</code></td><td>List in namespace</td></tr>
+                <tr><td><code>kubectl describe ds name</code></td><td>DaemonSet details</td></tr>
+                <tr><td><code>kubectl rollout status ds/name</code></td><td>Rollout status</td></tr>
+                <tr><td><code>kubectl delete ds name</code></td><td>Delete DaemonSet</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="hpa">Horizontal Pod Autoscaler (HPA)</h2>
+          <p>HPA automatically scales the number of pods based on CPU/memory utilization or custom metrics.</p>
+
+          <pre><code class="language-yaml"># hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80</code></pre>
+
+          <h3>HPA Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl autoscale deploy name --min=2 --max=10 --cpu-percent=50</code></td><td>Create HPA</td></tr>
+                <tr><td><code>kubectl get hpa</code></td><td>List HPAs</td></tr>
+                <tr><td><code>kubectl describe hpa name</code></td><td>HPA details</td></tr>
+                <tr><td><code>kubectl delete hpa name</code></td><td>Delete HPA</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <p><strong>Requirement:</strong> HPA requires metrics-server to be installed in the cluster.</p>
+            <pre><code>kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml</code></pre>
+          </div>
+
+          <h2 id="cluster-autoscaler">Cluster Autoscaler</h2>
+          <p>Cluster Autoscaler automatically adjusts the number of nodes in a cluster when pods fail to schedule due to resource constraints.</p>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Scale Up</strong></td><td>Adds nodes when pods are pending due to insufficient resources</td></tr>
+                <tr><td><strong>Scale Down</strong></td><td>Removes underutilized nodes (utilization &lt; 50% for 10+ mins)</td></tr>
+                <tr><td><strong>Cloud Provider</strong></td><td>Works with GKE, EKS, AKS node pools/groups</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>GKE Cluster Autoscaler</h3>
+          <pre><code class="language-bash"># Enable autoscaling on GKE node pool
+gcloud container clusters update my-cluster \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10 \
+    --node-pool=default-pool
+
+# Or when creating cluster
+gcloud container clusters create my-cluster \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10</code></pre>
+
+          <h3>EKS Cluster Autoscaler</h3>
+          <pre><code class="language-bash"># Install via Helm
+helm repo add autoscaler https://kubernetes.github.io/autoscaler
+helm install cluster-autoscaler autoscaler/cluster-autoscaler \
+    --set autoDiscovery.clusterName=my-cluster \
+    --set awsRegion=us-east-1</code></pre>
         </div>
 
         <nav class="page-navigation">

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IAM - Identity and Access Management for GCP.">
+  <title>IAM | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./iam.html" class="active">IAM</a></li>
+        <li><a href="./secret-manager.html">Secret Manager</a></li>
+        <li><a href="./cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>IAM</h1></header>
+        <div class="article-body">
+          <p>Identity and Access Management controls who can do what on GCP resources.</p>
+
+          <h2>Key Concepts</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Concept</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Principal</strong></td><td>User, group, service account, or domain</td></tr>
+                <tr><td><strong>Role</strong></td><td>Collection of permissions</td></tr>
+                <tr><td><strong>Policy</strong></td><td>Binds principals to roles on a resource</td></tr>
+                <tr><td><strong>Permission</strong></td><td>service.resource.verb (e.g., storage.objects.get)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Service Accounts</h2>
+          <pre><code class="language-bash"># Create service account
+gcloud iam service-accounts create my-sa \
+    --display-name="My Service Account"
+
+# List service accounts
+gcloud iam service-accounts list
+
+# Get email format
+# my-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2>Grant Roles</h2>
+          <pre><code class="language-bash"># Grant role to service account
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:my-sa@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+
+# Grant role to user
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="user:alice@example.com" \
+    --role="roles/viewer"
+
+# Grant role at resource level
+gcloud storage buckets add-iam-policy-binding gs://my-bucket \
+    --member="serviceAccount:my-sa@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.objectAdmin"</code></pre>
+
+          <h2>Common Roles for Containers</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Role</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td>roles/container.admin</td><td>Full GKE access</td></tr>
+                <tr><td>roles/container.developer</td><td>Deploy to GKE</td></tr>
+                <tr><td>roles/container.viewer</td><td>Read-only GKE access</td></tr>
+                <tr><td>roles/run.admin</td><td>Full Cloud Run access</td></tr>
+                <tr><td>roles/artifactregistry.reader</td><td>Pull images</td></tr>
+                <tr><td>roles/artifactregistry.writer</td><td>Push/pull images</td></tr>
+                <tr><td>roles/cloudsql.client</td><td>Connect to Cloud SQL</td></tr>
+                <tr><td>roles/secretmanager.secretAccessor</td><td>Access secrets</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Workload Identity</h2>
+          <pre><code class="language-bash"># Enable Workload Identity on cluster
+gcloud container clusters update my-cluster \
+    --workload-pool=PROJECT_ID.svc.id.goog
+
+# Create Kubernetes service account
+kubectl create serviceaccount my-ksa -n my-namespace
+
+# Bind KSA to GSA
+gcloud iam service-accounts add-iam-policy-binding \
+    my-gsa@PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="serviceAccount:PROJECT_ID.svc.id.goog[my-namespace/my-ksa]"
+
+# Annotate KSA
+kubectl annotate serviceaccount my-ksa \
+    -n my-namespace \
+    iam.gke.io/gcp-service-account=my-gsa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2>Workload Identity Federation</h2>
+          <pre><code class="language-bash"># For external identity providers (GitHub Actions, GitLab, etc.)
+
+# Create workload identity pool
+gcloud iam workload-identity-pools create github-pool \
+    --location="global" \
+    --display-name="GitHub Pool"
+
+# Create provider
+gcloud iam workload-identity-pools providers create-oidc github-provider \
+    --location="global" \
+    --workload-identity-pool="github-pool" \
+    --issuer-uri="https://token.actions.githubusercontent.com" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository"
+
+# Grant access to service account
+gcloud iam service-accounts add-iam-policy-binding \
+    my-sa@PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="principalSet://iam.googleapis.com/projects/PROJECT_NUM/locations/global/workloadIdentityPools/github-pool/attribute.repository/my-org/my-repo"</code></pre>
+
+          <h2>View IAM Policies</h2>
+          <pre><code class="language-bash"># Get project IAM policy
+gcloud projects get-iam-policy PROJECT_ID
+
+# Get service account IAM policy
+gcloud iam service-accounts get-iam-policy \
+    my-sa@PROJECT_ID.iam.gserviceaccount.com
+
+# List roles
+gcloud iam roles list --filter="name:container"
+
+# Describe role permissions
+gcloud iam roles describe roles/container.developer</code></pre>
+
+          <h2>Custom Roles</h2>
+          <pre><code class="language-bash"># Create custom role
+gcloud iam roles create myCustomRole \
+    --project=PROJECT_ID \
+    --title="My Custom Role" \
+    --description="Custom role for app" \
+    --permissions="storage.objects.get,storage.objects.list"</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

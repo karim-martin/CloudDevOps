@@ -10,7 +10,8 @@
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link active">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
   <div class="sidebar-overlay"></div>
 
   <div class="page-wrapper">
@@ -114,6 +115,81 @@ volumeBindingMode: WaitForFirstConsumer</code></pre>
                 <tr><td><code>kubectl describe pvc name</code></td><td>PVC details</td></tr>
               </tbody>
             </table>
+          </div>
+
+          <h2 id="volumesnapshotclass">VolumeSnapshotClass</h2>
+          <p>VolumeSnapshotClass defines the provisioner and parameters for volume snapshots, similar to StorageClass for volumes.</p>
+
+          <pre><code class="language-yaml"># volumesnapshotclass.yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: csi-snapclass
+driver: pd.csi.storage.gke.io  # CSI driver (cloud specific)
+deletionPolicy: Delete         # Delete or Retain
+parameters:
+  storage-locations: us-central1</code></pre>
+
+          <h3>Common CSI Drivers</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Cloud</th><th>CSI Driver</th></tr></thead>
+              <tbody>
+                <tr><td>GKE</td><td><code>pd.csi.storage.gke.io</code></td></tr>
+                <tr><td>EKS</td><td><code>ebs.csi.aws.com</code></td></tr>
+                <tr><td>AKS</td><td><code>disk.csi.azure.com</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="volumesnapshot">VolumeSnapshot</h2>
+          <p>VolumeSnapshot creates a point-in-time copy of a PersistentVolumeClaim for backup or cloning.</p>
+
+          <pre><code class="language-yaml"># volumesnapshot.yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: my-snapshot
+spec:
+  volumeSnapshotClassName: csi-snapclass
+  source:
+    persistentVolumeClaimName: my-pvc  # PVC to snapshot</code></pre>
+
+          <h3>Restore from Snapshot</h3>
+          <p>Create a new PVC from an existing VolumeSnapshot:</p>
+
+          <pre><code class="language-yaml"># pvc-from-snapshot.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: restored-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+  dataSource:
+    name: my-snapshot
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io</code></pre>
+
+          <h3>Snapshot Commands</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get volumesnapshotclass</code></td><td>List snapshot classes</td></tr>
+                <tr><td><code>kubectl get volumesnapshot</code></td><td>List snapshots</td></tr>
+                <tr><td><code>kubectl describe volumesnapshot name</code></td><td>Snapshot details</td></tr>
+                <tr><td><code>kubectl delete volumesnapshot name</code></td><td>Delete snapshot</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <p><strong>Requirement:</strong> Volume snapshots require the CSI snapshot controller and CRDs to be installed. Most managed Kubernetes services (GKE, EKS, AKS) have this pre-installed.</p>
           </div>
         </div>
 

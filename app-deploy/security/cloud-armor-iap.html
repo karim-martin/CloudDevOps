@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure Cloud Armor WAF and Identity-Aware Proxy for GKE application security.">
+  <title>Cloud Armor & IAP | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./workload-identity.html">Workload Identity</a></li>
+        <li><a href="./cloud-armor-iap.html" class="active">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Security</a></li><li aria-current="page">Cloud Armor & IAP</li></ol></nav>
+        <header class="article-header"><h1>Cloud Armor & IAP</h1></header>
+
+        <div class="article-body">
+          <p>Protect your application with Cloud Armor WAF (Web Application Firewall) for DDoS protection and OWASP rules, and Identity-Aware Proxy (IAP) for Google-authenticated access.</p>
+
+          <h2 id="cloud-armor">Cloud Armor</h2>
+          <p>Cloud Armor provides edge security at the load balancer level.</p>
+
+          <h3>Create Security Policy</h3>
+          <pre><code class="language-bash"># Create a security policy
+gcloud compute security-policies create app-security-policy \
+    --description="Security policy for app"
+
+# View the policy
+gcloud compute security-policies describe app-security-policy</code></pre>
+
+          <h3>Add OWASP Rules</h3>
+          <p>Preconfigured rules for common web attacks.</p>
+          <pre><code class="language-bash"># SQL Injection protection
+gcloud compute security-policies rules create 1000 \
+    --security-policy=app-security-policy \
+    --expression="evaluatePreconfiguredExpr('sqli-v33-stable')" \
+    --action=deny-403 \
+    --description="SQL Injection protection"
+
+# Cross-site scripting (XSS) protection
+gcloud compute security-policies rules create 1001 \
+    --security-policy=app-security-policy \
+    --expression="evaluatePreconfiguredExpr('xss-v33-stable')" \
+    --action=deny-403 \
+    --description="XSS protection"
+
+# Local file inclusion protection
+gcloud compute security-policies rules create 1002 \
+    --security-policy=app-security-policy \
+    --expression="evaluatePreconfiguredExpr('lfi-v33-stable')" \
+    --action=deny-403 \
+    --description="Local file inclusion protection"
+
+# Remote file inclusion protection
+gcloud compute security-policies rules create 1003 \
+    --security-policy=app-security-policy \
+    --expression="evaluatePreconfiguredExpr('rfi-v33-stable')" \
+    --action=deny-403 \
+    --description="Remote file inclusion protection"
+
+# Remote code execution protection
+gcloud compute security-policies rules create 1004 \
+    --security-policy=app-security-policy \
+    --expression="evaluatePreconfiguredExpr('rce-v33-stable')" \
+    --action=deny-403 \
+    --description="Remote code execution protection"</code></pre>
+
+          <h3>Rate Limiting</h3>
+          <pre><code class="language-bash"># Rate limit: 100 requests per minute per IP
+gcloud compute security-policies rules create 2000 \
+    --security-policy=app-security-policy \
+    --src-ip-ranges="*" \
+    --action=throttle \
+    --rate-limit-threshold-count=100 \
+    --rate-limit-threshold-interval-sec=60 \
+    --conform-action=allow \
+    --exceed-action=deny-429 \
+    --enforce-on-key=IP \
+    --description="Rate limiting"</code></pre>
+
+          <h3>Geo-Blocking (Optional)</h3>
+          <pre><code class="language-bash"># Block specific countries
+gcloud compute security-policies rules create 3000 \
+    --security-policy=app-security-policy \
+    --expression="origin.region_code == 'CN' || origin.region_code == 'RU'" \
+    --action=deny-403 \
+    --description="Block traffic from specific countries"
+
+# Allow only specific countries
+gcloud compute security-policies rules create 3001 \
+    --security-policy=app-security-policy \
+    --expression="origin.region_code != 'US' && origin.region_code != 'CA'" \
+    --action=deny-403 \
+    --description="Allow only US and Canada"</code></pre>
+
+          <h3>IP Allowlist/Blocklist</h3>
+          <pre><code class="language-bash"># Block specific IPs
+gcloud compute security-policies rules create 4000 \
+    --security-policy=app-security-policy \
+    --src-ip-ranges="1.2.3.4/32,5.6.7.0/24" \
+    --action=deny-403 \
+    --description="Block malicious IPs"
+
+# Allow only specific IPs (for admin endpoints)
+gcloud compute security-policies rules create 4001 \
+    --security-policy=app-security-policy \
+    --expression="request.path.startsWith('/admin') && !inIpRange(origin.ip, '10.0.0.0/8')" \
+    --action=deny-403 \
+    --description="Admin access from internal IPs only"</code></pre>
+
+          <h2 id="attach-policy">Attach Policy to Backend</h2>
+          <pre><code class="language-bash"># List backend services to find the correct one
+gcloud compute backend-services list --global
+
+# The backend service name follows pattern: k8s1-HASH-NAMESPACE-SERVICE-PORT-HASH
+# Example: k8s1-abc123-app-react-frontend-80-def456
+
+# Attach security policy to frontend backend
+gcloud compute backend-services update BACKEND_SERVICE_NAME \
+    --global \
+    --security-policy=app-security-policy
+
+# Verify attachment
+gcloud compute backend-services describe BACKEND_SERVICE_NAME \
+    --global \
+    --format='value(securityPolicy)'</code></pre>
+
+          <h3>Using BackendConfig (Kubernetes way)</h3>
+          <pre><code class="language-yaml"># k8s/networking/backend-config.yaml (updated)
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: app-backend-config
+  namespace: app
+spec:
+  securityPolicy:
+    name: app-security-policy
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /health
+    port: 8080
+  logging:
+    enable: true
+    sampleRate: 1.0</code></pre>
+
+          <h2 id="view-logs">View Cloud Armor Logs</h2>
+          <pre><code class="language-bash"># View blocked requests
+gcloud logging read "resource.type=http_load_balancer AND \
+    jsonPayload.enforcedSecurityPolicy.outcome='DENY'" \
+    --limit=50 \
+    --format="table(timestamp,jsonPayload.enforcedSecurityPolicy.name,jsonPayload.enforcedSecurityPolicy.matchedRule,httpRequest.remoteIp)"
+
+# View all Cloud Armor decisions
+gcloud logging read "resource.type=http_load_balancer AND \
+    jsonPayload.enforcedSecurityPolicy.name:app-security-policy" \
+    --limit=100</code></pre>
+
+          <h2 id="iap">Identity-Aware Proxy (IAP)</h2>
+          <p>IAP adds Google authentication in front of your application.</p>
+
+          <h3>Enable IAP API</h3>
+          <pre><code class="language-bash"># Enable IAP API
+gcloud services enable iap.googleapis.com
+
+# Configure OAuth consent screen (required once per project)
+# Go to: https://console.cloud.google.com/apis/credentials/consent</code></pre>
+
+          <h3>Create OAuth Credentials</h3>
+          <pre><code class="language-bash"># Create OAuth 2.0 credentials
+# 1. Go to: https://console.cloud.google.com/apis/credentials
+# 2. Create Credentials > OAuth client ID
+# 3. Application type: Web application
+# 4. Name: "IAP Client"
+# 5. Authorized redirect URIs:
+#    https://iap.googleapis.com/v1/oauth/clientIds/CLIENT_ID:handleRedirect
+# 6. Save the Client ID and Client Secret</code></pre>
+
+          <h3>Enable IAP on Backend</h3>
+          <pre><code class="language-bash"># Enable IAP for the backend service
+gcloud iap web enable \
+    --resource-type=backend-services \
+    --service=BACKEND_SERVICE_NAME \
+    --oauth2-client-id=CLIENT_ID \
+    --oauth2-client-secret=CLIENT_SECRET
+
+# Or via BackendConfig</code></pre>
+
+          <h3>BackendConfig with IAP</h3>
+          <pre><code class="language-yaml"># k8s/security/backend-config-iap.yaml
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: iap-backend-config
+  namespace: app
+spec:
+  iap:
+    enabled: true
+    oauthclientCredentials:
+      secretName: iap-oauth-secret
+  securityPolicy:
+    name: app-security-policy</code></pre>
+
+          <pre><code class="language-bash"># Create secret with OAuth credentials
+kubectl create secret generic iap-oauth-secret \
+    --namespace=app \
+    --from-literal=client_id=YOUR_CLIENT_ID \
+    --from-literal=client_secret=YOUR_CLIENT_SECRET</code></pre>
+
+          <h3>Grant IAP Access</h3>
+          <pre><code class="language-bash"># Allow specific users
+gcloud iap web add-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=BACKEND_SERVICE_NAME \
+    --member="user:user@example.com" \
+    --role="roles/iap.httpsResourceAccessor"
+
+# Allow all users in a domain
+gcloud iap web add-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=BACKEND_SERVICE_NAME \
+    --member="domain:example.com" \
+    --role="roles/iap.httpsResourceAccessor"
+
+# Allow a Google group
+gcloud iap web add-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=BACKEND_SERVICE_NAME \
+    --member="group:team@example.com" \
+    --role="roles/iap.httpsResourceAccessor"</code></pre>
+
+          <h2 id="iap-headers">Reading IAP Headers in Application</h2>
+          <p>IAP adds headers with authenticated user information.</p>
+          <pre><code class="language-csharp">// .NET - Read IAP user information
+[ApiController]
+public class UserController : ControllerBase
+{
+    [HttpGet("whoami")]
+    public IActionResult WhoAmI()
+    {
+        // IAP adds these headers
+        var userEmail = Request.Headers["X-Goog-Authenticated-User-Email"]
+            .ToString().Replace("accounts.google.com:", "");
+        var userId = Request.Headers["X-Goog-Authenticated-User-Id"]
+            .ToString().Replace("accounts.google.com:", "");
+
+        return Ok(new {
+            Email = userEmail,
+            UserId = userId
+        });
+    }
+}</code></pre>
+
+          <h2 id="preconfigured-rules">Cloud Armor Preconfigured Rules</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Rule</th><th>Protection</th></tr></thead>
+              <tbody>
+                <tr><td><code>sqli-v33-stable</code></td><td>SQL Injection</td></tr>
+                <tr><td><code>xss-v33-stable</code></td><td>Cross-site Scripting</td></tr>
+                <tr><td><code>lfi-v33-stable</code></td><td>Local File Inclusion</td></tr>
+                <tr><td><code>rfi-v33-stable</code></td><td>Remote File Inclusion</td></tr>
+                <tr><td><code>rce-v33-stable</code></td><td>Remote Code Execution</td></tr>
+                <tr><td><code>methodenforcement-v33-stable</code></td><td>Method Enforcement</td></tr>
+                <tr><td><code>scannerdetection-v33-stable</code></td><td>Scanner Detection</td></tr>
+                <tr><td><code>protocolattack-v33-stable</code></td><td>Protocol Attack</td></tr>
+                <tr><td><code>php-v33-stable</code></td><td>PHP Injection</td></tr>
+                <tr><td><code>sessionfixation-v33-stable</code></td><td>Session Fixation</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>403 from Cloud Armor</td><td>Check security policy logs for matched rule</td></tr>
+                <tr><td>429 rate limited</td><td>Increase rate limit or add IP to allowlist</td></tr>
+                <tr><td>IAP redirect loop</td><td>Verify OAuth redirect URI configuration</td></tr>
+                <tr><td>IAP 403 forbidden</td><td>Check user has iap.httpsResourceAccessor role</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Check security policy rules
+gcloud compute security-policies rules list \
+    --policy=app-security-policy
+
+# View detailed policy
+gcloud compute security-policies describe app-security-policy --format=yaml
+
+# Test a specific rule (dry run)
+gcloud compute security-policies rules describe 1000 \
+    --policy=app-security-policy
+
+# Check IAP status
+gcloud iap web get-iam-policy \
+    --resource-type=backend-services \
+    --service=BACKEND_SERVICE_NAME</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Rule Priority</div>
+            <p>Cloud Armor rules are evaluated by priority (lowest number first). Put deny rules at lower priorities than allow rules. The default rule (priority 2147483647) should typically be "allow" to permit legitimate traffic.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Testing WAF Rules</div>
+            <p>Test WAF rules in preview mode first by using <code>--action=preview</code>. This logs what would be blocked without actually blocking. Review logs before switching to <code>deny-403</code>.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">IAP vs Application Auth</div>
+            <p>IAP provides authentication at the edge. You may still need application-level authorization to control what authenticated users can do. IAP ensures users are who they claim to be; your app controls what they can access.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./workload-identity.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Workload Identity</span></a>
+          <a href="../operations/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Operations</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

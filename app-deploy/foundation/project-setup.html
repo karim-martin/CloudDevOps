@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Project Setup - create project, enable APIs, and configure IAM.">
+  <title>Project Setup | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./project-setup.html" class="active">Project Setup</a></li>
+        <li><a href="./networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Foundation</a></li><li aria-current="page">Project Setup</li></ol></nav>
+        <header class="article-header"><h1>Project Setup</h1></header>
+
+        <div class="article-body">
+          <p>Create a GCP project, enable required APIs, and configure IAM for your application deployment.</p>
+
+          <h2 id="create-project">Create GCP Project</h2>
+          <pre><code class="language-bash"># Set your project variables
+export PROJECT_ID="my-app-project-$(date +%s)"
+export REGION="us-central1"
+export ZONE="us-central1-a"
+
+# Create new project
+gcloud projects create $PROJECT_ID --name="My App Project"
+
+# Set as default project
+gcloud config set project $PROJECT_ID
+
+# Link billing account (required for most services)
+# List available billing accounts
+gcloud billing accounts list
+
+# Link billing (replace BILLING_ACCOUNT_ID)
+gcloud billing projects link $PROJECT_ID --billing-account=BILLING_ACCOUNT_ID</code></pre>
+
+          <h2 id="enable-apis">Enable Required APIs</h2>
+          <p>Enable all APIs needed for this deployment:</p>
+          <pre><code class="language-bash"># Enable APIs (this may take a few minutes)
+gcloud services enable \
+    container.googleapis.com \
+    sqladmin.googleapis.com \
+    storage.googleapis.com \
+    artifactregistry.googleapis.com \
+    cloudbuild.googleapis.com \
+    servicenetworking.googleapis.com \
+    cloudresourcemanager.googleapis.com \
+    iam.googleapis.com \
+    iamcredentials.googleapis.com \
+    compute.googleapis.com \
+    logging.googleapis.com \
+    monitoring.googleapis.com
+
+# Verify enabled APIs
+gcloud services list --enabled</code></pre>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>API</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>container.googleapis.com</td><td>Google Kubernetes Engine</td></tr>
+                <tr><td>sqladmin.googleapis.com</td><td>Cloud SQL Admin</td></tr>
+                <tr><td>storage.googleapis.com</td><td>Cloud Storage</td></tr>
+                <tr><td>artifactregistry.googleapis.com</td><td>Container Registry</td></tr>
+                <tr><td>cloudbuild.googleapis.com</td><td>Cloud Build (optional)</td></tr>
+                <tr><td>servicenetworking.googleapis.com</td><td>VPC peering for Cloud SQL</td></tr>
+                <tr><td>compute.googleapis.com</td><td>Compute Engine (networking)</td></tr>
+                <tr><td>iam.googleapis.com</td><td>Identity and Access Management</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="artifact-registry">Create Artifact Registry</h2>
+          <p>Create a Docker repository to store your container images:</p>
+          <pre><code class="language-bash"># Create Artifact Registry repository
+gcloud artifacts repositories create app-repo \
+    --repository-format=docker \
+    --location=$REGION \
+    --description="Docker repository for app images"
+
+# Configure Docker to authenticate with Artifact Registry
+gcloud auth configure-docker $REGION-docker.pkg.dev
+
+# Verify repository
+gcloud artifacts repositories list</code></pre>
+
+          <h2 id="service-accounts">Create Service Accounts</h2>
+          <p>Create dedicated service accounts for different purposes:</p>
+
+          <h3>Application Service Account</h3>
+          <pre><code class="language-bash"># Service account for workloads running in GKE
+gcloud iam service-accounts create app-workload-sa \
+    --display-name="App Workload Service Account" \
+    --description="Service account for GKE workloads"
+
+# Store the email for later use
+export APP_SA_EMAIL="app-workload-sa@${PROJECT_ID}.iam.gserviceaccount.com"
+echo $APP_SA_EMAIL</code></pre>
+
+          <h3>GitHub Actions Service Account</h3>
+          <pre><code class="language-bash"># Service account for CI/CD pipelines
+gcloud iam service-accounts create github-actions-sa \
+    --display-name="GitHub Actions Service Account" \
+    --description="Service account for GitHub Actions CI/CD"
+
+export GITHUB_SA_EMAIL="github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com"</code></pre>
+
+          <h2 id="iam-roles">Assign IAM Roles</h2>
+
+          <h3>Application Service Account Roles</h3>
+          <pre><code class="language-bash"># Cloud SQL Client - for database access
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$APP_SA_EMAIL" \
+    --role="roles/cloudsql.client"
+
+# Storage Object Admin - for file uploads
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$APP_SA_EMAIL" \
+    --role="roles/storage.objectAdmin"
+
+# Logging Writer - for application logs
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$APP_SA_EMAIL" \
+    --role="roles/logging.logWriter"
+
+# Monitoring Metric Writer - for custom metrics
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$APP_SA_EMAIL" \
+    --role="roles/monitoring.metricWriter"</code></pre>
+
+          <h3>GitHub Actions Service Account Roles</h3>
+          <pre><code class="language-bash"># Artifact Registry Writer - push images
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GITHUB_SA_EMAIL" \
+    --role="roles/artifactregistry.writer"
+
+# GKE Developer - deploy to cluster
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GITHUB_SA_EMAIL" \
+    --role="roles/container.developer"
+
+# Service Account User - use other service accounts
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GITHUB_SA_EMAIL" \
+    --role="roles/iam.serviceAccountUser"</code></pre>
+
+          <h2 id="common-roles">Common IAM Roles Reference</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Role</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>roles/cloudsql.client</td><td>Connect to Cloud SQL instances</td></tr>
+                <tr><td>roles/storage.objectAdmin</td><td>Full control of Cloud Storage objects</td></tr>
+                <tr><td>roles/storage.objectViewer</td><td>Read-only access to Storage objects</td></tr>
+                <tr><td>roles/container.developer</td><td>Deploy to GKE clusters</td></tr>
+                <tr><td>roles/container.admin</td><td>Full control of GKE clusters</td></tr>
+                <tr><td>roles/artifactregistry.writer</td><td>Push images to Artifact Registry</td></tr>
+                <tr><td>roles/logging.logWriter</td><td>Write logs to Cloud Logging</td></tr>
+                <tr><td>roles/monitoring.metricWriter</td><td>Write metrics to Cloud Monitoring</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="verify-setup">Verify Setup</h2>
+          <pre><code class="language-bash"># List service accounts
+gcloud iam service-accounts list
+
+# Check IAM policy
+gcloud projects get-iam-policy $PROJECT_ID \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:serviceAccount:*-sa@" \
+    --format="table(bindings.role, bindings.members)"
+
+# Verify Artifact Registry
+gcloud artifacts repositories describe app-repo --location=$REGION</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Security Best Practice</div>
+            <p>Never use the default compute service account or overly permissive roles like Owner or Editor. Create dedicated service accounts with minimum required permissions.</p>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Save Your Variables</div>
+            <p>Save these environment variables for use in later sections:</p>
+            <pre><code class="language-bash">echo "export PROJECT_ID=$PROJECT_ID" >> ~/.bashrc
+echo "export REGION=$REGION" >> ~/.bashrc
+echo "export ZONE=$ZONE" >> ~/.bashrc
+echo "export APP_SA_EMAIL=$APP_SA_EMAIL" >> ~/.bashrc</code></pre>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Foundation Overview</span></a>
+          <a href="./networking.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deploy React frontend to GKE with Deployment, Service, and ConfigMap.">
+  <title>React Frontend | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./containerize.html">Containerize</a></li>
+        <li><a href="./react-frontend.html" class="active">React Frontend</a></li>
+        <li><a href="./dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Deployment</a></li><li aria-current="page">React Frontend</li></ol></nav>
+        <header class="article-header"><h1>Deploy React Frontend</h1></header>
+
+        <div class="article-body">
+          <p>Deploy the React frontend to GKE with 3 replicas, ConfigMap for configuration, and a ClusterIP Service.</p>
+
+          <h2 id="deployment-yaml">Deployment</h2>
+          <pre><code class="language-yaml"># k8s/frontend/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend
+  namespace: app
+  labels:
+    app: react-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: react-frontend
+  template:
+    metadata:
+      labels:
+        app: react-frontend
+    spec:
+      containers:
+      - name: react
+        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/frontend:latest
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: frontend-config</code></pre>
+
+          <h2 id="service-yaml">Service</h2>
+          <pre><code class="language-yaml"># k8s/frontend/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend
+  namespace: app
+  labels:
+    app: react-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: react-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http</code></pre>
+
+          <h2 id="configmap-yaml">ConfigMap</h2>
+          <pre><code class="language-yaml"># k8s/frontend/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: app
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        location /api/ {
+            proxy_pass http://dotnet-api:8080/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }</code></pre>
+
+          <h2 id="deploy-frontend">Deploy to Cluster</h2>
+          <pre><code class="language-bash"># Ensure you're in the app namespace
+kubectl config set-context --current --namespace=app
+
+# Apply ConfigMap first
+kubectl apply -f k8s/frontend/configmap.yaml
+
+# Apply Deployment
+kubectl apply -f k8s/frontend/deployment.yaml
+
+# Apply Service
+kubectl apply -f k8s/frontend/service.yaml
+
+# Or apply all at once
+kubectl apply -f k8s/frontend/</code></pre>
+
+          <h2 id="verify-deployment">Verify Deployment</h2>
+          <pre><code class="language-bash"># Check deployment status
+kubectl get deployment react-frontend -n app
+
+# Check pods are running
+kubectl get pods -l app=react-frontend -n app
+
+# Check pod details
+kubectl describe pod -l app=react-frontend -n app
+
+# Check service
+kubectl get service react-frontend -n app
+
+# View logs
+kubectl logs -l app=react-frontend -n app --tail=50
+
+# Watch rollout status
+kubectl rollout status deployment/react-frontend -n app</code></pre>
+
+          <h2 id="test-frontend">Test Frontend</h2>
+          <pre><code class="language-bash"># Port forward to test locally
+kubectl port-forward service/react-frontend 3000:80 -n app
+
+# In another terminal, test
+curl http://localhost:3000
+curl http://localhost:3000/health
+
+# Test from inside the cluster
+kubectl run test-curl --rm -it --restart=Never --image=curlimages/curl -- \
+    curl http://react-frontend.app.svc.cluster.local/health</code></pre>
+
+          <h2 id="update-deployment">Update Deployment</h2>
+          <pre><code class="language-bash"># Update image (triggers rolling update)
+kubectl set image deployment/react-frontend \
+    react=us-central1-docker.pkg.dev/PROJECT_ID/app-repo/frontend:v2 \
+    -n app
+
+# Or update via YAML edit
+kubectl edit deployment react-frontend -n app
+
+# Check rollout status
+kubectl rollout status deployment/react-frontend -n app
+
+# Rollback if needed
+kubectl rollout undo deployment/react-frontend -n app
+
+# View rollout history
+kubectl rollout history deployment/react-frontend -n app</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>kubectl get pods -l app=react-frontend</code></td><td>List frontend pods</td></tr>
+                <tr><td><code>kubectl logs -f deployment/react-frontend</code></td><td>Stream logs</td></tr>
+                <tr><td><code>kubectl exec -it POD -- sh</code></td><td>Shell into pod</td></tr>
+                <tr><td><code>kubectl describe pod POD</code></td><td>Pod details</td></tr>
+                <tr><td><code>kubectl scale deployment/react-frontend --replicas=5</code></td><td>Scale manually</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Nginx Proxy</div>
+            <p>The nginx config proxies /api/* requests to the backend service (dotnet-api:8080). This allows the frontend to call APIs without CORS issues, as both appear to be from the same origin.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Replace PROJECT_ID</div>
+            <p>Remember to replace PROJECT_ID in the image path with your actual GCP project ID before applying the manifests.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./containerize.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Containerize</span></a>
+          <a href="./dotnet-backend.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">.NET Backend</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

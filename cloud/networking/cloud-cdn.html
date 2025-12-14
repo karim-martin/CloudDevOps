@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud CDN - Content delivery network.">
+  <title>Cloud CDN | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./vpc.html">VPC</a></li>
+        <li><a href="./load-balancing.html">Load Balancing</a></li>
+        <li><a href="./cloud-cdn.html" class="active">Cloud CDN</a></li>
+        <li><a href="./cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud CDN</h1></header>
+        <div class="article-body">
+          <p>Cloud CDN caches content at Google's edge locations for faster delivery.</p>
+
+          <h2>Enable CDN</h2>
+          <pre><code class="language-bash"># Enable on backend service
+gcloud compute backend-services update my-backend \
+    --enable-cdn \
+    --global</code></pre>
+
+          <h2>GKE BackendConfig</h2>
+          <pre><code class="language-yaml">apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: cdn-config
+spec:
+  cdn:
+    enabled: true
+    cachePolicy:
+      includeHost: true
+      includeProtocol: true
+      includeQueryString: false</code></pre>
+
+          <h2>Cache Modes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Mode</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>CACHE_ALL_STATIC</td><td>Cache static content</td></tr>
+                <tr><td>USE_ORIGIN_HEADERS</td><td>Respect Cache-Control</td></tr>
+                <tr><td>FORCE_CACHE_ALL</td><td>Cache everything</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Cache Invalidation</h2>
+          <pre><code class="language-bash"># Invalidate path
+gcloud compute url-maps invalidate-cdn-cache my-url-map \
+    --path="/images/*" \
+    --global
+
+# Invalidate all
+gcloud compute url-maps invalidate-cdn-cache my-url-map \
+    --path="/*" \
+    --global</code></pre>
+
+          <h2>TTL Settings</h2>
+          <pre><code class="language-bash">gcloud compute backend-services update my-backend \
+    --enable-cdn \
+    --default-ttl=3600 \
+    --max-ttl=86400 \
+    --global</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

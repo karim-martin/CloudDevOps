@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="End-to-end guide for deploying a React and .NET application to Google Cloud GKE.">
+  <title>App Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../devops/" class="nav-link">DevOps</a><a href="../cloud/" class="nav-link">Cloud</a><a href="./" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Overview</a></li>
+        <li><a href="./foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="./foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/">Overview</a></li>
+        <li><a href="./infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="./infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/ingress.html">Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="./security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="./operations/scaling.html">Scaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../">Home</a></li><li aria-current="page">App Deploy</li></ol></nav>
+        <header class="article-header"><h1>Deploy a Full-Stack Application to GCP</h1></header>
+
+        <div class="article-body">
+          <p>This guide walks you through deploying a production-ready React + .NET 8 application to Google Kubernetes Engine (GKE). Perfect for developers new to Google Cloud who want to deploy real applications with proper security, scaling, and CI/CD.</p>
+
+          <h2 id="architecture">Application Architecture</h2>
+          <pre><code>                    Internet
+                       │
+                       ▼
+              ┌─────────────────┐
+              │  Load Balancer  │
+              │   (HTTPS/SSL)   │
+              └────────┬────────┘
+                       │
+              ┌────────┴────────┐
+              │     Ingress     │
+              │  (Path Routing) │
+              └────────┬────────┘
+                       │
+         ┌─────────────┴─────────────┐
+         │                           │
+         ▼                           ▼
+┌─────────────────┐       ┌─────────────────┐
+│  React Frontend │       │  .NET 8 Backend │
+│   (3 replicas)  │──────▶│   (3 replicas)  │
+│     Port 80     │       │    Port 8080    │
+└─────────────────┘       └────────┬────────┘
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │                             │
+                    ▼                             ▼
+           ┌─────────────────┐         ┌─────────────────┐
+           │    Cloud SQL    │         │  Cloud Storage  │
+           │  (MySQL/MSSQL)  │         │   (File Store)  │
+           └─────────────────┘         └─────────────────┘</code></pre>
+
+          <h2 id="what-youll-build">What You'll Build</h2>
+          <ul>
+            <li><strong>React Frontend</strong> - User-facing web application (3 instances for high availability)</li>
+            <li><strong>.NET 8 Backend</strong> - REST API services (3 instances with auto-scaling)</li>
+            <li><strong>Cloud SQL</strong> - Managed MySQL or MSSQL database with private IP</li>
+            <li><strong>Cloud Storage</strong> - File storage for uploads and static assets</li>
+            <li><strong>GKE Cluster</strong> - Kubernetes cluster with Workload Identity</li>
+            <li><strong>HTTPS/SSL</strong> - Google-managed certificates with automatic renewal</li>
+            <li><strong>CI/CD Pipeline</strong> - GitHub Actions for automated deployments</li>
+          </ul>
+
+          <h2 id="learning-path">Learning Path</h2>
+          <div class="card-grid">
+            <a href="./foundation/" class="card card-link">
+              <h3 class="card-title">1. Foundation</h3>
+              <p class="card-description">GCP project setup, IAM configuration, and VPC networking.</p>
+            </a>
+            <a href="./infrastructure/" class="card card-link">
+              <h3 class="card-title">2. Infrastructure</h3>
+              <p class="card-description">GKE cluster, Cloud SQL database, and storage setup.</p>
+            </a>
+            <a href="./deployment/" class="card card-link">
+              <h3 class="card-title">3. Deployment</h3>
+              <p class="card-description">Containerize apps and deploy to Kubernetes.</p>
+            </a>
+            <a href="./networking/" class="card card-link">
+              <h3 class="card-title">4. Networking</h3>
+              <p class="card-description">Load balancing, Ingress, and SSL certificates.</p>
+            </a>
+            <a href="./security/" class="card card-link">
+              <h3 class="card-title">5. Security</h3>
+              <p class="card-description">Workload Identity, Cloud Armor, and IAP.</p>
+            </a>
+            <a href="./operations/" class="card card-link">
+              <h3 class="card-title">6. Operations</h3>
+              <p class="card-description">CI/CD pipelines, scaling, and monitoring.</p>
+            </a>
+          </div>
+
+          <h2 id="technologies">Technologies Used</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Category</th><th>Technology</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Frontend</td><td>React 18+</td><td>User interface</td></tr>
+                <tr><td>Backend</td><td>.NET 8</td><td>REST API</td></tr>
+                <tr><td>Database</td><td>Cloud SQL (MySQL/MSSQL)</td><td>Relational data</td></tr>
+                <tr><td>Storage</td><td>Cloud Storage</td><td>Files and uploads</td></tr>
+                <tr><td>Container</td><td>Docker</td><td>Application packaging</td></tr>
+                <tr><td>Orchestration</td><td>GKE (Kubernetes)</td><td>Container management</td></tr>
+                <tr><td>CI/CD</td><td>GitHub Actions</td><td>Automated deployments</td></tr>
+                <tr><td>Security</td><td>Workload Identity</td><td>Keyless authentication</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Time Estimate</div>
+            <p>Following this guide takes approximately 4-6 hours to complete. You can complete sections independently if you already have parts of the infrastructure in place.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Cost Warning</div>
+            <p>This guide creates billable GCP resources. Estimated cost: $5-15/day for a development cluster. Remember to delete resources when done, or use GCP's $300 free credits for new accounts.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../cloud/gcp-gke/monitoring-logging.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">GKE Monitoring</span></a>
+          <a href="./prerequisites.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Prerequisites</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>

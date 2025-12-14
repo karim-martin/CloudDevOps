@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Database Services - Cloud SQL, Firestore, and Memorystore for container workloads.">
+  <title>Databases | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./firestore.html">Firestore</a></li>
+        <li><a href="./memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li aria-current="page">Databases</li></ol></nav>
+        <header class="article-header"><h1>Database Services</h1></header>
+
+        <div class="article-body">
+          <p>GCP offers managed database services for container workloads - from relational databases to NoSQL and in-memory caching.</p>
+
+          <h2>Database Options</h2>
+          <div class="card-grid">
+            <a href="./cloud-sql.html" class="card card-link">
+              <h3 class="card-title">Cloud SQL</h3>
+              <p class="card-description">Managed MySQL, PostgreSQL, and SQL Server with automatic backups and HA.</p>
+            </a>
+            <a href="./firestore.html" class="card card-link">
+              <h3 class="card-title">Firestore</h3>
+              <p class="card-description">Serverless NoSQL document database with real-time sync and offline support.</p>
+            </a>
+            <a href="./memorystore.html" class="card card-link">
+              <h3 class="card-title">Memorystore</h3>
+              <p class="card-description">Managed Redis and Memcached for caching and session storage.</p>
+            </a>
+          </div>
+
+          <h2>Choosing the Right Database</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Use Case</th><th>Recommended Service</th></tr></thead>
+              <tbody>
+                <tr><td>Traditional relational data, complex queries</td><td><strong>Cloud SQL</strong> (MySQL/PostgreSQL)</td></tr>
+                <tr><td>Real-time sync, mobile/web apps</td><td><strong>Firestore</strong></td></tr>
+                <tr><td>Session storage, caching</td><td><strong>Memorystore Redis</strong></td></tr>
+                <tr><td>Simple key-value caching</td><td><strong>Memorystore Memcached</strong></td></tr>
+                <tr><td>Enterprise SQL Server workloads</td><td><strong>Cloud SQL for SQL Server</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Comparison</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Cloud SQL</th><th>Firestore</th><th>Memorystore</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Type</strong></td><td>Relational</td><td>Document (NoSQL)</td><td>In-memory</td></tr>
+                <tr><td><strong>Query Language</strong></td><td>SQL</td><td>SDK/API</td><td>Redis/Memcached commands</td></tr>
+                <tr><td><strong>Scaling</strong></td><td>Vertical + Read replicas</td><td>Automatic</td><td>Vertical</td></tr>
+                <tr><td><strong>Transactions</strong></td><td>Full ACID</td><td>Limited</td><td>Redis only</td></tr>
+                <tr><td><strong>HA</strong></td><td>Regional failover</td><td>Built-in</td><td>Standard tier</td></tr>
+                <tr><td><strong>Serverless</strong></td><td>No (always running)</td><td>Yes</td><td>No</td></tr>
+                <tr><td><strong>Minimum cost</strong></td><td>~$10/mo</td><td>Free tier</td><td>~$35/mo</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Connecting from Containers</h2>
+          <h3>GKE</h3>
+          <pre><code class="language-bash"># Cloud SQL: Use private IP or Cloud SQL Auth Proxy
+# Firestore: Use client library with Workload Identity
+# Memorystore: Use private IP (VPC only)</code></pre>
+
+          <h3>Cloud Run</h3>
+          <pre><code class="language-bash"># Cloud SQL: Built-in Unix socket connection
+gcloud run deploy my-service \
+    --add-cloudsql-instances=PROJECT:REGION:INSTANCE
+
+# Firestore: Use client library (automatic auth)
+
+# Memorystore: Requires VPC connector
+gcloud run deploy my-service \
+    --vpc-connector=my-connector</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Private Connectivity</div>
+            <p>For production workloads, use private IP addresses. Cloud SQL, Firestore, and Memorystore all support VPC-native connectivity for secure, low-latency access from GKE and Cloud Run.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../compute/cloud-run.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud Run</span></a>
+          <a href="./cloud-sql.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud SQL</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

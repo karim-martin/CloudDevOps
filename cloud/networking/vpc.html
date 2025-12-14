@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VPC - Virtual Private Cloud networking.">
+  <title>VPC | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./vpc.html" class="active">VPC</a></li>
+        <li><a href="./load-balancing.html">Load Balancing</a></li>
+        <li><a href="./cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="./cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>VPC</h1></header>
+        <div class="article-body">
+          <p>Virtual Private Cloud provides isolated network environments.</p>
+          <h2>Create VPC</h2>
+          <pre><code class="language-bash"># Create custom VPC
+gcloud compute networks create my-vpc --subnet-mode=custom
+
+# Create subnet
+gcloud compute networks subnets create my-subnet \
+    --network=my-vpc \
+    --region=us-central1 \
+    --range=10.0.0.0/20
+
+# Create subnet with secondary ranges (for GKE)
+gcloud compute networks subnets create gke-subnet \
+    --network=my-vpc \
+    --region=us-central1 \
+    --range=10.0.0.0/20 \
+    --secondary-range=pods=10.4.0.0/14,services=10.8.0.0/20</code></pre>
+
+          <h2>Firewall Rules</h2>
+          <pre><code class="language-bash"># Allow internal traffic
+gcloud compute firewall-rules create allow-internal \
+    --network=my-vpc \
+    --allow=tcp,udp,icmp \
+    --source-ranges=10.0.0.0/8
+
+# Allow SSH from IAP
+gcloud compute firewall-rules create allow-ssh-iap \
+    --network=my-vpc \
+    --allow=tcp:22 \
+    --source-ranges=35.235.240.0/20
+
+# Allow HTTP/HTTPS
+gcloud compute firewall-rules create allow-http \
+    --network=my-vpc \
+    --allow=tcp:80,tcp:443 \
+    --source-ranges=0.0.0.0/0
+
+# Allow health checks
+gcloud compute firewall-rules create allow-health-checks \
+    --network=my-vpc \
+    --allow=tcp \
+    --source-ranges=35.191.0.0/16,130.211.0.0/22</code></pre>
+
+          <h2>Cloud NAT</h2>
+          <pre><code class="language-bash"># Create Cloud Router
+gcloud compute routers create my-router \
+    --network=my-vpc \
+    --region=us-central1
+
+# Create Cloud NAT
+gcloud compute routers nats create my-nat \
+    --router=my-router \
+    --region=us-central1 \
+    --nat-all-subnet-ip-ranges \
+    --auto-allocate-nat-external-ips</code></pre>
+
+          <h2>Private Service Access</h2>
+          <pre><code class="language-bash"># Allocate IP range for services
+gcloud compute addresses create google-services \
+    --global \
+    --purpose=VPC_PEERING \
+    --prefix-length=16 \
+    --network=my-vpc
+
+# Create private connection
+gcloud services vpc-peerings connect \
+    --service=servicenetworking.googleapis.com \
+    --ranges=google-services \
+    --network=my-vpc</code></pre>
+
+          <h2>Common Commands</h2>
+          <pre><code class="language-bash"># List VPCs
+gcloud compute networks list
+
+# List subnets
+gcloud compute networks subnets list
+
+# List firewall rules
+gcloud compute firewall-rules list</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

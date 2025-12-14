@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Logging - Centralized logging for GCP.">
+  <title>Cloud Logging | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="./cloud-logging.html" class="active">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud Logging</h1></header>
+        <div class="article-body">
+          <p>Cloud Logging collects, stores, and analyzes logs from GKE, Cloud Run, and all GCP services.</p>
+
+          <h2>Log Query Language</h2>
+          <pre><code class="language-sql"># GKE container logs
+resource.type="k8s_container"
+resource.labels.namespace_name="production"
+resource.labels.container_name="api"
+
+# Filter by severity
+resource.type="k8s_container"
+severity>=ERROR
+
+# Search text in logs
+resource.type="k8s_container"
+textPayload:"connection refused"
+
+# JSON payload queries
+resource.type="k8s_container"
+jsonPayload.level="error"
+jsonPayload.userId="12345"
+
+# Time range
+resource.type="k8s_container"
+timestamp>="2024-01-01T00:00:00Z"
+timestamp<="2024-01-02T00:00:00Z"
+
+# Cloud Run logs
+resource.type="cloud_run_revision"
+resource.labels.service_name="my-service"
+
+# Load balancer logs
+resource.type="http_load_balancer"
+httpRequest.status>=500</code></pre>
+
+          <h2>Structured Logging</h2>
+          <pre><code class="language-csharp">// .NET - Structured logging (auto-parsed by Cloud Logging)
+using Microsoft.Extensions.Logging;
+
+logger.LogInformation("Processing order {OrderId} for user {UserId}",
+    orderId, userId);
+
+// Output JSON for Cloud Logging
+// {"message": "Processing order", "orderId": "123", "userId": "456", "severity": "INFO"}</code></pre>
+
+          <pre><code class="language-javascript">// Node.js - Structured logging
+const {Logging} = require('@google-cloud/logging');
+const logging = new Logging();
+const log = logging.log('my-log');
+
+const entry = log.entry(
+  {resource: {type: 'global'}},
+  {
+    message: 'User logged in',
+    userId: '12345',
+    action: 'login'
+  }
+);
+await log.write(entry);</code></pre>
+
+          <h2>Log-Based Metrics</h2>
+          <pre><code class="language-bash"># Create counter metric from logs
+gcloud logging metrics create error-count \
+    --description="Count of error logs" \
+    --log-filter='resource.type="k8s_container" severity=ERROR'
+
+# Create distribution metric
+gcloud logging metrics create request-latency \
+    --description="Request latency distribution" \
+    --log-filter='resource.type="http_load_balancer"' \
+    --bucket-boundaries=0.1,0.5,1,2,5,10
+
+# List metrics
+gcloud logging metrics list</code></pre>
+
+          <h2>Log Sinks (Export)</h2>
+          <pre><code class="language-bash"># Export to Cloud Storage
+gcloud logging sinks create storage-sink \
+    storage.googleapis.com/my-log-bucket \
+    --log-filter='resource.type="k8s_container"'
+
+# Export to BigQuery
+gcloud logging sinks create bq-sink \
+    bigquery.googleapis.com/projects/PROJECT/datasets/logs \
+    --log-filter='resource.type="k8s_container" severity>=WARNING'
+
+# Export to Pub/Sub
+gcloud logging sinks create pubsub-sink \
+    pubsub.googleapis.com/projects/PROJECT/topics/log-topic \
+    --log-filter='resource.type="k8s_container" severity=ERROR'
+
+# List sinks
+gcloud logging sinks list
+
+# Grant sink service account write access
+gcloud projects add-iam-policy-binding PROJECT \
+    --member="serviceAccount:SINK_SERVICE_ACCOUNT" \
+    --role="roles/bigquery.dataEditor"</code></pre>
+
+          <h2>Log Buckets</h2>
+          <pre><code class="language-bash"># Create custom log bucket
+gcloud logging buckets create my-bucket \
+    --location=global \
+    --retention-days=30 \
+    --description="Application logs"
+
+# Update retention
+gcloud logging buckets update my-bucket \
+    --location=global \
+    --retention-days=90
+
+# Create sink to custom bucket
+gcloud logging sinks create app-logs-sink \
+    logging.googleapis.com/projects/PROJECT/locations/global/buckets/my-bucket \
+    --log-filter='resource.type="k8s_container"'</code></pre>
+
+          <h2>Log Router</h2>
+          <pre><code class="language-bash"># Exclusion filter (reduce costs)
+gcloud logging sinks create _Default \
+    --log-filter='NOT resource.type="k8s_container" OR severity>=WARNING'
+
+# Create exclusion
+gcloud logging sinks update _Default \
+    --add-exclusion=name=exclude-debug,filter='severity=DEBUG'</code></pre>
+
+          <h2>Logs Explorer CLI</h2>
+          <pre><code class="language-bash"># Read logs
+gcloud logging read 'resource.type="k8s_container"' \
+    --limit=100 \
+    --format=json
+
+# Stream logs (tail)
+gcloud logging tail 'resource.type="k8s_container" resource.labels.namespace_name="production"'
+
+# Read with time range
+gcloud logging read 'resource.type="k8s_container"' \
+    --freshness=1h
+
+# Write log entry
+gcloud logging write my-log "Test log message" \
+    --severity=INFO \
+    --payload-type=text</code></pre>
+
+          <h2>Log-Based Alerts</h2>
+          <pre><code class="language-bash"># Create alert from log-based metric
+gcloud alpha monitoring policies create \
+    --policy-from-file=log-alert.json</code></pre>
+
+          <pre><code class="language-json">// log-alert.json
+{
+  "displayName": "Error Rate Alert",
+  "conditions": [{
+    "displayName": "Error logs > 10/min",
+    "conditionThreshold": {
+      "filter": "metric.type=\"logging.googleapis.com/user/error-count\"",
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 10,
+      "duration": "60s",
+      "aggregations": [{
+        "alignmentPeriod": "60s",
+        "perSeriesAligner": "ALIGN_RATE"
+      }]
+    }
+  }],
+  "notificationChannels": ["projects/PROJECT/notificationChannels/CHANNEL_ID"]
+}</code></pre>
+
+          <h2>Error Reporting</h2>
+          <pre><code class="language-bash"># Error Reporting automatically groups errors from logs
+# Ensure your application logs include stack traces
+
+# View errors
+gcloud beta error-reporting events list
+
+# Delete error group
+gcloud beta error-reporting events delete</code></pre>
+
+          <h2>Common Commands</h2>
+          <pre><code class="language-bash"># List log names
+gcloud logging logs list
+
+# Delete logs (careful!)
+gcloud logging logs delete LOG_NAME
+
+# Get project logging settings
+gcloud logging settings describe
+
+# Update default retention
+gcloud logging buckets update _Default \
+    --location=global \
+    --retention-days=30</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

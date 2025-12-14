@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure Horizontal Pod Autoscaler and GKE Cluster Autoscaler for automatic scaling.">
+  <title>Scaling | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./ci-cd.html">CI/CD</a></li>
+        <li><a href="./scaling.html" class="active">Scaling</a></li>
+        <li><a href="./monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Operations</a></li><li aria-current="page">Scaling</li></ol></nav>
+        <header class="article-header"><h1>Scaling</h1></header>
+
+        <div class="article-body">
+          <p>Configure automatic scaling with Horizontal Pod Autoscaler (HPA) for pods and Cluster Autoscaler for GKE nodes.</p>
+
+          <h2 id="scaling-overview">Scaling Overview</h2>
+          <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      Traffic Increases                          │
+└─────────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                 Horizontal Pod Autoscaler (HPA)                 │
+│                                                                 │
+│  CPU > 70%  ──────▶  Scale pods from 3 to 6                     │
+│                                                                 │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐                      │
+│  │Pod │ │Pod │ │Pod │ │Pod │ │Pod │ │Pod │                      │
+│  └────┘ └────┘ └────┘ └────┘ └────┘ └────┘                      │
+└─────────────────────────────────┬───────────────────────────────┘
+                                  │
+                                  │ Pods pending (no node space)
+                                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Cluster Autoscaler                           │
+│                                                                 │
+│  Pending pods  ──────▶  Add node to node pool                   │
+│                                                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐            │
+│  │  Node 1  │ │  Node 2  │ │  Node 3  │ │  Node 4  │            │
+│  │  (3 pods)│ │  (3 pods)│ │  (2 pods)│ │  (new)   │            │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘            │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2 id="resource-requests">Step 1: Define Resource Requests</h2>
+          <p>HPA requires resource requests to calculate utilization percentages.</p>
+          <pre><code class="language-yaml"># k8s/backend/deployment.yaml (resources section)
+spec:
+  containers:
+  - name: api
+    image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/backend:latest
+    resources:
+      requests:
+        memory: "128Mi"    # HPA uses this for memory %
+        cpu: "100m"        # HPA uses this for CPU %
+      limits:
+        memory: "512Mi"
+        cpu: "500m"</code></pre>
+
+          <h2 id="hpa-cpu">Step 2: HPA with CPU Scaling</h2>
+          <pre><code class="language-yaml"># k8s/backend/hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dotnet-api-hpa
+  namespace: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dotnet-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70</code></pre>
+
+          <h2 id="hpa-multiple">HPA with Multiple Metrics</h2>
+          <pre><code class="language-yaml"># k8s/backend/hpa-advanced.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dotnet-api-hpa
+  namespace: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dotnet-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  # Scale on CPU utilization
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  # Scale on memory utilization
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Wait 5 min before scaling down
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60              # Remove 10% of pods per minute max
+    scaleUp:
+      stabilizationWindowSeconds: 0    # Scale up immediately
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15              # Double pods every 15 seconds max
+      - type: Pods
+        value: 4
+        periodSeconds: 15              # Or add 4 pods every 15 seconds</code></pre>
+
+          <h2 id="frontend-hpa">Frontend HPA</h2>
+          <pre><code class="language-yaml"># k8s/frontend/hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: react-frontend-hpa
+  namespace: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: react-frontend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70</code></pre>
+
+          <h2 id="apply-hpa">Apply HPA</h2>
+          <pre><code class="language-bash"># Apply HPA configurations
+kubectl apply -f k8s/backend/hpa.yaml
+kubectl apply -f k8s/frontend/hpa.yaml
+
+# Verify HPA
+kubectl get hpa -n app
+
+# Watch HPA status
+kubectl get hpa -n app -w
+
+# Describe HPA for details
+kubectl describe hpa dotnet-api-hpa -n app</code></pre>
+
+          <h2 id="cluster-autoscaler">Cluster Autoscaler</h2>
+          <p>GKE Cluster Autoscaler automatically adds or removes nodes based on pod scheduling needs.</p>
+          <pre><code class="language-bash"># Enable Cluster Autoscaler on existing node pool
+gcloud container clusters update app-cluster \
+    --region=us-central1 \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10 \
+    --node-pool=default-pool
+
+# Or configure per node pool
+gcloud container node-pools update default-pool \
+    --cluster=app-cluster \
+    --region=us-central1 \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10
+
+# Verify autoscaling config
+gcloud container clusters describe app-cluster \
+    --region=us-central1 \
+    --format='yaml(nodePools[].autoscaling)'</code></pre>
+
+          <h2 id="autoscaler-profile">Autoscaler Profile</h2>
+          <pre><code class="language-bash"># Set autoscaler profile (cluster level)
+gcloud container clusters update app-cluster \
+    --region=us-central1 \
+    --autoscaling-profile=optimize-utilization
+
+# Profiles:
+# - balanced (default): Balance availability and cost
+# - optimize-utilization: Prefer smaller cluster, more aggressive scale down</code></pre>
+
+          <h2 id="verify-scaling">Verify Scaling</h2>
+          <pre><code class="language-bash"># Check HPA status
+kubectl get hpa -n app
+# NAME              REFERENCE              TARGETS   MINPODS   MAXPODS   REPLICAS
+# dotnet-api-hpa    Deployment/dotnet-api  45%/70%   3         10        3
+
+# Check current pod resource usage
+kubectl top pods -n app
+
+# Check node resource usage
+kubectl top nodes
+
+# View HPA events
+kubectl describe hpa dotnet-api-hpa -n app | grep -A 10 Events
+
+# View pending pods (Cluster Autoscaler trigger)
+kubectl get pods -n app --field-selector=status.phase=Pending
+
+# View Cluster Autoscaler status
+kubectl -n kube-system describe configmap cluster-autoscaler-status</code></pre>
+
+          <h2 id="load-test">Load Testing</h2>
+          <p>Test scaling with artificial load.</p>
+          <pre><code class="language-bash"># Deploy load generator
+kubectl run load-generator \
+    --image=busybox \
+    --restart=Never \
+    --rm -it -- /bin/sh -c \
+    "while true; do wget -q -O- http://dotnet-api.app.svc.cluster.local:8080/health; done"
+
+# Or use hey for HTTP load testing
+# Install: go install github.com/rakyll/hey@latest
+hey -z 5m -c 100 http://YOUR_INGRESS_IP/api/health
+
+# Watch HPA respond
+kubectl get hpa -n app -w
+
+# Watch pods scale
+kubectl get pods -n app -w</code></pre>
+
+          <h2 id="manual-scaling">Manual Scaling</h2>
+          <pre><code class="language-bash"># Scale deployment manually
+kubectl scale deployment/dotnet-api --replicas=5 -n app
+
+# Note: HPA will override manual scaling if enabled
+# To prevent HPA override, temporarily delete HPA:
+kubectl delete hpa dotnet-api-hpa -n app
+
+# Scale nodes manually (if autoscaler disabled)
+gcloud container clusters resize app-cluster \
+    --node-pool=default-pool \
+    --num-nodes=5 \
+    --region=us-central1</code></pre>
+
+          <h2 id="scaling-policies">Scaling Best Practices</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Practice</th><th>Recommendation</th></tr></thead>
+              <tbody>
+                <tr><td>CPU target</td><td>60-80% (leave headroom for spikes)</td></tr>
+                <tr><td>Min replicas</td><td>At least 2-3 for availability</td></tr>
+                <tr><td>Max replicas</td><td>Based on budget and capacity</td></tr>
+                <tr><td>Scale down stabilization</td><td>300-600 seconds (avoid flapping)</td></tr>
+                <tr><td>Resource requests</td><td>Based on actual usage (monitor first)</td></tr>
+                <tr><td>Node pool sizing</td><td>Right-size VMs for your pod sizes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>HPA shows <unknown>/70%</td><td>Metrics server issue or missing resource requests</td></tr>
+                <tr><td>Pods not scaling up</td><td>Check HPA targets and current metrics</td></tr>
+                <tr><td>Nodes not adding</td><td>Check node pool max limit or quota</td></tr>
+                <tr><td>Slow scale down</td><td>Check stabilizationWindowSeconds setting</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Check if metrics-server is running
+kubectl get pods -n kube-system | grep metrics-server
+
+# Debug HPA unable to fetch metrics
+kubectl describe hpa dotnet-api-hpa -n app
+
+# Check if resources requests are defined
+kubectl get deployment dotnet-api -n app -o yaml | grep -A 10 resources
+
+# View Cluster Autoscaler logs
+kubectl -n kube-system logs -l k8s-app=cluster-autoscaler --tail=100
+
+# Check for resource quota limits
+kubectl describe resourcequota -n app</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Resource Requests Required</div>
+            <p>HPA cannot calculate utilization percentages without resource requests. If you see <code>&lt;unknown&gt;</code> in HPA TARGETS, ensure your deployment has CPU and memory requests defined.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Scale Down Delay</div>
+            <p>By default, HPA waits 5 minutes (stabilizationWindowSeconds) before scaling down. This prevents rapid scaling oscillations during temporary traffic dips.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Preemptible Nodes</div>
+            <p>Consider using preemptible/spot nodes for cost savings on non-critical workloads. They're up to 80% cheaper but can be terminated with 30-second notice.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./ci-cd.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">CI/CD</span></a>
+          <a href="./monitoring.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Monitoring</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

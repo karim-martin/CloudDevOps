@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Artifact Registry - Store and manage container images and packages.">
+  <title>Artifact Registry | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/gke.html">GKE</a></li><li><a href="../compute/cloud-run.html">Cloud Run</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/cloud-sql.html">Cloud SQL</a></li><li><a href="../databases/firestore.html">Firestore</a></li><li><a href="../databases/memorystore.html">Memorystore</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./cloud-storage.html">Cloud Storage</a></li><li><a href="./artifact-registry.html" class="active">Artifact Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/load-balancing.html">Load Balancing</a></li><li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li><li><a href="../networking/cloud-dns.html">Cloud DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secret-manager.html">Secret Manager</a></li><li><a href="../security/cloud-armor.html">Cloud Armor</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/cloud-build.html">Cloud Build</a></li><li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li><li><a href="../observability/cloud-logging.html">Cloud Logging</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Storage</a></li><li aria-current="page">Artifact Registry</li></ol></nav>
+        <header class="article-header"><h1>Artifact Registry</h1></header>
+
+        <div class="article-body">
+          <p>Artifact Registry is GCP's universal package manager for container images, language packages, and OS packages.</p>
+
+          <h2 id="supported-formats">Supported Formats</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Format</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Docker</strong></td><td>Container images</td></tr>
+                <tr><td><strong>npm</strong></td><td>Node.js packages</td></tr>
+                <tr><td><strong>Maven</strong></td><td>Java packages</td></tr>
+                <tr><td><strong>Python</strong></td><td>pip packages</td></tr>
+                <tr><td><strong>Go</strong></td><td>Go modules</td></tr>
+                <tr><td><strong>APT/YUM</strong></td><td>OS packages</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="create-repo">Create Repository</h2>
+          <pre><code class="language-bash"># Create Docker repository
+gcloud artifacts repositories create my-repo \
+    --repository-format=docker \
+    --location=us-central1 \
+    --description="Docker images"
+
+# Create npm repository
+gcloud artifacts repositories create npm-repo \
+    --repository-format=npm \
+    --location=us-central1
+
+# List repositories
+gcloud artifacts repositories list</code></pre>
+
+          <h2 id="docker-auth">Docker Authentication</h2>
+          <pre><code class="language-bash"># Configure Docker to use gcloud credentials
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+# Or for multiple regions
+gcloud auth configure-docker \
+    us-central1-docker.pkg.dev,us-docker.pkg.dev,asia-docker.pkg.dev</code></pre>
+
+          <h2 id="docker-push-pull">Push & Pull Images</h2>
+          <pre><code class="language-bash"># Image naming format
+# LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG
+
+# Tag image
+docker tag my-image:latest \
+    us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest
+
+# Push image
+docker push us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest
+
+# Pull image
+docker pull us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest
+
+# List images
+gcloud artifacts docker images list \
+    us-central1-docker.pkg.dev/my-project/my-repo
+
+# List tags
+gcloud artifacts docker tags list \
+    us-central1-docker.pkg.dev/my-project/my-repo/my-image</code></pre>
+
+          <h2 id="gke-integration">GKE Integration</h2>
+          <pre><code class="language-yaml"># GKE automatically authenticates to Artifact Registry in same project
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: us-central1-docker.pkg.dev/my-project/my-repo/my-image:v1.0.0</code></pre>
+
+          <pre><code class="language-bash"># For cross-project access, grant GKE service account permission
+gcloud artifacts repositories add-iam-policy-binding my-repo \
+    --location=us-central1 \
+    --member="serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+    --role="roles/artifactregistry.reader"</code></pre>
+
+          <h2 id="vulnerability-scanning">Vulnerability Scanning</h2>
+          <pre><code class="language-bash"># Enable scanning (on by default for new repos)
+gcloud artifacts repositories update my-repo \
+    --location=us-central1 \
+    --enable-vulnerability-scanning
+
+# View vulnerabilities
+gcloud artifacts docker images list \
+    us-central1-docker.pkg.dev/my-project/my-repo \
+    --show-occurrences \
+    --occurrence-filter='kind="VULNERABILITY"'
+
+# Get detailed scan results
+gcloud artifacts docker images describe \
+    us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest \
+    --show-all-metadata</code></pre>
+
+          <h2 id="cleanup-policies">Cleanup Policies</h2>
+          <pre><code class="language-bash"># Delete untagged images older than 30 days
+gcloud artifacts repositories set-cleanup-policies my-repo \
+    --location=us-central1 \
+    --policy=policy.json</code></pre>
+          <pre><code class="language-json">// policy.json
+{
+  "cleanupPolicies": [
+    {
+      "id": "delete-old-untagged",
+      "action": {"type": "Delete"},
+      "condition": {
+        "olderThan": "2592000s",
+        "tagState": "UNTAGGED"
+      }
+    },
+    {
+      "id": "keep-recent-tagged",
+      "action": {"type": "Keep"},
+      "condition": {
+        "tagState": "TAGGED",
+        "newerThan": "7776000s"
+      },
+      "mostRecentVersions": {
+        "keepCount": 10
+      }
+    }
+  ]
+}</code></pre>
+
+          <h2 id="npm-registry">npm Registry</h2>
+          <pre><code class="language-bash"># Configure npm
+gcloud artifacts print-settings npm \
+    --repository=npm-repo \
+    --location=us-central1
+
+# .npmrc
+@my-scope:registry=https://us-central1-npm.pkg.dev/my-project/npm-repo/
+//us-central1-npm.pkg.dev/my-project/npm-repo/:_authToken=""
+//us-central1-npm.pkg.dev/my-project/npm-repo/:always-auth=true
+
+# Authenticate
+npx google-artifactregistry-auth
+
+# Publish
+npm publish
+
+# Install
+npm install @my-scope/my-package</code></pre>
+
+          <h2 id="remote-repos">Remote Repositories (Proxy)</h2>
+          <pre><code class="language-bash"># Create remote repo (proxies to Docker Hub)
+gcloud artifacts repositories create docker-hub-proxy \
+    --repository-format=docker \
+    --location=us-central1 \
+    --mode=remote-repository \
+    --remote-repo-config-desc="Docker Hub" \
+    --remote-docker-repo=DOCKER-HUB
+
+# Pull through proxy (caches locally)
+docker pull us-central1-docker.pkg.dev/my-project/docker-hub-proxy/nginx:latest</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List repositories
+gcloud artifacts repositories list
+
+# Describe repository
+gcloud artifacts repositories describe my-repo --location=us-central1
+
+# Delete image
+gcloud artifacts docker images delete \
+    us-central1-docker.pkg.dev/my-project/my-repo/my-image:v1.0.0
+
+# Delete repository
+gcloud artifacts repositories delete my-repo --location=us-central1
+
+# Copy image between repos
+gcloud artifacts docker images copy \
+    us-central1-docker.pkg.dev/my-project/dev-repo/image:v1 \
+    us-central1-docker.pkg.dev/my-project/prod-repo/image:v1</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Immutable Tags</div>
+            <p>Enable immutable tags to prevent overwriting existing image tags. This ensures that <code>:v1.0.0</code> always refers to the same image.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">gcr.io Migration</div>
+            <p>Container Registry (gcr.io) is deprecated. Migrate to Artifact Registry (pkg.dev) for new features and better integration.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./cloud-storage.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud Storage</span></a>
+          <a href="../networking/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

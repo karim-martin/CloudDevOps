@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cloud learning path - GCP GKE end-to-end guide for deploying applications to Kubernetes.">
+  <meta name="description" content="GCP Cloud Services - Compute, Databases, Storage, Networking, Security, DevOps, and Observability for containerized workloads.">
   <title>Cloud | CloudDevOps</title>
   <link rel="stylesheet" href="../assets/css/main.css">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -13,7 +13,7 @@
   <header class="site-header">
     <div class="header-container">
       <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
-      <nav class="main-nav"><a href="../devops/" class="nav-link">DevOps</a><a href="../cloud/" class="nav-link active">Cloud</a></nav>
+      <nav class="main-nav"><a href="../devops/" class="nav-link">DevOps</a><a href="../cloud/" class="nav-link active">Cloud</a><a href="../app-deploy/" class="nav-link">App Deploy</a></nav>
       <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
     </div>
   </header>
@@ -22,19 +22,14 @@
 
   <div class="page-wrapper">
     <aside class="sidebar"><nav class="sidebar-nav">
-      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
-        <li><a href="./" class="active">Cloud Overview</a></li>
-      </ul></div>
-      <div class="sidebar-section"><h3 class="sidebar-section-title">GCP GKE</h3><ul class="sidebar-links">
-        <li><a href="./gcp-gke/">GKE Overview</a></li>
-        <li><a href="./gcp-gke/introduction.html">Introduction</a></li>
-        <li><a href="./gcp-gke/cluster-setup.html">Cluster Setup</a></li>
-        <li><a href="./gcp-gke/deploying-apps.html">Deploying Apps</a></li>
-        <li><a href="./gcp-gke/networking-ingress.html">Networking & Ingress</a></li>
-        <li><a href="./gcp-gke/security-iam.html">Security & IAM</a></li>
-        <li><a href="./gcp-gke/ci-cd.html">CI/CD</a></li>
-        <li><a href="./gcp-gke/monitoring-logging.html">Monitoring & Logging</a></li>
-      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links"><li><a href="./" class="active">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="./compute/">Overview</a></li><li><a href="./compute/gke.html">GKE</a></li><li><a href="./compute/cloud-run.html">Cloud Run</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="./databases/">Overview</a></li><li><a href="./databases/cloud-sql.html">Cloud SQL</a></li><li><a href="./databases/firestore.html">Firestore</a></li><li><a href="./databases/memorystore.html">Memorystore</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="./storage/">Overview</a></li><li><a href="./storage/cloud-storage.html">Cloud Storage</a></li><li><a href="./storage/artifact-registry.html">Artifact Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="./networking/">Overview</a></li><li><a href="./networking/vpc.html">VPC</a></li><li><a href="./networking/load-balancing.html">Load Balancing</a></li><li><a href="./networking/cloud-cdn.html">Cloud CDN</a></li><li><a href="./networking/cloud-dns.html">Cloud DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="./security/">Overview</a></li><li><a href="./security/iam.html">IAM</a></li><li><a href="./security/secret-manager.html">Secret Manager</a></li><li><a href="./security/cloud-armor.html">Cloud Armor</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="./devops/">Overview</a></li><li><a href="./devops/cloud-build.html">Cloud Build</a></li><li><a href="./devops/cloud-deploy.html">Cloud Deploy</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="./observability/">Overview</a></li><li><a href="./observability/cloud-monitoring.html">Cloud Monitoring</a></li><li><a href="./observability/cloud-logging.html">Cloud Logging</a></li></ul></div>
     </nav></aside>
     <main id="main-content" class="main-content">
       <article class="content-article">
@@ -44,89 +39,140 @@
         </ol></nav>
 
         <header class="article-header">
-          <h1>Cloud Learning Path</h1>
-          <p class="text-secondary text-lg">Master cloud platforms and deploy applications at scale.</p>
+          <h1>GCP Cloud Services</h1>
+          <p class="text-secondary text-lg">Google Cloud Platform services for containerized workloads.</p>
         </header>
 
         <div class="article-body">
-          <p>This section covers cloud platforms and services, with a focus on Google Cloud Platform (GCP) and Google Kubernetes Engine (GKE).</p>
+          <p>This section covers GCP services commonly used with containerized applications running on GKE and Cloud Run.</p>
 
-          <h2>GCP GKE End-to-End</h2>
-          <p>A comprehensive guide for developers who want to learn how to deploy and manage applications on Google Kubernetes Engine, from zero to production.</p>
-
+          <h2>Compute</h2>
+          <p>Container orchestration and serverless compute platforms.</p>
           <div class="card-grid">
-            <a href="./gcp-gke/introduction.html" class="card card-link">
-              <h3 class="card-title">Introduction to GKE</h3>
-              <p class="card-description">What is GKE and why use it? Perfect for developers new to Kubernetes.</p>
+            <a href="./compute/gke.html" class="card card-link">
+              <h3 class="card-title">GKE</h3>
+              <p class="card-description">Google Kubernetes Engine for container orchestration.</p>
             </a>
-
-            <a href="./gcp-gke/cluster-setup.html" class="card card-link">
-              <h3 class="card-title">Cluster Setup</h3>
-              <p class="card-description">Create and configure GKE clusters using Console and gcloud CLI.</p>
+            <a href="./compute/cloud-run.html" class="card card-link">
+              <h3 class="card-title">Cloud Run</h3>
+              <p class="card-description">Serverless containers with automatic scaling.</p>
             </a>
+          </div>
 
-            <a href="./gcp-gke/deploying-apps.html" class="card card-link">
-              <h3 class="card-title">Deploying Applications</h3>
-              <p class="card-description">Deploy your first app to GKE with deployments and services.</p>
+          <h2>Databases</h2>
+          <p>Managed database services for containerized applications.</p>
+          <div class="card-grid">
+            <a href="./databases/cloud-sql.html" class="card card-link">
+              <h3 class="card-title">Cloud SQL</h3>
+              <p class="card-description">Managed MySQL, PostgreSQL, and SQL Server.</p>
             </a>
-
-            <a href="./gcp-gke/networking-ingress.html" class="card card-link">
-              <h3 class="card-title">Networking & Ingress</h3>
-              <p class="card-description">Load balancers, Ingress controllers, and SSL/TLS configuration.</p>
+            <a href="./databases/firestore.html" class="card card-link">
+              <h3 class="card-title">Firestore</h3>
+              <p class="card-description">NoSQL document database for real-time data.</p>
             </a>
-
-            <a href="./gcp-gke/security-iam.html" class="card card-link">
-              <h3 class="card-title">Security & IAM</h3>
-              <p class="card-description">Workload Identity, IAM, network policies, and security best practices.</p>
+            <a href="./databases/memorystore.html" class="card card-link">
+              <h3 class="card-title">Memorystore</h3>
+              <p class="card-description">Managed Redis and Memcached for caching.</p>
             </a>
+          </div>
 
-            <a href="./gcp-gke/ci-cd.html" class="card card-link">
-              <h3 class="card-title">CI/CD with GKE</h3>
-              <p class="card-description">Automate deployments with Cloud Build and GitHub Actions.</p>
+          <h2>Storage</h2>
+          <p>Object storage and container registries.</p>
+          <div class="card-grid">
+            <a href="./storage/cloud-storage.html" class="card card-link">
+              <h3 class="card-title">Cloud Storage</h3>
+              <p class="card-description">Object storage for any type of data.</p>
             </a>
+            <a href="./storage/artifact-registry.html" class="card card-link">
+              <h3 class="card-title">Artifact Registry</h3>
+              <p class="card-description">Store and manage container images and packages.</p>
+            </a>
+          </div>
 
-            <a href="./gcp-gke/monitoring-logging.html" class="card card-link">
-              <h3 class="card-title">Monitoring & Logging</h3>
-              <p class="card-description">Cloud Monitoring, Cloud Logging, and observability.</p>
+          <h2>Networking</h2>
+          <p>VPC, load balancing, CDN, and DNS for containers.</p>
+          <div class="card-grid">
+            <a href="./networking/vpc.html" class="card card-link">
+              <h3 class="card-title">VPC</h3>
+              <p class="card-description">Virtual Private Cloud for network isolation.</p>
+            </a>
+            <a href="./networking/load-balancing.html" class="card card-link">
+              <h3 class="card-title">Load Balancing</h3>
+              <p class="card-description">Global and regional load balancers for GKE.</p>
+            </a>
+            <a href="./networking/cloud-cdn.html" class="card card-link">
+              <h3 class="card-title">Cloud CDN</h3>
+              <p class="card-description">Content delivery network for faster performance.</p>
+            </a>
+            <a href="./networking/cloud-dns.html" class="card card-link">
+              <h3 class="card-title">Cloud DNS</h3>
+              <p class="card-description">Managed DNS service for domains.</p>
+            </a>
+          </div>
+
+          <h2>Security</h2>
+          <p>Identity, secrets, and application protection.</p>
+          <div class="card-grid">
+            <a href="./security/iam.html" class="card card-link">
+              <h3 class="card-title">IAM</h3>
+              <p class="card-description">Identity and Access Management, Workload Identity.</p>
+            </a>
+            <a href="./security/secret-manager.html" class="card card-link">
+              <h3 class="card-title">Secret Manager</h3>
+              <p class="card-description">Secure storage for sensitive data.</p>
+            </a>
+            <a href="./security/cloud-armor.html" class="card card-link">
+              <h3 class="card-title">Cloud Armor</h3>
+              <p class="card-description">DDoS protection and WAF.</p>
+            </a>
+          </div>
+
+          <h2>DevOps</h2>
+          <p>CI/CD services for containerized deployments.</p>
+          <div class="card-grid">
+            <a href="./devops/cloud-build.html" class="card card-link">
+              <h3 class="card-title">Cloud Build</h3>
+              <p class="card-description">Serverless CI/CD for building containers.</p>
+            </a>
+            <a href="./devops/cloud-deploy.html" class="card card-link">
+              <h3 class="card-title">Cloud Deploy</h3>
+              <p class="card-description">Managed continuous delivery to GKE and Cloud Run.</p>
+            </a>
+          </div>
+
+          <h2>Observability</h2>
+          <p>Monitoring, logging, and alerting for containers.</p>
+          <div class="card-grid">
+            <a href="./observability/cloud-monitoring.html" class="card card-link">
+              <h3 class="card-title">Cloud Monitoring</h3>
+              <p class="card-description">Metrics, dashboards, and alerting.</p>
+            </a>
+            <a href="./observability/cloud-logging.html" class="card card-link">
+              <h3 class="card-title">Cloud Logging</h3>
+              <p class="card-description">Centralized log management and analysis.</p>
             </a>
           </div>
 
           <div class="callout callout-info">
-            <div class="callout-title">Prerequisites</div>
-            <p>Before starting the GKE section, you should be familiar with:</p>
-            <ul>
-              <li>Basic Linux commands</li>
-              <li>Docker containers</li>
-              <li>Kubernetes fundamentals (from the DevOps section)</li>
-            </ul>
+            <div class="callout-title">Container Focus</div>
+            <p>This section focuses on GCP services commonly used with containerized workloads on GKE and Cloud Run. For end-to-end deployment guides, see the <a href="../app-deploy/">App Deploy</a> section.</p>
           </div>
-
-          <h2>Learning Path</h2>
-          <ol>
-            <li><strong>Introduction</strong> - Understand GKE and its benefits</li>
-            <li><strong>Cluster Setup</strong> - Create your first cluster</li>
-            <li><strong>Deploy Apps</strong> - Deploy and manage workloads</li>
-            <li><strong>Networking</strong> - Expose apps to the internet</li>
-            <li><strong>Security</strong> - Secure your cluster and workloads</li>
-            <li><strong>CI/CD</strong> - Automate your deployments</li>
-            <li><strong>Monitoring</strong> - Observe and troubleshoot</li>
-          </ol>
         </div>
 
         <nav class="page-navigation">
-          <a href="../devops/ansible.html" class="nav-prev">
+          <a href="../devops/terraform.html" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title">Ansible</span>
+            <span class="nav-title">Terraform</span>
           </a>
-          <a href="./gcp-gke/" class="nav-next">
+          <a href="./compute/" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">GKE Overview</span>
+            <span class="nav-title">Compute</span>
           </a>
         </nav>
       </article>
     </main>
   </div>
-  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
   <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Run - Serverless containers that scale to zero automatically.">
+  <title>Cloud Run | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./gke.html">GKE</a></li>
+        <li><a href="./cloud-run.html" class="active">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="../databases/">Overview</a></li>
+        <li><a href="../databases/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../databases/firestore.html">Firestore</a></li>
+        <li><a href="../databases/memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Compute</a></li><li aria-current="page">Cloud Run</li></ol></nav>
+        <header class="article-header"><h1>Cloud Run</h1></header>
+
+        <div class="article-body">
+          <p>Cloud Run is a fully managed serverless platform for running stateless containers. It automatically scales from zero to thousands of instances based on traffic.</p>
+
+          <h2 id="services-vs-jobs">Services vs Jobs</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Use Case</th><th>Trigger</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Services</strong></td><td>Web apps, APIs, webhooks</td><td>HTTP requests</td></tr>
+                <tr><td><strong>Jobs</strong></td><td>Batch processing, migrations</td><td>Manual, scheduled, or event</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="deploy-service">Deploy a Service</h2>
+          <pre><code class="language-bash"># Deploy from source (builds automatically)
+gcloud run deploy my-service \
+    --source=. \
+    --region=us-central1 \
+    --allow-unauthenticated
+
+# Deploy from container image
+gcloud run deploy my-service \
+    --image=us-central1-docker.pkg.dev/PROJECT_ID/repo/image:tag \
+    --region=us-central1 \
+    --port=8080 \
+    --memory=512Mi \
+    --cpu=1 \
+    --min-instances=0 \
+    --max-instances=100 \
+    --allow-unauthenticated
+
+# Deploy with environment variables
+gcloud run deploy my-service \
+    --image=us-central1-docker.pkg.dev/PROJECT_ID/repo/image:tag \
+    --region=us-central1 \
+    --set-env-vars="DB_HOST=10.0.0.1,ENV=production" \
+    --set-secrets="DB_PASSWORD=db-password:latest"</code></pre>
+
+          <h2 id="service-config">Service Configuration</h2>
+          <pre><code class="language-bash"># Update service settings
+gcloud run services update my-service \
+    --region=us-central1 \
+    --memory=1Gi \
+    --cpu=2 \
+    --timeout=300 \
+    --concurrency=80 \
+    --min-instances=1 \
+    --max-instances=50
+
+# Set CPU allocation
+gcloud run services update my-service \
+    --region=us-central1 \
+    --cpu-throttling  # CPU only during requests (default)
+    # or
+    --no-cpu-throttling  # CPU always allocated (for background work)</code></pre>
+
+          <h2 id="traffic-management">Traffic Management</h2>
+          <pre><code class="language-bash"># Deploy new revision without traffic
+gcloud run deploy my-service \
+    --image=new-image:v2 \
+    --region=us-central1 \
+    --no-traffic
+
+# Split traffic between revisions
+gcloud run services update-traffic my-service \
+    --region=us-central1 \
+    --to-revisions=my-service-00001=50,my-service-00002=50
+
+# Gradual rollout
+gcloud run services update-traffic my-service \
+    --region=us-central1 \
+    --to-revisions=my-service-00002=10  # 10% to new version
+
+# Rollback to previous revision
+gcloud run services update-traffic my-service \
+    --region=us-central1 \
+    --to-revisions=my-service-00001=100</code></pre>
+
+          <h2 id="vpc-connector">VPC Connector (Private Resources)</h2>
+          <pre><code class="language-bash"># Create VPC connector
+gcloud compute networks vpc-access connectors create my-connector \
+    --region=us-central1 \
+    --network=my-vpc \
+    --range=10.8.0.0/28 \
+    --min-instances=2 \
+    --max-instances=10
+
+# Deploy with VPC connector
+gcloud run deploy my-service \
+    --image=my-image \
+    --region=us-central1 \
+    --vpc-connector=my-connector \
+    --vpc-egress=private-ranges-only  # or all-traffic</code></pre>
+
+          <h2 id="cloud-sql">Connect to Cloud SQL</h2>
+          <pre><code class="language-bash"># Deploy with Cloud SQL connection
+gcloud run deploy my-service \
+    --image=my-image \
+    --region=us-central1 \
+    --add-cloudsql-instances=PROJECT_ID:us-central1:my-db \
+    --set-env-vars="DB_HOST=/cloudsql/PROJECT_ID:us-central1:my-db"
+
+# Connection string in app (Unix socket)
+# PostgreSQL: Host=/cloudsql/PROJECT:REGION:INSTANCE
+# MySQL: Server=/cloudsql/PROJECT:REGION:INSTANCE</code></pre>
+
+          <h2 id="authentication">Authentication</h2>
+          <pre><code class="language-bash"># Allow public access
+gcloud run deploy my-service \
+    --allow-unauthenticated
+
+# Require authentication
+gcloud run deploy my-service \
+    --no-allow-unauthenticated
+
+# Grant invoker access to specific user/SA
+gcloud run services add-iam-policy-binding my-service \
+    --region=us-central1 \
+    --member="serviceAccount:my-sa@project.iam.gserviceaccount.com" \
+    --role="roles/run.invoker"
+
+# Call authenticated service
+curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
+    https://my-service-xxx-uc.a.run.app</code></pre>
+
+          <h2 id="jobs">Cloud Run Jobs</h2>
+          <pre><code class="language-bash"># Create a job
+gcloud run jobs create my-job \
+    --image=us-central1-docker.pkg.dev/PROJECT_ID/repo/job-image:tag \
+    --region=us-central1 \
+    --tasks=10 \
+    --parallelism=5 \
+    --task-timeout=3600 \
+    --max-retries=3
+
+# Execute job
+gcloud run jobs execute my-job --region=us-central1
+
+# Execute with overrides
+gcloud run jobs execute my-job \
+    --region=us-central1 \
+    --tasks=20 \
+    --update-env-vars="BATCH_SIZE=1000"
+
+# Schedule job (Cloud Scheduler)
+gcloud scheduler jobs create http my-scheduled-job \
+    --location=us-central1 \
+    --schedule="0 2 * * *" \
+    --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/PROJECT_ID/jobs/my-job:run" \
+    --http-method=POST \
+    --oauth-service-account-email=scheduler-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="custom-domains">Custom Domains</h2>
+          <pre><code class="language-bash"># Map custom domain
+gcloud run domain-mappings create \
+    --service=my-service \
+    --region=us-central1 \
+    --domain=api.example.com
+
+# View DNS records to configure
+gcloud run domain-mappings describe \
+    --domain=api.example.com \
+    --region=us-central1</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List services
+gcloud run services list
+
+# Describe service
+gcloud run services describe my-service --region=us-central1
+
+# View logs
+gcloud run services logs read my-service --region=us-central1 --limit=100
+
+# Delete service
+gcloud run services delete my-service --region=us-central1
+
+# List revisions
+gcloud run revisions list --service=my-service --region=us-central1</code></pre>
+
+          <h2 id="yaml-config">YAML Configuration</h2>
+          <pre><code class="language-yaml"># service.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "100"
+        run.googleapis.com/vpc-access-connector: my-connector
+        run.googleapis.com/cloudsql-instances: project:region:instance
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: my-sa@project.iam.gserviceaccount.com
+      containers:
+      - image: us-central1-docker.pkg.dev/project/repo/image:tag
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "2"
+            memory: 1Gi
+        env:
+        - name: ENV
+          value: production
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-password
+              key: latest</code></pre>
+
+          <pre><code class="language-bash"># Deploy from YAML
+gcloud run services replace service.yaml --region=us-central1</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Cold Starts</div>
+            <p>Cloud Run instances scale to zero by default. Set <code>--min-instances=1</code> to keep at least one instance warm and avoid cold start latency for critical services.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Stateless Requirement</div>
+            <p>Cloud Run containers are stateless. Don't store data in the container filesystem - use Cloud Storage, databases, or Memorystore for persistent data.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./gke.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">GKE</span></a>
+          <a href="../databases/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Databases</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>
