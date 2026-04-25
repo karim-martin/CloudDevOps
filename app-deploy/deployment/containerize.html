@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Containerize React and .NET applications with multi-stage Dockerfiles.">
+  <title>Containerize | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./containerize.html" class="active">Containerize</a></li>
+        <li><a href="./react-frontend.html">React Frontend</a></li>
+        <li><a href="./dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Deployment</a></li><li aria-current="page">Containerize</li></ol></nav>
+        <header class="article-header"><h1>Containerize Applications</h1></header>
+
+        <div class="article-body">
+          <p>Create optimized Docker images for your React frontend and .NET 8 backend using multi-stage builds.</p>
+
+          <h2 id="react-dockerfile">React Dockerfile</h2>
+          <pre><code class="language-dockerfile"># frontend/Dockerfile
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files first (for better caching)
+COPY package*.json ./
+RUN npm ci --only=production=false
+
+# Copy source and build
+COPY . .
+RUN npm run build
+
+# Stage 2: Serve with nginx
+FROM nginx:alpine
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+
+          <h3>Nginx Configuration</h3>
+          <pre><code class="language-nginx"># frontend/nginx.conf
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Serve static files
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API proxy (requests to /api go to backend)
+    location /api/ {
+        proxy_pass http://dotnet-api:8080/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+}</code></pre>
+
+          <h3>.dockerignore for React</h3>
+          <pre><code class="language-text"># frontend/.dockerignore
+node_modules
+npm-debug.log
+build
+.git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+.env.local
+.env.development
+.env.test</code></pre>
+
+          <h2 id="dotnet-dockerfile">.NET 8 Dockerfile</h2>
+          <pre><code class="language-dockerfile"># backend/Dockerfile
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+# Copy csproj and restore (for better caching)
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . .
+RUN dotnet publish -c Release -o /app/publish --no-restore
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+WORKDIR /app
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos "" appuser
+
+# Copy published app
+COPY --from=build /app/publish .
+
+# Change ownership and switch to non-root user
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Expose port
+EXPOSE 8080
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl --fail http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "MyApi.dll"]</code></pre>
+
+          <h3>.NET Health Check Endpoint</h3>
+          <pre><code class="language-csharp">// Program.cs - Add health checks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy())
+    .AddNpgSql(connectionString, name: "database"); // or AddSqlServer
+
+var app = builder.Build();
+
+// Map health check endpoints
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false // Always returns healthy
+});</code></pre>
+
+          <h3>.dockerignore for .NET</h3>
+          <pre><code class="language-text"># backend/.dockerignore
+**/bin
+**/obj
+**/.git
+**/.vs
+**/.vscode
+**/node_modules
+Dockerfile
+.dockerignore
+*.md
+appsettings.Development.json</code></pre>
+
+          <h2 id="build-images">Build and Push Images</h2>
+          <pre><code class="language-bash"># Set variables
+export IMAGE_TAG=$(git rev-parse --short HEAD)
+export REGISTRY="$REGION-docker.pkg.dev/$PROJECT_ID/app-repo"
+
+# Build React frontend
+cd frontend
+docker build -t $REGISTRY/frontend:$IMAGE_TAG -t $REGISTRY/frontend:latest .
+
+# Build .NET backend
+cd ../backend
+docker build -t $REGISTRY/backend:$IMAGE_TAG -t $REGISTRY/backend:latest .
+
+# Push to Artifact Registry
+docker push $REGISTRY/frontend:$IMAGE_TAG
+docker push $REGISTRY/frontend:latest
+docker push $REGISTRY/backend:$IMAGE_TAG
+docker push $REGISTRY/backend:latest
+
+# Verify images
+gcloud artifacts docker images list $REGISTRY</code></pre>
+
+          <h2 id="local-testing">Test Locally</h2>
+          <pre><code class="language-bash"># Test frontend locally
+docker run -p 3000:80 $REGISTRY/frontend:latest
+
+# Test backend locally (with env vars)
+docker run -p 8080:8080 \
+    -e ConnectionStrings__DefaultConnection="Server=localhost;..." \
+    -e GCS_BUCKET="test-bucket" \
+    $REGISTRY/backend:latest
+
+# Test with docker-compose
+docker-compose up --build</code></pre>
+
+          <h3>docker-compose.yml (for local testing)</h3>
+          <pre><code class="language-yaml"># docker-compose.yml
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=appdb;User=root;Password=password;
+      - GCS_BUCKET=local-test
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: appdb
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:</code></pre>
+
+          <h2 id="image-security">Image Security Best Practices</h2>
+          <ul>
+            <li>Use specific version tags (not just <code>latest</code>)</li>
+            <li>Run as non-root user</li>
+            <li>Use multi-stage builds to minimize image size</li>
+            <li>Scan images for vulnerabilities</li>
+            <li>Use <code>.dockerignore</code> to exclude sensitive files</li>
+          </ul>
+
+          <pre><code class="language-bash"># Scan image for vulnerabilities (requires gcloud)
+gcloud artifacts docker images scan $REGISTRY/backend:latest
+
+# View scan results
+gcloud artifacts docker images list-vulnerabilities $REGISTRY/backend:latest</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Multi-stage Build Benefits</div>
+            <p>Multi-stage builds create smaller images by separating build tools from runtime. React image: ~25MB (nginx). .NET image: ~100MB (aspnet runtime only).</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Deployment Overview</span></a>
+          <a href="./react-frontend.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">React Frontend</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prerequisites — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./prerequisites.html" class="active">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/">Overview</a></li>
+        <li><a href="./infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href="./infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href="./infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="./security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="./operations/scaling.html">Scaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li>
+          <li><a href="./">Azure</a></li><li aria-current="page">Prerequisites</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>Prerequisites</h1>
+          <p class="text-secondary text-lg">Tools and accounts you need before starting the Azure AKS deployment guide.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">First Time Setting Up?</div>
+            <p>This page walks through every tool you need. Install them in order — each one builds on the previous. The whole setup takes about 20 minutes.</p>
+          </div>
+
+          <h2>Required Accounts</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">☁️</div><div class="feature-text"><h4>Azure Account</h4><p>Free account at portal.azure.com — $200 credit for 30 days + 12 months free services.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🐙</div><div class="feature-text"><h4>GitHub Account</h4><p>For storing your code and triggering Azure Pipelines deployments.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🔧</div><div class="feature-text"><h4>Azure DevOps</h4><p>Free at dev.azure.com — Azure Pipelines lives here (5 free parallel jobs).</p></div></div>
+          </div>
+
+          <h2>Install Azure CLI</h2>
+          <pre><code># macOS
+brew install azure-cli
+
+# Ubuntu / Debian
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Windows (PowerShell)
+winget install Microsoft.AzureCLI
+
+# Verify
+az --version
+
+# Log in
+az login</code></pre>
+
+          <h2>Install kubectl</h2>
+          <pre><code># macOS
+brew install kubectl
+
+# Linux
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+# Verify
+kubectl version --client</code></pre>
+
+          <h2>Install Helm</h2>
+          <pre><code># macOS / Linux
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Verify
+helm version</code></pre>
+
+          <h2>Install Terraform</h2>
+          <pre><code># macOS
+brew install terraform
+
+# Linux
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+
+# Verify
+terraform --version</code></pre>
+
+          <h2>Install Docker</h2>
+          <pre><code># Download Docker Desktop from docker.com/products/docker-desktop
+# Or on Linux:
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Verify
+docker --version</code></pre>
+
+          <h2>Verify Everything</h2>
+          <pre><code">az --version       # Azure CLI
+kubectl version --client
+helm version
+terraform --version
+docker --version</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Set Your Default Subscription</div>
+            <pre><code># List subscriptions
+az account list --output table
+
+# Set default
+az account set --subscription "My Subscription Name"
+
+# Verify
+az account show</code></pre>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Overview</span></a>
+          <a href="./foundation/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Foundation</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

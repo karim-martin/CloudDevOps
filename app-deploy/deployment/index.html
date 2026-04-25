@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Application deployment - containerize and deploy React and .NET apps to GKE.">
+  <title>Deployment | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./containerize.html">Containerize</a></li>
+        <li><a href="./react-frontend.html">React Frontend</a></li>
+        <li><a href="./dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Deployment</li></ol></nav>
+        <header class="article-header"><h1>Application Deployment</h1></header>
+
+        <div class="article-body">
+          <p>Containerize your React frontend and .NET 8 backend, then deploy them to the GKE cluster.</p>
+
+          <h2>Deployment Steps</h2>
+          <div class="card-grid">
+            <a href="./containerize.html" class="card card-link">
+              <h3 class="card-title">1. Containerize</h3>
+              <p class="card-description">Create Dockerfiles and build images for both applications.</p>
+            </a>
+            <a href="./react-frontend.html" class="card card-link">
+              <h3 class="card-title">2. React Frontend</h3>
+              <p class="card-description">Deploy the React app with ConfigMap and Service.</p>
+            </a>
+            <a href="./dotnet-backend.html" class="card card-link">
+              <h3 class="card-title">3. .NET Backend</h3>
+              <p class="card-description">Deploy the API with Secrets and database connection.</p>
+            </a>
+          </div>
+
+          <h2>Deployment Flow</h2>
+          <pre><code>┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Source Code    │───▶│  Docker Build   │───▶│ Artifact Registry│
+│  (React/.NET)   │    │  (Multi-stage)  │    │  (Container)     │
+└─────────────────┘    └─────────────────┘    └────────┬─────────┘
+                                                       │
+                       ┌───────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         GKE Cluster                             │
+│  ┌─────────────────┐          ┌─────────────────┐              │
+│  │   Deployment    │          │   Deployment    │              │
+│  │  (React x 3)    │          │  (.NET x 3)     │              │
+│  └────────┬────────┘          └────────┬────────┘              │
+│           │                            │                        │
+│  ┌────────▼────────┐          ┌────────▼────────┐              │
+│  │     Service     │          │     Service     │              │
+│  │   (ClusterIP)   │          │   (ClusterIP)   │              │
+│  └─────────────────┘          └─────────────────┘              │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2>Key Kubernetes Resources</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Resource</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Deployment</strong></td><td>Manages pod replicas, rolling updates</td></tr>
+                <tr><td><strong>Service</strong></td><td>Internal load balancing, DNS name</td></tr>
+                <tr><td><strong>ConfigMap</strong></td><td>Non-sensitive configuration</td></tr>
+                <tr><td><strong>Secret</strong></td><td>Sensitive data (passwords, keys)</td></tr>
+                <tr><td><strong>ServiceAccount</strong></td><td>Pod identity for GCP access</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>File Structure</h2>
+          <pre><code class="language-bash">k8s/
+├── namespace.yaml           # app namespace
+├── service-account.yaml     # Workload Identity SA
+├── frontend/
+│   ├── deployment.yaml      # React deployment
+│   ├── service.yaml         # React service
+│   └── configmap.yaml       # React config
+└── backend/
+    ├── deployment.yaml      # .NET deployment
+    ├── service.yaml         # .NET service
+    └── secret.yaml          # Database credentials</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Deployment Order</div>
+            <p>Deploy in this order: 1) Namespace & ServiceAccount, 2) Secrets & ConfigMaps, 3) Backend deployment, 4) Frontend deployment. This ensures dependencies are ready.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../infrastructure/storage.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Storage</span></a>
+          <a href="./containerize.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Containerize</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

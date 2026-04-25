@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Infrastructure setup - GKE cluster, Cloud SQL database, and storage.">
+  <title>Infrastructure | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Infrastructure</li></ol></nav>
+        <header class="article-header"><h1>Infrastructure</h1></header>
+
+        <div class="article-body">
+          <p>Set up the core infrastructure components: GKE cluster for running containers, Cloud SQL for the database, and Cloud Storage for files.</p>
+
+          <h2>Components to Create</h2>
+          <div class="card-grid">
+            <a href="./gke-cluster.html" class="card card-link">
+              <h3 class="card-title">GKE Cluster</h3>
+              <p class="card-description">Create a private GKE cluster with Workload Identity enabled.</p>
+            </a>
+            <a href="./cloud-sql.html" class="card card-link">
+              <h3 class="card-title">Cloud SQL</h3>
+              <p class="card-description">Set up MySQL or MSSQL database with private IP.</p>
+            </a>
+            <a href="./storage.html" class="card card-link">
+              <h3 class="card-title">Storage</h3>
+              <p class="card-description">Configure Cloud Storage for file uploads and assets.</p>
+            </a>
+          </div>
+
+          <h2>Infrastructure Overview</h2>
+          <pre><code>┌────────────────────────────────────────────────────────────────────┐
+│                           GKE Cluster                              │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │                        Node Pool                             │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │  │
+│  │  │   Node 1    │  │   Node 2    │  │   Node 3    │          │  │
+│  │  │  e2-medium  │  │  e2-medium  │  │  e2-medium  │          │  │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘          │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                              │                                     │
+│                        Private VPC                                 │
+│                              │                                     │
+│         ┌────────────────────┴────────────────────┐               │
+│         │                                         │                │
+│         ▼                                         ▼                │
+│  ┌─────────────────┐                    ┌─────────────────┐       │
+│  │   Cloud SQL     │                    │  Cloud Storage  │       │
+│  │  (Private IP)   │                    │    (Bucket)     │       │
+│  └─────────────────┘                    └─────────────────┘       │
+└────────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2>Estimated Costs</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Resource</th><th>Configuration</th><th>Est. Monthly Cost</th></tr></thead>
+              <tbody>
+                <tr><td>GKE Cluster</td><td>3x e2-medium nodes</td><td>~$75</td></tr>
+                <tr><td>Cloud SQL</td><td>db-custom-2-4096</td><td>~$50</td></tr>
+                <tr><td>Cloud Storage</td><td>10GB Standard</td><td>~$0.20</td></tr>
+                <tr><td>Cloud NAT</td><td>Per GB processed</td><td>~$5</td></tr>
+                <tr><td>Load Balancer</td><td>HTTP(S) LB</td><td>~$20</td></tr>
+                <tr><td><strong>Total</strong></td><td></td><td><strong>~$150/month</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Cost Optimization</div>
+            <p>For development environments, use smaller machine types (e2-small), fewer nodes, and consider using Autopilot clusters or spot VMs for significant savings.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Creation Time</div>
+            <p>GKE clusters take 5-10 minutes to create, and Cloud SQL instances take 10-15 minutes. Plan accordingly or run commands in parallel.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../foundation/networking.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Networking</span></a>
+          <a href="./gke-cluster.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">GKE Cluster</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

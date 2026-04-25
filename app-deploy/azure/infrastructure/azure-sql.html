@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure SQL — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href=".././">Overview</a></li>
+        <li><a href=".././prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href=".././foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href=".././infrastructure/">Overview</a></li>
+        <li><a href=".././infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href=".././infrastructure/azure-sql.html" class="active">Azure SQL</a></li>
+        <li><a href=".././infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href=".././deployment/">Overview</a></li>
+        <li><a href=".././deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href=".././deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href=".././deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href=".././networking/">Overview</a></li>
+        <li><a href=".././networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href=".././networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href=".././security/">Overview</a></li>
+        <li><a href=".././security/workload-identity.html">Workload Identity</a></li>
+        <li><a href=".././security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href=".././operations/">Overview</a></li>
+        <li><a href=".././operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href=".././operations/scaling.html">Scaling</a></li>
+        <li><a href=".././operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">Azure</a></li><li><a href="./">Infrastructure</a></li>
+          <li aria-current="page">Azure SQL</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>Azure SQL Database</h1>
+          <p class="text-secondary text-lg">Managed SQL Server for your .NET 8 application — with private endpoint and automatic backups.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Create Azure SQL with Terraform</h2>
+          <pre><code># sql.tf
+resource "azurerm_mssql_server" "main" {
+  name                         = "myapp-sql-server"
+  resource_group_name          = azurerm_resource_group.main.name
+  location                     = azurerm_resource_group.main.location
+  version                      = "12.0"
+  administrator_login          = "sqladmin"
+  administrator_login_password = var.sql_admin_password
+
+  azuread_administrator {
+    login_username = "AzureAD Admin"
+    object_id      = data.azurerm_client_config.current.object_id
+  }
+}
+
+resource "azurerm_mssql_database" "main" {
+  name           = "myapp-db"
+  server_id      = azurerm_mssql_server.main.id
+  collation      = "SQL_Latin1_General_CP1_CI_AS"
+  sku_name       = "S1"
+  max_size_gb    = 10
+  zone_redundant = false
+
+  short_term_retention_policy {
+    retention_days = 7
+  }
+}
+
+# Firewall rule — allow Azure services
+resource "azurerm_mssql_firewall_rule" "azure_services" {
+  name             = "AllowAzureServices"
+  server_id        = azurerm_mssql_server.main.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+}
+
+# VNet rule — restrict to AKS subnet
+resource "azurerm_mssql_virtual_network_rule" "aks" {
+  name      = "aks-subnet"
+  server_id = azurerm_mssql_server.main.id
+  subnet_id = azurerm_subnet.aks_nodes.id
+}</code></pre>
+
+          <h2>.NET 8 Connection String</h2>
+          <pre><code>// appsettings.json — connection string stored in Key Vault
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=myapp-sql-server.database.windows.net;Database=myapp-db;Authentication=Active Directory Default;"
+  }
+}
+
+// Program.cs — using Entity Framework Core
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Use Active Directory Auth — No Passwords</div>
+            <p>The connection string above uses <code>Authentication=Active Directory Default</code> — your AKS pod's Managed Identity authenticates automatically. No password needed, no credentials to rotate.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./aks-cluster.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AKS Cluster</span></a>
+          <a href="./storage.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Storage &amp; ACR</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

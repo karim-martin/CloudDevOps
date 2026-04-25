@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storage & ACR — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href=".././">Overview</a></li>
+        <li><a href=".././prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href=".././foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href=".././infrastructure/">Overview</a></li>
+        <li><a href=".././infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href=".././infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href=".././infrastructure/storage.html" class="active">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href=".././deployment/">Overview</a></li>
+        <li><a href=".././deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href=".././deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href=".././deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href=".././networking/">Overview</a></li>
+        <li><a href=".././networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href=".././networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href=".././security/">Overview</a></li>
+        <li><a href=".././security/workload-identity.html">Workload Identity</a></li>
+        <li><a href=".././security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href=".././operations/">Overview</a></li>
+        <li><a href=".././operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href=".././operations/scaling.html">Scaling</a></li>
+        <li><a href=".././operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">Azure</a></li><li><a href="./">Infrastructure</a></li>
+          <li aria-current="page">Storage &amp; ACR</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>Blob Storage &amp; Container Registry</h1>
+          <p class="text-secondary text-lg">Azure Blob Storage for file uploads and ACR for Docker images.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Blob Storage</h2>
+          <pre><code># storage.tf
+resource "azurerm_storage_account" "main" {
+  name                     = "myappfiles"
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = azurerm_resource_group.main.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
+
+  blob_properties {
+    cors_rule {
+      allowed_headers    = ["*"]
+      allowed_methods    = ["GET", "POST", "PUT"]
+      allowed_origins    = ["https://myapp.com"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 3600
+    }
+  }
+}
+
+resource "azurerm_storage_container" "uploads" {
+  name                  = "uploads"
+  storage_account_name  = azurerm_storage_account.main.name
+  container_access_type = "private"
+}</code></pre>
+
+          <h2>Azure Container Registry (ACR)</h2>
+          <pre><code"># acr.tf
+resource "azurerm_container_registry" "main" {
+  name                = "myappacr"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  sku                 = "Standard"
+  admin_enabled       = false
+}
+
+# Output the login server
+output "acr_login_server" {
+  value = azurerm_container_registry.main.login_server
+}</code></pre>
+
+          <h2>Push Images to ACR</h2>
+          <pre><code># Log in to ACR
+az acr login --name myappacr
+
+# Tag your local image
+docker tag myapp-frontend myappacr.azurecr.io/frontend:latest
+docker tag myapp-backend myappacr.azurecr.io/backend:latest
+
+# Push
+docker push myappacr.azurecr.io/frontend:latest
+docker push myappacr.azurecr.io/backend:latest</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./azure-sql.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure SQL</span></a>
+          <a href="../deployment/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Deployment</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS CodePipeline | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">DevOps</a></li><li aria-current="page">CodePipeline</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS CodePipeline</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Fully managed CI/CD pipeline orchestration service.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">CodePipeline is the Conductor</div>
+            <p>CodePipeline itself doesn't build or deploy anything — it coordinates other services. It connects your source code repo (GitHub, CodeCommit), triggers a CodeBuild job to build and test, optionally requires a manual approval, then deploys to EKS or Elastic Beanstalk. Think of it as a workflow engine that knows what to run and when, reacting to code changes automatically.</p>
+          </div>
+
+          <h2>Pipeline Stages</h2>
+          <pre><code># cloudformation/pipeline.yaml (simplified)
+Pipeline:
+  Type: AWS::CodePipeline::Pipeline
+  Properties:
+    Stages:
+      # Stage 1: Source — pull from GitHub on push
+      - Name: Source
+        Actions:
+          - Name: GitHub
+            ActionTypeId: {Category: Source, Owner: ThirdParty, Provider: GitHub, Version: 1}
+            Configuration:
+              Owner: myorg
+              Repo: myapp
+              Branch: main
+              OAuthToken: !Ref GitHubToken
+
+      # Stage 2: Build — run CodeBuild
+      - Name: Build
+        Actions:
+          - Name: BuildAndTest
+            ActionTypeId: {Category: Build, Owner: AWS, Provider: CodeBuild, Version: 1}
+            Configuration:
+              ProjectName: !Ref CodeBuildProject
+
+      # Stage 3: Manual approval (optional)
+      - Name: Approval
+        Actions:
+          - Name: ManualApproval
+            ActionTypeId: {Category: Approval, Owner: AWS, Provider: Manual, Version: 1}
+
+      # Stage 4: Deploy to EKS
+      - Name: Deploy
+        Actions:
+          - Name: DeployToEKS
+            ActionTypeId: {Category: Build, Owner: AWS, Provider: CodeBuild, Version: 1}
+            Configuration:
+              ProjectName: !Ref DeployProject</code></pre>
+
+          <h2>Typical buildspec.yml</h2>
+          <pre><code># buildspec.yml — runs in CodeBuild
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_URI
+  build:
+    commands:
+      - docker build -t $ECR_URI/myapp:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker push $ECR_URI/myapp:$CODEBUILD_RESOLVED_SOURCE_VERSION
+  post_build:
+    commands:
+      - aws eks update-kubeconfig --name my-cluster --region us-east-1
+      - kubectl set image deployment/my-app app=$ECR_URI/myapp:$CODEBUILD_RESOLVED_SOURCE_VERSION</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS DevOps</span></a>
+          <a href="./codebuild.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">CodeBuild</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

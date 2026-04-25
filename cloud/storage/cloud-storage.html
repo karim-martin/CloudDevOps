@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Storage - Object storage for files, backups, and static assets.">
+  <title>Cloud Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/gke.html">GKE</a></li><li><a href="../compute/cloud-run.html">Cloud Run</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/cloud-sql.html">Cloud SQL</a></li><li><a href="../databases/firestore.html">Firestore</a></li><li><a href="../databases/memorystore.html">Memorystore</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./cloud-storage.html" class="active">Cloud Storage</a></li><li><a href="./artifact-registry.html">Artifact Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/load-balancing.html">Load Balancing</a></li><li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li><li><a href="../networking/cloud-dns.html">Cloud DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secret-manager.html">Secret Manager</a></li><li><a href="../security/cloud-armor.html">Cloud Armor</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/cloud-build.html">Cloud Build</a></li><li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li><li><a href="../observability/cloud-logging.html">Cloud Logging</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Storage</a></li><li aria-current="page">Cloud Storage</li></ol></nav>
+        <header class="article-header"><h1>Cloud Storage</h1></header>
+
+        <div class="article-body">
+          <p>Cloud Storage is GCP's object storage service for storing and serving files, backups, static assets, and data.</p>
+
+          <h2 id="create-bucket">Create Bucket</h2>
+          <pre><code class="language-bash"># Create bucket
+gcloud storage buckets create gs://my-bucket \
+    --location=us-central1 \
+    --default-storage-class=STANDARD \
+    --uniform-bucket-level-access
+
+# With lifecycle and versioning
+gcloud storage buckets create gs://my-bucket \
+    --location=us \
+    --default-storage-class=STANDARD \
+    --uniform-bucket-level-access \
+    --enable-versioning</code></pre>
+
+          <h2 id="upload-download">Upload & Download</h2>
+          <pre><code class="language-bash"># Upload file
+gcloud storage cp local-file.txt gs://my-bucket/
+
+# Upload directory
+gcloud storage cp -r ./local-dir gs://my-bucket/
+
+# Download file
+gcloud storage cp gs://my-bucket/file.txt ./
+
+# Sync directory
+gcloud storage rsync -r ./local-dir gs://my-bucket/backup/</code></pre>
+
+          <h2 id="gsutil">gsutil Commands</h2>
+          <pre><code class="language-bash"># List buckets
+gsutil ls
+
+# List objects
+gsutil ls gs://my-bucket/
+gsutil ls -l gs://my-bucket/  # With details
+
+# Copy
+gsutil cp file.txt gs://my-bucket/
+gsutil cp -r dir/ gs://my-bucket/
+
+# Move/rename
+gsutil mv gs://my-bucket/old.txt gs://my-bucket/new.txt
+
+# Delete
+gsutil rm gs://my-bucket/file.txt
+gsutil rm -r gs://my-bucket/dir/
+
+# Get object info
+gsutil stat gs://my-bucket/file.txt</code></pre>
+
+          <h2 id="access-control">Access Control</h2>
+          <pre><code class="language-bash"># Make bucket public (not recommended for sensitive data)
+gcloud storage buckets add-iam-policy-binding gs://my-bucket \
+    --member=allUsers \
+    --role=roles/storage.objectViewer
+
+# Grant access to service account
+gcloud storage buckets add-iam-policy-binding gs://my-bucket \
+    --member=serviceAccount:my-sa@project.iam.gserviceaccount.com \
+    --role=roles/storage.objectAdmin
+
+# Remove public access
+gcloud storage buckets remove-iam-policy-binding gs://my-bucket \
+    --member=allUsers \
+    --role=roles/storage.objectViewer</code></pre>
+
+          <h2 id="signed-urls">Signed URLs</h2>
+          <pre><code class="language-bash"># Generate signed URL (requires service account key)
+gsutil signurl -d 1h key.json gs://my-bucket/file.txt
+
+# Using gcloud (with impersonation)
+gcloud storage sign-url gs://my-bucket/file.txt \
+    --duration=1h \
+    --impersonate-service-account=my-sa@project.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="lifecycle">Lifecycle Management</h2>
+          <pre><code class="language-json">// lifecycle.json
+{
+  "rule": [
+    {
+      "action": {"type": "Delete"},
+      "condition": {"age": 365}
+    },
+    {
+      "action": {"type": "SetStorageClass", "storageClass": "NEARLINE"},
+      "condition": {"age": 30}
+    },
+    {
+      "action": {"type": "Delete"},
+      "condition": {"isLive": false, "numNewerVersions": 3}
+    }
+  ]
+}</code></pre>
+          <pre><code class="language-bash"># Apply lifecycle rules
+gcloud storage buckets update gs://my-bucket --lifecycle-file=lifecycle.json</code></pre>
+
+          <h2 id="cors">CORS Configuration</h2>
+          <pre><code class="language-json">// cors.json
+[
+  {
+    "origin": ["https://example.com"],
+    "method": ["GET", "PUT", "POST"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  }
+]</code></pre>
+          <pre><code class="language-bash"># Apply CORS
+gcloud storage buckets update gs://my-bucket --cors-file=cors.json</code></pre>
+
+          <h2 id="sdk-examples">SDK Examples</h2>
+          <h3>Node.js</h3>
+          <pre><code class="language-javascript">const { Storage } = require('@google-cloud/storage');
+const storage = new Storage();
+const bucket = storage.bucket('my-bucket');
+
+// Upload
+await bucket.upload('local-file.txt', { destination: 'remote-file.txt' });
+
+// Download
+await bucket.file('remote-file.txt').download({ destination: 'local-file.txt' });
+
+// List
+const [files] = await bucket.getFiles();
+files.forEach(file => console.log(file.name));
+
+// Delete
+await bucket.file('file.txt').delete();
+
+// Generate signed URL
+const [url] = await bucket.file('file.txt').getSignedUrl({
+  action: 'read',
+  expires: Date.now() + 60 * 60 * 1000 // 1 hour
+});</code></pre>
+
+          <h3>Python</h3>
+          <pre><code class="language-python">from google.cloud import storage
+
+client = storage.Client()
+bucket = client.bucket('my-bucket')
+
+# Upload
+blob = bucket.blob('remote-file.txt')
+blob.upload_from_filename('local-file.txt')
+
+# Download
+blob = bucket.blob('remote-file.txt')
+blob.download_to_filename('local-file.txt')
+
+# List
+blobs = bucket.list_blobs()
+for blob in blobs:
+    print(blob.name)
+
+# Delete
+bucket.blob('file.txt').delete()
+
+# Signed URL
+url = blob.generate_signed_url(expiration=3600)</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List buckets
+gcloud storage buckets list
+
+# Describe bucket
+gcloud storage buckets describe gs://my-bucket
+
+# Delete bucket (must be empty)
+gcloud storage buckets delete gs://my-bucket
+
+# Delete bucket and contents
+gcloud storage rm -r gs://my-bucket
+
+# Get bucket size
+gsutil du -s gs://my-bucket/</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Bucket Names are Global</div>
+            <p>Bucket names must be globally unique across all of GCP. Use project ID or domain name as prefix to ensure uniqueness.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Storage Overview</span></a>
+          <a href="./artifact-registry.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Artifact Registry</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

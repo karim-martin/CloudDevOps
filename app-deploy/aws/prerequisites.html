@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Prerequisites | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Overview</a></li>
+        <li><a href="./foundation/account-setup.html">AWS Account Setup</a></li>
+        <li><a href="./foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/">Overview</a></li>
+        <li><a href="./infrastructure/eks-cluster.html">EKS Cluster</a></li>
+        <li><a href="./infrastructure/rds.html">RDS Database</a></li>
+        <li><a href="./infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/irsa.html">IRSA</a></li>
+        <li><a href="./security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="./operations/scaling.html">Autoscaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">AWS</a></li><li aria-current="page">Prerequisites</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS Prerequisites</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Tools and accounts needed before deploying to AWS EKS.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Required Accounts</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">☁️</div><div class="feature-text"><h4>AWS Account</h4><p>Create a free account at aws.amazon.com. New accounts get a 12-month free tier. Enable MFA on the root account immediately.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🐙</div><div class="feature-text"><h4>GitHub Account</h4><p>Required for the CI/CD pipeline. Your React and .NET 8 source code should be in a GitHub repository.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🌐</div><div class="feature-text"><h4>Domain Name (optional)</h4><p>Register a domain in Route 53 or bring your own. Required for HTTPS with a custom domain. Can be added later.</p></div></div>
+          </div>
+
+          <h2>Required CLI Tools</h2>
+          <pre><code># 1. AWS CLI v2
+# macOS:
+brew install awscli
+# Linux:
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip && sudo ./aws/install
+
+aws --version  # aws-cli/2.x.x
+
+# 2. eksctl — EKS cluster management
+# macOS:
+brew tap weaveworks/tap
+brew install weaveworks/tap/eksctl
+# Linux:
+ARCH=amd64
+PLATFORM=$(uname -s)_$ARCH
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && sudo mv /tmp/eksctl /usr/local/bin
+
+eksctl version
+
+# 3. kubectl
+# macOS:
+brew install kubectl
+# Linux:
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+kubectl version --client
+
+# 4. Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version
+
+# 5. Terraform
+# macOS:
+brew tap hashicorp/tap && brew install hashicorp/tap/terraform
+# Linux: https://developer.hashicorp.com/terraform/install
+terraform --version
+
+# 6. Docker
+# https://docs.docker.com/get-docker/
+docker --version</code></pre>
+
+          <h2>Configure AWS CLI</h2>
+          <pre><code># Create an IAM user with programmatic access (least privilege)
+# Never use root account credentials here
+
+aws configure
+# AWS Access Key ID: AKIA...
+# AWS Secret Access Key: ...
+# Default region name: us-east-1
+# Default output format: json
+
+# Verify
+aws sts get-caller-identity</code></pre>
+
+          <h2>Application Requirements</h2>
+          <p>This guide deploys a React + .NET 8 app. Your app needs:</p>
+          <ul>
+            <li><strong>React frontend</strong> — build with <code>npm run build</code>, serve with Nginx or serve-static</li>
+            <li><strong>.NET 8 backend</strong> — Web API project that reads config from environment variables or AWS Secrets Manager</li>
+            <li><strong>Dockerfiles</strong> — one per service (we'll create these in the Deployment section)</li>
+            <li><strong>Health check endpoints</strong> — <code>GET /health</code> returning HTTP 200 for Kubernetes liveness probes</li>
+          </ul>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS Deploy Overview</span></a>
+          <a href="./foundation/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Foundation</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

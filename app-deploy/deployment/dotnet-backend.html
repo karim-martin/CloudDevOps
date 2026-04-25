@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deploy .NET 8 backend to GKE with database connection and Workload Identity.">
+  <title>.NET Backend | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./containerize.html">Containerize</a></li>
+        <li><a href="./react-frontend.html">React Frontend</a></li>
+        <li><a href="./dotnet-backend.html" class="active">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Deployment</a></li><li aria-current="page">.NET Backend</li></ol></nav>
+        <header class="article-header"><h1>Deploy .NET Backend</h1></header>
+
+        <div class="article-body">
+          <p>Deploy the .NET 8 backend API to GKE with 3 replicas, database connection via Secret, and Workload Identity for GCP access.</p>
+
+          <h2 id="deployment-yaml">Deployment</h2>
+          <pre><code class="language-yaml"># k8s/backend/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-api
+  namespace: app
+  labels:
+    app: dotnet-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dotnet-api
+  template:
+    metadata:
+      labels:
+        app: dotnet-api
+    spec:
+      serviceAccountName: app-ksa
+      containers:
+      - name: api
+        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/backend:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: connection-string
+        - name: GCS_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: gcs-bucket
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 30</code></pre>
+
+          <h2 id="service-yaml">Service</h2>
+          <pre><code class="language-yaml"># k8s/backend/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-api
+  namespace: app
+  labels:
+    app: dotnet-api
+spec:
+  type: ClusterIP
+  selector:
+    app: dotnet-api
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http</code></pre>
+
+          <h2 id="configmap-yaml">ConfigMap</h2>
+          <pre><code class="language-yaml"># k8s/backend/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: app
+data:
+  gcs-bucket: "PROJECT_ID-app-uploads"
+  log-level: "Information"
+  allowed-origins: "https://app.example.com"</code></pre>
+
+          <h2 id="secret-yaml">Secret (for reference - create via kubectl)</h2>
+          <pre><code class="language-yaml"># k8s/backend/secret.yaml (DO NOT commit with real values)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: app
+type: Opaque
+stringData:
+  connection-string: "Server=10.x.x.x;Database=appdb;User=appuser;Password=SECURE_PASSWORD;SslMode=Required;"</code></pre>
+
+          <pre><code class="language-bash"># Better: Create secret via kubectl (not committed to git)
+kubectl create secret generic db-credentials \
+    --namespace=app \
+    --from-literal=connection-string="Server=${DB_HOST};Database=appdb;User=appuser;Password=${DB_PASSWORD};SslMode=Required;"</code></pre>
+
+          <h2 id="deploy-backend">Deploy to Cluster</h2>
+          <pre><code class="language-bash"># Ensure namespace exists
+kubectl create namespace app --dry-run=client -o yaml | kubectl apply -f -
+
+# Create secret first (if not already created)
+kubectl create secret generic db-credentials \
+    --namespace=app \
+    --from-literal=connection-string="Server=${DB_HOST};Database=appdb;User=appuser;Password=${DB_PASSWORD};SslMode=Required;"
+
+# Apply ConfigMap
+kubectl apply -f k8s/backend/configmap.yaml
+
+# Apply Deployment
+kubectl apply -f k8s/backend/deployment.yaml
+
+# Apply Service
+kubectl apply -f k8s/backend/service.yaml
+
+# Or apply all non-secret files
+kubectl apply -f k8s/backend/configmap.yaml -f k8s/backend/deployment.yaml -f k8s/backend/service.yaml</code></pre>
+
+          <h2 id="verify-deployment">Verify Deployment</h2>
+          <pre><code class="language-bash"># Check deployment status
+kubectl get deployment dotnet-api -n app
+
+# Check pods are running
+kubectl get pods -l app=dotnet-api -n app
+
+# Check for any issues
+kubectl describe pod -l app=dotnet-api -n app
+
+# View logs
+kubectl logs -l app=dotnet-api -n app --tail=100
+
+# Check if database connection works
+kubectl logs -l app=dotnet-api -n app | grep -i "database\|connection\|error"
+
+# Watch rollout
+kubectl rollout status deployment/dotnet-api -n app</code></pre>
+
+          <h2 id="test-backend">Test Backend</h2>
+          <pre><code class="language-bash"># Port forward to test locally
+kubectl port-forward service/dotnet-api 8080:8080 -n app
+
+# Test endpoints
+curl http://localhost:8080/health
+curl http://localhost:8080/health/ready
+curl http://localhost:8080/api/your-endpoint
+
+# Test from inside the cluster
+kubectl run test-curl --rm -it --restart=Never --image=curlimages/curl -- \
+    curl http://dotnet-api.app.svc.cluster.local:8080/health</code></pre>
+
+          <h2 id="workload-identity-verify">Verify Workload Identity</h2>
+          <pre><code class="language-bash"># Verify pod is using the correct service account
+kubectl get pod -l app=dotnet-api -n app -o jsonpath='{.items[0].spec.serviceAccountName}'
+# Should output: app-ksa
+
+# Test GCS access from pod
+kubectl exec -it deployment/dotnet-api -n app -- \
+    curl -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email
+# Should output: app-workload-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Command</th></tr></thead>
+              <tbody>
+                <tr><td>Pod not starting</td><td><code>kubectl describe pod -l app=dotnet-api -n app</code></td></tr>
+                <tr><td>Image pull error</td><td><code>kubectl get events -n app --sort-by=.lastTimestamp</code></td></tr>
+                <tr><td>Database connection</td><td><code>kubectl logs -l app=dotnet-api -n app | grep -i error</code></td></tr>
+                <tr><td>Secret not found</td><td><code>kubectl get secret db-credentials -n app</code></td></tr>
+                <tr><td>Health check failing</td><td><code>kubectl port-forward pod/POD_NAME 8080:8080 && curl localhost:8080/health</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="update-secret">Update Secret</h2>
+          <pre><code class="language-bash"># Update database credentials
+kubectl delete secret db-credentials -n app
+kubectl create secret generic db-credentials \
+    --namespace=app \
+    --from-literal=connection-string="NEW_CONNECTION_STRING"
+
+# Restart pods to pick up new secret
+kubectl rollout restart deployment/dotnet-api -n app</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Startup Probe</div>
+            <p>The startupProbe gives the app 150 seconds (30 failures × 5 seconds) to start. This is important for .NET apps that may take time to initialize database connections.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Service Account</div>
+            <p>The deployment uses serviceAccountName: app-ksa which is linked to the GCP service account via Workload Identity. This allows the pod to access Cloud SQL and Cloud Storage without credential files.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./react-frontend.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">React Frontend</span></a>
+          <a href="../networking/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

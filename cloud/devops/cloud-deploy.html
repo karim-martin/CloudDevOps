@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Deploy - Managed CD for GKE and Cloud Run.">
+  <title>Cloud Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-build.html">Cloud Build</a></li>
+        <li><a href="./cloud-deploy.html" class="active">Cloud Deploy</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud Deploy</h1></header>
+        <div class="article-body">
+          <p>Cloud Deploy is a managed continuous delivery service for GKE and Cloud Run with built-in approval workflows and rollbacks.</p>
+
+          <h2>Delivery Pipeline</h2>
+          <pre><code class="language-yaml"># clouddeploy.yaml
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: my-app-pipeline
+description: Pipeline for my-app
+serialPipeline:
+  stages:
+    - targetId: dev
+      profiles: [dev]
+    - targetId: staging
+      profiles: [staging]
+    - targetId: prod
+      profiles: [prod]
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: dev
+description: Dev GKE cluster
+gke:
+  cluster: projects/PROJECT/locations/us-central1/clusters/dev-cluster
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: staging
+description: Staging GKE cluster
+gke:
+  cluster: projects/PROJECT/locations/us-central1/clusters/staging-cluster
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: prod
+description: Production GKE cluster
+requireApproval: true
+gke:
+  cluster: projects/PROJECT/locations/us-central1/clusters/prod-cluster</code></pre>
+
+          <h2>Skaffold Config</h2>
+          <pre><code class="language-yaml"># skaffold.yaml
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: my-app
+manifests:
+  rawYaml:
+    - k8s/*.yaml
+deploy:
+  kubectl: {}
+profiles:
+  - name: dev
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+  - name: staging
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+  - name: prod
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod</code></pre>
+
+          <h2>Cloud Run Target</h2>
+          <pre><code class="language-yaml">apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: run-prod
+description: Cloud Run production
+run:
+  location: projects/PROJECT/locations/us-central1</code></pre>
+
+          <h2>Apply Pipeline</h2>
+          <pre><code class="language-bash"># Register pipeline and targets
+gcloud deploy apply --file=clouddeploy.yaml --region=us-central1
+
+# List pipelines
+gcloud deploy delivery-pipelines list --region=us-central1
+
+# Describe pipeline
+gcloud deploy delivery-pipelines describe my-app-pipeline --region=us-central1</code></pre>
+
+          <h2>Create Release</h2>
+          <pre><code class="language-bash"># Create release (starts deployment to first target)
+gcloud deploy releases create release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1 \
+    --images=app=us-central1-docker.pkg.dev/PROJECT/repo/app:v1.0.0
+
+# Create release from Cloud Build
+# In cloudbuild.yaml:
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/repo/app:$COMMIT_SHA', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/repo/app:$COMMIT_SHA']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'deploy'
+      - 'releases'
+      - 'create'
+      - 'release-$SHORT_SHA'
+      - '--delivery-pipeline=my-app-pipeline'
+      - '--region=us-central1'
+      - '--images=app=us-central1-docker.pkg.dev/$PROJECT_ID/repo/app:$COMMIT_SHA'</code></pre>
+
+          <h2>Promote Release</h2>
+          <pre><code class="language-bash"># Promote to next stage
+gcloud deploy releases promote \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1
+
+# Promote to specific target
+gcloud deploy releases promote \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1 \
+    --to-target=prod</code></pre>
+
+          <h2>Approvals</h2>
+          <pre><code class="language-bash"># Approve rollout (for targets with requireApproval: true)
+gcloud deploy rollouts approve rollout-001 \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1
+
+# Reject rollout
+gcloud deploy rollouts reject rollout-001 \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1</code></pre>
+
+          <h2>Rollback</h2>
+          <pre><code class="language-bash"># Rollback to previous release
+gcloud deploy targets rollback prod \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1
+
+# Deploy specific previous release
+gcloud deploy releases promote \
+    --release=release-000 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1 \
+    --to-target=prod</code></pre>
+
+          <h2>Canary Deployments</h2>
+          <pre><code class="language-yaml">apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: canary-pipeline
+serialPipeline:
+  stages:
+    - targetId: prod
+      strategy:
+        canary:
+          runtimeConfig:
+            kubernetes:
+              serviceNetworking:
+                service: my-service
+                deployment: my-deployment
+          canaryDeployment:
+            percentages: [10, 25, 50, 75]
+            verify: true</code></pre>
+
+          <h2>View Status</h2>
+          <pre><code class="language-bash"># List releases
+gcloud deploy releases list \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1
+
+# List rollouts for a release
+gcloud deploy rollouts list \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1
+
+# Describe rollout
+gcloud deploy rollouts describe rollout-001 \
+    --release=release-001 \
+    --delivery-pipeline=my-app-pipeline \
+    --region=us-central1</code></pre>
+
+          <h2>Automation</h2>
+          <pre><code class="language-yaml"># Auto-promote to staging after dev succeeds
+apiVersion: deploy.cloud.google.com/v1
+kind: Automation
+metadata:
+  name: auto-promote-staging
+deliveryPipeline: my-app-pipeline
+selector:
+  targets:
+    - id: dev
+rules:
+  - promoteRelease:
+      targetId: staging
+      wait: 600s # Wait 10 minutes after dev success</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

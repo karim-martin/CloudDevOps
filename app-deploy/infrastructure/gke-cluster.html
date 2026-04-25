@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a GKE cluster with private nodes and Workload Identity.">
+  <title>GKE Cluster | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./gke-cluster.html" class="active">GKE Cluster</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Infrastructure</a></li><li aria-current="page">GKE Cluster</li></ol></nav>
+        <header class="article-header"><h1>GKE Cluster Setup</h1></header>
+
+        <div class="article-body">
+          <p>Create a private GKE cluster with VPC-native networking and Workload Identity for secure, keyless authentication.</p>
+
+          <h2 id="cluster-options">Cluster Type Decision</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Standard</th><th>Autopilot</th></tr></thead>
+              <tbody>
+                <tr><td>Node Management</td><td>You manage</td><td>Google manages</td></tr>
+                <tr><td>Pricing</td><td>Per node</td><td>Per pod resources</td></tr>
+                <tr><td>Customization</td><td>Full control</td><td>Limited</td></tr>
+                <tr><td>Best For</td><td>Production, custom needs</td><td>Simplicity, variable loads</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>This guide uses <strong>Standard mode</strong> for full control. For simpler setups, consider Autopilot.</p>
+
+          <h2 id="create-cluster">Create GKE Cluster</h2>
+          <pre><code class="language-bash"># Create private GKE cluster with Workload Identity
+gcloud container clusters create app-cluster \
+    --region=$REGION \
+    --num-nodes=1 \
+    --machine-type=e2-medium \
+    --disk-size=50GB \
+    --network=app-vpc \
+    --subnetwork=app-subnet \
+    --cluster-secondary-range-name=pods \
+    --services-secondary-range-name=services \
+    --enable-ip-alias \
+    --enable-private-nodes \
+    --master-ipv4-cidr=172.16.0.0/28 \
+    --enable-master-authorized-networks \
+    --master-authorized-networks=0.0.0.0/0 \
+    --workload-pool=${PROJECT_ID}.svc.id.goog \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=5 \
+    --tags=gke-node
+
+# This takes 5-10 minutes...</code></pre>
+
+          <h3>Cluster Configuration Explained</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Flag</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>--region</td><td>Regional cluster (high availability across zones)</td></tr>
+                <tr><td>--num-nodes=1</td><td>1 node per zone (3 total for regional)</td></tr>
+                <tr><td>--enable-private-nodes</td><td>Nodes have no public IPs (more secure)</td></tr>
+                <tr><td>--master-ipv4-cidr</td><td>Private IP range for control plane</td></tr>
+                <tr><td>--workload-pool</td><td>Enables Workload Identity</td></tr>
+                <tr><td>--enable-autoscaling</td><td>Auto-scale nodes based on demand</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="connect-kubectl">Connect kubectl</h2>
+          <pre><code class="language-bash"># Get cluster credentials
+gcloud container clusters get-credentials app-cluster --region=$REGION
+
+# Verify connection
+kubectl cluster-info
+
+# Check nodes
+kubectl get nodes
+
+# Check namespaces
+kubectl get namespaces</code></pre>
+
+          <h2 id="create-namespace">Create Application Namespace</h2>
+          <pre><code class="language-bash"># Create dedicated namespace for the application
+kubectl create namespace app
+
+# Set as default namespace (optional)
+kubectl config set-context --current --namespace=app
+
+# Verify
+kubectl get namespace app</code></pre>
+
+          <h2 id="kubernetes-service-account">Create Kubernetes Service Account</h2>
+          <p>Create a Kubernetes Service Account that will be linked to the GCP Service Account via Workload Identity:</p>
+          <pre><code class="language-yaml"># k8s/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-ksa
+  namespace: app
+  annotations:
+    iam.gke.io/gcp-service-account: app-workload-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <pre><code class="language-bash"># Apply the service account (replace PROJECT_ID first)
+sed "s/PROJECT_ID/$PROJECT_ID/g" k8s/service-account.yaml | kubectl apply -f -
+
+# Or create directly
+kubectl create serviceaccount app-ksa -n app
+
+# Add annotation for Workload Identity
+kubectl annotate serviceaccount app-ksa \
+    --namespace app \
+    iam.gke.io/gcp-service-account=app-workload-sa@${PROJECT_ID}.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="workload-identity-binding">Enable Workload Identity Binding</h2>
+          <pre><code class="language-bash"># Allow KSA to impersonate GSA
+gcloud iam service-accounts add-iam-policy-binding \
+    app-workload-sa@${PROJECT_ID}.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="serviceAccount:${PROJECT_ID}.svc.id.goog[app/app-ksa]"</code></pre>
+
+          <h2 id="verify-workload-identity">Verify Workload Identity</h2>
+          <pre><code class="language-bash"># Deploy a test pod to verify Workload Identity works
+kubectl run workload-identity-test \
+    --image=google/cloud-sdk:slim \
+    --namespace=app \
+    --serviceaccount=app-ksa \
+    --rm -it --restart=Never \
+    -- gcloud auth list
+
+# Should show: app-workload-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="cluster-commands">Useful Cluster Commands</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>gcloud container clusters list</code></td><td>List all clusters</td></tr>
+                <tr><td><code>gcloud container clusters describe app-cluster --region=$REGION</code></td><td>Cluster details</td></tr>
+                <tr><td><code>kubectl get nodes -o wide</code></td><td>Node details with IPs</td></tr>
+                <tr><td><code>kubectl top nodes</code></td><td>Node resource usage</td></tr>
+                <tr><td><code>kubectl get pods -A</code></td><td>All pods in all namespaces</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="autopilot-alternative">Alternative: Autopilot Cluster</h2>
+          <p>For a simpler setup with less management overhead:</p>
+          <pre><code class="language-bash"># Create Autopilot cluster (Google manages everything)
+gcloud container clusters create-auto app-cluster-autopilot \
+    --region=$REGION \
+    --network=app-vpc \
+    --subnetwork=app-subnet \
+    --cluster-secondary-range-name=pods \
+    --services-secondary-range-name=services</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Cluster Creation Time</div>
+            <p>Cluster creation takes 5-10 minutes. You can proceed to create Cloud SQL in a separate terminal while waiting.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Private Cluster Access</div>
+            <p>With --enable-private-nodes, nodes have no public IPs. They access the internet via Cloud NAT (configured earlier). This is more secure but requires proper NAT setup.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Infrastructure Overview</span></a>
+          <a href="./cloud-sql.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud SQL</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

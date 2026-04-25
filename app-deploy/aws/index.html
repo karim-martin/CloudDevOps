@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deploy to AWS EKS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Overview</a></li>
+        <li><a href="./foundation/account-setup.html">AWS Account Setup</a></li>
+        <li><a href="./foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/">Overview</a></li>
+        <li><a href="./infrastructure/eks-cluster.html">EKS Cluster</a></li>
+        <li><a href="./infrastructure/rds.html">RDS Database</a></li>
+        <li><a href="./infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/irsa.html">IRSA</a></li>
+        <li><a href="./security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="./operations/scaling.html">Autoscaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">AWS</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Deploy to AWS EKS</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">End-to-end guide for deploying React + .NET 8 to Amazon EKS.</p>
+        </header>
+        <div class="article-body">
+
+          <p>This guide walks you through deploying a production-ready React + .NET 8 application to Amazon Elastic Kubernetes Service (EKS) — the industry standard for running Kubernetes on AWS.</p>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Target AWS Architecture</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user"><div class="arch-box-title">👤 User</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws"><div class="arch-box-title">🌐 Route 53 + CloudFront</div><div class="arch-box-subtitle">DNS + CDN + SSL</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws"><div class="arch-box-title">⚖️ ALB (AWS Load Balancer Controller)</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">EKS Cluster — Private Subnets</span>
+                <div class="arch-row" style="margin-top:0.5rem;">
+                  <div class="arch-box arch-box-aws"><div class="arch-box-title">⚛️ React (3 pods)</div></div>
+                  <div class="arch-arrow-right">→</div>
+                  <div class="arch-box arch-box-aws"><div class="arch-box-title">⚙️ .NET API (3 pods)</div></div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-aws" style="min-width:120px;"><div class="arch-box-title">🗄️ RDS</div></div>
+                <div style="width:1rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:120px;"><div class="arch-box-title">📦 S3</div></div>
+                <div style="width:1rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:120px;"><div class="arch-box-title">🔑 Secrets Mgr</div></div>
+              </div>
+            </div>
+          </div>
+
+          <h2>What You'll Build</h2>
+          <ul>
+            <li><strong>EKS Cluster</strong> — Managed Kubernetes with Managed Node Groups across 3 AZs</li>
+            <li><strong>React Frontend</strong> — 3 replicas, served via ALB with CloudFront CDN</li>
+            <li><strong>.NET 8 Backend</strong> — 3 replicas with Horizontal Pod Autoscaler</li>
+            <li><strong>RDS PostgreSQL</strong> — Multi-AZ managed database in private subnets</li>
+            <li><strong>S3</strong> — Object storage for file uploads</li>
+            <li><strong>ACM SSL</strong> — AWS-managed certificates with auto-renewal</li>
+            <li><strong>IRSA</strong> — Keyless authentication for pods via IAM Roles for Service Accounts</li>
+            <li><strong>CI/CD</strong> — GitHub Actions pushing to ECR and deploying to EKS</li>
+          </ul>
+
+          <h2>Learning Path</h2>
+          <div class="card-grid">
+            <a href="./foundation/" class="card card-link"><h3 class="card-title">1. Foundation</h3><p class="card-description">AWS account setup, IAM configuration, and VPC networking with public/private subnets.</p></a>
+            <a href="./infrastructure/" class="card card-link"><h3 class="card-title">2. Infrastructure</h3><p class="card-description">EKS cluster, RDS PostgreSQL database, and S3 storage using Terraform.</p></a>
+            <a href="./deployment/" class="card card-link"><h3 class="card-title">3. Deployment</h3><p class="card-description">Dockerfiles, Kubernetes manifests, and deploying both services to EKS.</p></a>
+            <a href="./networking/" class="card card-link"><h3 class="card-title">4. Networking</h3><p class="card-description">AWS Load Balancer Controller, ALB Ingress, and ACM SSL certificates.</p></a>
+            <a href="./security/" class="card card-link"><h3 class="card-title">5. Security</h3><p class="card-description">IRSA for keyless auth, Secrets Manager integration, and WAF protection.</p></a>
+            <a href="./operations/" class="card card-link"><h3 class="card-title">6. Operations</h3><p class="card-description">GitHub Actions CI/CD, HPA autoscaling, and CloudWatch monitoring.</p></a>
+          </div>
+
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Component</th><th>Technology</th><th>AWS Service</th></tr></thead>
+            <tbody>
+              <tr><td>Frontend</td><td>React 18</td><td>EKS + ALB + CloudFront</td></tr>
+              <tr><td>Backend</td><td>.NET 8 Web API</td><td>EKS + ALB</td></tr>
+              <tr><td>Database</td><td>PostgreSQL</td><td>RDS Multi-AZ</td></tr>
+              <tr><td>File Storage</td><td>Object Storage</td><td>S3</td></tr>
+              <tr><td>Container Images</td><td>Docker</td><td>ECR</td></tr>
+              <tr><td>Secrets</td><td>Credentials/API keys</td><td>AWS Secrets Manager</td></tr>
+              <tr><td>Pod Identity</td><td>Keyless Auth</td><td>IRSA</td></tr>
+              <tr><td>SSL Certificate</td><td>HTTPS</td><td>AWS Certificate Manager</td></tr>
+              <tr><td>CI/CD</td><td>Automation</td><td>GitHub Actions</td></tr>
+              <tr><td>Monitoring</td><td>Metrics + Logs</td><td>CloudWatch Container Insights</td></tr>
+            </tbody>
+          </table></div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Cost Estimate</div>
+            <p>Running this setup on AWS costs approximately $8–20/day for a development cluster (EKS: $0.10/hr, 2× t3.medium nodes: ~$0.094/hr, RDS t3.micro: ~$0.025/hr). Use <strong>Spot Instances</strong> for non-prod to save 70%. Delete resources when done, or use the AWS Free Tier where available.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">App Deploy Overview</span></a>
+          <a href="./prerequisites.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Prerequisites</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

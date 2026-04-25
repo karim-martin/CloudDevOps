@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li aria-current="page">Networking</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure Networking</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">VNet, Load Balancer, Azure Front Door CDN, and Azure DNS.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Azure Networking = Your Private Data Center in Microsoft's Cloud</div>
+            <p>Every Azure resource lives inside a <strong>Virtual Network (VNet)</strong>. VNets contain subnets — public (internet-facing) and private (internal only). The <strong>Application Gateway</strong> or <strong>Azure Load Balancer</strong> handles inbound HTTP(S) traffic. <strong>Azure Front Door</strong> adds global CDN and WAF at the edge. <strong>Azure DNS</strong> manages your domain records.</p>
+          </div>
+
+          <div class="card-grid">
+            <a href="./vnet.html" class="card card-link"><h3 class="card-title">VNet</h3><p class="card-description">Virtual Network — your private network in Azure. Subnets, NSGs, private endpoints, and VNet peering.</p></a>
+            <a href="./load-balancer.html" class="card card-link"><h3 class="card-title">Load Balancer &amp; App Gateway</h3><p class="card-description">Azure Load Balancer (L4) for TCP/UDP. Application Gateway (L7) for HTTP/HTTPS with WAF and AKS Ingress.</p></a>
+            <a href="./cdn.html" class="card card-link"><h3 class="card-title">CDN / Front Door</h3><p class="card-description">Azure Front Door combines global CDN, WAF, and load balancing. Serve static content fast worldwide.</p></a>
+            <a href="./dns.html" class="card card-link"><h3 class="card-title">Azure DNS</h3><p class="card-description">Host DNS zones in Azure. 100% SLA, global anycast. Integrate with Traffic Manager for intelligent routing.</p></a>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../storage/acr.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure Container Registry</span></a>
+          <a href="./vnet.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">VNet</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

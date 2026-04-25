@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure SQL | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li><a href="./">Databases</a></li><li aria-current="page">Azure SQL</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure SQL</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Managed SQL Server — intelligent, always up-to-date cloud database.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Azure SQL = SQL Server, Without the Server</div>
+            <p>Azure SQL Database is Microsoft's managed SQL Server in the cloud. It's <strong>100% compatible with SQL Server</strong> — so if you have an on-prem SQL Server app, you can migrate it to Azure SQL with minimal code changes. Azure manages backups (point-in-time restore up to 35 days), patches, high availability (3 replicas by default on the Business Critical tier), and automatic scaling.</p>
+          </div>
+
+          <h2>Service Tiers</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Tier</th><th>Use Case</th><th>HA Replicas</th><th>Pricing</th></tr></thead>
+            <tbody>
+              <tr><td>Basic / Standard</td><td>Dev/test, small apps</td><td>None</td><td>From $5/month</td></tr>
+              <tr><td>General Purpose</td><td>Most production workloads</td><td>1 standby</td><td>~$0.017/vCore/hr</td></tr>
+              <tr><td>Business Critical</td><td>High performance, readable replicas</td><td>3 replicas</td><td>~$0.051/vCore/hr</td></tr>
+              <tr><td>Hyperscale</td><td>100+ TB, fast backup/restore</td><td>Configurable</td><td>Custom</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Create Azure SQL Database</h2>
+          <pre><code># Create SQL Server
+az sql server create \
+  --name myapp-sqlserver \
+  --resource-group myapp-rg \
+  --location eastus \
+  --admin-user adminuser \
+  --admin-password "Str0ngP@ssw0rd!"
+
+# Create database
+az sql db create \
+  --server myapp-sqlserver \
+  --resource-group myapp-rg \
+  --name myapp-db \
+  --edition GeneralPurpose \
+  --family Gen5 \
+  --capacity 2 \
+  --backup-storage-redundancy Zone
+
+# Allow AKS subnet to connect (private endpoint preferred)
+az sql server firewall-rule create \
+  --server myapp-sqlserver \
+  --resource-group myapp-rg \
+  --name AllowAKS \
+  --start-ip-address 10.0.11.0 \
+  --end-ip-address 10.0.11.255</code></pre>
+
+          <h2>Connect from .NET</h2>
+          <pre><code">// Program.cs — retrieve connection string from Key Vault
+var keyVaultUri = new Uri("https://myapp-vault.vault.azure.net/");
+var credential = new DefaultAzureCredential();  // Workload Identity
+var client = new SecretClient(keyVaultUri, credential);
+
+var connString = (await client.GetSecretAsync("sql-connection-string")).Value.Value;
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlServer(connString));</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure Databases</span></a>
+          <a href="./cosmos-db.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cosmos DB</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure SSL/TLS certificates and HTTPS redirect for GKE Ingress.">
+  <title>SSL/HTTPS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./ingress.html">Ingress</a></li>
+        <li><a href="./ssl-https.html" class="active">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Networking</a></li><li aria-current="page">SSL/HTTPS</li></ol></nav>
+        <header class="article-header"><h1>SSL/HTTPS</h1></header>
+
+        <div class="article-body">
+          <p>Secure your application with Google-managed SSL certificates, HTTPS redirect, and modern TLS configuration.</p>
+
+          <h2 id="managed-certificate">Google-Managed Certificate</h2>
+          <p>Google automatically provisions and renews Let's Encrypt certificates.</p>
+          <pre><code class="language-yaml"># k8s/networking/managed-certificate.yaml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: app-certificate
+  namespace: app
+spec:
+  domains:
+  - app.example.com
+  # Add more domains if needed:
+  # - www.app.example.com
+  # - api.example.com</code></pre>
+
+          <h2 id="frontend-config">FrontendConfig (HTTPS Redirect)</h2>
+          <p>Configure SSL policy and HTTP to HTTPS redirect.</p>
+          <pre><code class="language-yaml"># k8s/networking/frontend-config.yaml
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: app-frontend-config
+  namespace: app
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT  # 301 redirect
+  sslPolicy: app-ssl-policy  # Reference to GCP SSL policy</code></pre>
+
+          <h2 id="ssl-policy">SSL Policy (GCP)</h2>
+          <p>Create an SSL policy for modern TLS configuration.</p>
+          <pre><code class="language-bash"># Create SSL policy with modern TLS settings
+gcloud compute ssl-policies create app-ssl-policy \
+    --profile=MODERN \
+    --min-tls-version=1.2
+
+# Verify SSL policy
+gcloud compute ssl-policies describe app-ssl-policy
+
+# Alternative: RESTRICTED profile (TLS 1.2+ only, stricter ciphers)
+gcloud compute ssl-policies create app-ssl-policy-strict \
+    --profile=RESTRICTED \
+    --min-tls-version=1.2</code></pre>
+
+          <h2 id="ssl-policy-profiles">SSL Policy Profiles</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Profile</th><th>Min TLS</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><code>COMPATIBLE</code></td><td>TLS 1.0</td><td>Maximum compatibility (legacy clients)</td></tr>
+                <tr><td><code>MODERN</code></td><td>TLS 1.2</td><td>Recommended for most applications</td></tr>
+                <tr><td><code>RESTRICTED</code></td><td>TLS 1.2</td><td>PCI-DSS compliance, stricter ciphers</td></tr>
+                <tr><td><code>CUSTOM</code></td><td>Configurable</td><td>Fine-grained cipher control</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="update-ingress">Update Ingress with SSL</h2>
+          <pre><code class="language-yaml"># k8s/networking/ingress.yaml (updated)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "app-ip"
+    # SSL Configuration
+    networking.gke.io/managed-certificates: "app-certificate"
+    networking.gke.io/v1beta1.FrontendConfig: "app-frontend-config"
+    # Disable HTTP after certificate is active (optional)
+    # kubernetes.io/ingress.allow-http: "false"
+spec:
+  defaultBackend:
+    service:
+      name: react-frontend
+      port:
+        number: 80
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: dotnet-api
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-frontend
+            port:
+              number: 80</code></pre>
+
+          <h2 id="deploy-ssl">Deploy SSL Configuration</h2>
+          <pre><code class="language-bash"># Prerequisites: DNS must be configured first!
+# The certificate will only provision if DNS points to the static IP
+
+# Create SSL policy
+gcloud compute ssl-policies create app-ssl-policy \
+    --profile=MODERN \
+    --min-tls-version=1.2
+
+# Apply ManagedCertificate
+kubectl apply -f k8s/networking/managed-certificate.yaml
+
+# Apply FrontendConfig
+kubectl apply -f k8s/networking/frontend-config.yaml
+
+# Update Ingress with SSL annotations
+kubectl apply -f k8s/networking/ingress.yaml
+
+# Watch certificate status
+kubectl describe managedcertificate app-certificate -n app</code></pre>
+
+          <h2 id="verify-certificate">Verify Certificate Status</h2>
+          <pre><code class="language-bash"># Check ManagedCertificate status
+kubectl get managedcertificate app-certificate -n app
+
+# Status values:
+# - Provisioning: Certificate being created
+# - Active: Certificate ready and attached
+# - ProvisioningFailed: Check DNS configuration
+
+# Detailed status
+kubectl describe managedcertificate app-certificate -n app
+
+# Check in GCP Console
+gcloud compute ssl-certificates list
+
+# Test HTTPS (after certificate is Active)
+curl -I https://app.example.com
+
+# Test HTTP redirect
+curl -I http://app.example.com
+# Should return 301 redirect to https://</code></pre>
+
+          <h2 id="certificate-status">Certificate Status Reference</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Status</th><th>Meaning</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><code>Provisioning</code></td><td>Certificate being created</td><td>Wait 15-60 minutes</td></tr>
+                <tr><td><code>Active</code></td><td>Certificate ready</td><td>HTTPS works</td></tr>
+                <tr><td><code>ProvisioningFailed</code></td><td>DNS not configured</td><td>Check DNS A record</td></tr>
+                <tr><td><code>ProvisioningFailedPermanently</code></td><td>Domain verification failed</td><td>Verify domain ownership</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="multiple-domains">Multiple Domains Certificate</h2>
+          <pre><code class="language-yaml"># k8s/networking/managed-certificate-multi.yaml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: app-certificate
+  namespace: app
+spec:
+  domains:
+  - app.example.com
+  - www.app.example.com
+  - api.example.com
+---
+# If domains exceed 100 or need separate certs
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: api-certificate
+  namespace: app
+spec:
+  domains:
+  - api.example.com
+---
+# Reference multiple certificates in Ingress
+# networking.gke.io/managed-certificates: "app-certificate,api-certificate"</code></pre>
+
+          <h2 id="self-managed-cert">Self-Managed Certificate (Optional)</h2>
+          <p>For custom certificates or certificates from other CAs.</p>
+          <pre><code class="language-bash"># Create Kubernetes TLS secret from your certificate files
+kubectl create secret tls app-tls-secret \
+    --namespace=app \
+    --cert=certificate.crt \
+    --key=private.key
+
+# Or from files
+kubectl create secret tls app-tls-secret \
+    --namespace=app \
+    --cert=/path/to/fullchain.pem \
+    --key=/path/to/privkey.pem</code></pre>
+
+          <pre><code class="language-yaml"># Ingress with self-managed certificate
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "app-ip"
+spec:
+  tls:
+  - hosts:
+    - app.example.com
+    secretName: app-tls-secret
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-frontend
+            port:
+              number: 80</code></pre>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>Certificate stuck in Provisioning</td><td>Verify DNS A record points to static IP</td></tr>
+                <tr><td>ProvisioningFailed</td><td>Check domain ownership and DNS propagation</td></tr>
+                <tr><td>Mixed content warnings</td><td>Ensure all resources use HTTPS URLs</td></tr>
+                <tr><td>HTTPS redirect not working</td><td>Verify FrontendConfig is applied to Ingress</td></tr>
+                <tr><td>SSL handshake errors</td><td>Check SSL policy and client TLS version</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Debug certificate provisioning
+kubectl describe managedcertificate app-certificate -n app
+
+# Check DNS propagation
+dig app.example.com +short
+nslookup app.example.com
+
+# Verify DNS points to correct IP
+EXPECTED_IP=$(gcloud compute addresses describe app-ip --global --format='value(address)')
+ACTUAL_IP=$(dig +short app.example.com)
+echo "Expected: $EXPECTED_IP, Actual: $ACTUAL_IP"
+
+# Test SSL certificate
+openssl s_client -connect app.example.com:443 -servername app.example.com
+
+# Check certificate details
+echo | openssl s_client -connect app.example.com:443 2>/dev/null | openssl x509 -text -noout
+
+# View Ingress events
+kubectl describe ingress app-ingress -n app | grep -A 20 Events</code></pre>
+
+          <h2 id="disable-http">Disable HTTP (Optional)</h2>
+          <p>After confirming HTTPS works, optionally disable HTTP entirely.</p>
+          <pre><code class="language-yaml"># Add this annotation to Ingress to disable HTTP
+annotations:
+  kubernetes.io/ingress.allow-http: "false"</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">DNS First</div>
+            <p>Google-managed certificates require DNS to be properly configured BEFORE the certificate will provision. The certificate authority needs to verify domain ownership via HTTP challenge.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Certificate Renewal</div>
+            <p>Google-managed certificates are automatically renewed before expiration. No action required from you. The certificates are valid for 90 days and renewal starts 30 days before expiry.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Wildcard Certificates</div>
+            <p>Google-managed certificates do not support wildcards (*.example.com). List each domain explicitly or use self-managed certificates for wildcards.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./ingress.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Ingress</span></a>
+          <a href="../security/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Security</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

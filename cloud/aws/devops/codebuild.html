@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS CodeBuild | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">DevOps</a></li><li aria-current="page">CodeBuild</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS CodeBuild</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Managed build service — compile, test, and package applications.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">CodeBuild = A Build Server You Never Manage</div>
+            <p>CodeBuild provisions a fresh container environment, runs your build commands, and tears it down. You pay only for build minutes used. No Jenkins server to maintain, no build agents to scale. Each build gets an isolated environment — builds can't affect each other. It integrates natively with ECR, S3, and Secrets Manager.</p>
+          </div>
+
+          <h2>CodeBuild Project</h2>
+          <pre><code>resource "aws_codebuild_project" "build" {
+  name          = "myapp-build"
+  service_role  = aws_iam_role.codebuild.arn
+  build_timeout = 20  # minutes
+
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true  # needed for Docker builds
+
+    environment_variable {
+      name  = "ECR_URI"
+      value = aws_ecr_repository.app.repository_url
+    }
+  }
+
+  source {
+    type      = "GITHUB"
+    location  = "https://github.com/myorg/myapp"
+    buildspec = "buildspec.yml"
+  }
+
+  artifacts { type = "NO_ARTIFACTS" }
+
+  logs_config {
+    cloudwatch_logs { group_name = "/codebuild/myapp" }
+  }
+}</code></pre>
+
+          <h2>.NET 8 Build Example</h2>
+          <pre><code># buildspec.yml for .NET 8 API
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0
+  pre_build:
+    commands:
+      - dotnet restore
+      - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_URI
+  build:
+    commands:
+      - dotnet test --no-restore --logger "trx;LogFileName=results.xml"
+      - docker build -f Dockerfile -t $ECR_URI/api:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker push $ECR_URI/api:$CODEBUILD_RESOLVED_SOURCE_VERSION
+reports:
+  test-results:
+    files: ["**/results.xml"]
+    file-format: VisualStudioTRX</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./codepipeline.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">CodePipeline</span></a>
+          <a href="../observability/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AWS Observability</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

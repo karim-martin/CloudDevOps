@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon Route 53 | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Networking</a></li><li aria-current="page">Route 53</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon Route 53</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Scalable DNS service with health checks and intelligent routing.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">DNS = The Internet's Phone Book</div>
+            <p>When you type <code>myapp.com</code> in a browser, DNS translates that to an IP address your computer can connect to. Route 53 is AWS's DNS service. You create a <strong>Hosted Zone</strong> for your domain, then add <strong>records</strong>: an A record points to an IP, a CNAME points to another domain name, an ALIAS record (AWS-specific) points to a CloudFront or ALB DNS name.</p>
+          </div>
+
+          <h2>Common DNS Records</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Record Type</th><th>Use Case</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>A</td><td>Domain → IPv4 address</td><td>myapp.com → 1.2.3.4</td></tr>
+              <tr><td>AAAA</td><td>Domain → IPv6 address</td><td>myapp.com → 2001:db8::1</td></tr>
+              <tr><td>CNAME</td><td>Domain → another domain</td><td>www.myapp.com → myapp.com</td></tr>
+              <tr><td>ALIAS</td><td>Domain → AWS resource (no TTL charge)</td><td>myapp.com → alb.us-east-1.amazonaws.com</td></tr>
+              <tr><td>MX</td><td>Email routing</td><td>myapp.com → mail.google.com</td></tr>
+              <tr><td>TXT</td><td>Domain verification, SPF/DKIM</td><td>myapp.com → "v=spf1 include:..."</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Point Domain to CloudFront</h2>
+          <pre><code>resource "aws_route53_record" "apex" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "myapp.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.frontend.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
+    evaluate_target_health = false
+  }
+}</code></pre>
+
+          <h2>Health Checks + Failover</h2>
+          <p>Route 53 can check if your endpoint is healthy (HTTP 200) and automatically route traffic to a backup region if the primary fails. This is multi-region active-passive failover.</p>
+          <pre><code>resource "aws_route53_health_check" "primary" {
+  fqdn              = "primary.myapp.com"
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = "/health"
+  failure_threshold = 3
+  request_interval  = 30
+}</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./cloudfront.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">CloudFront</span></a>
+          <a href="../security/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AWS Security</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

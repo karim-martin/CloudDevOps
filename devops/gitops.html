@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitOps & ArgoCD | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+        <a href="../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./overview.html">DevOps Overview</a></li>
+        <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        <li><a href="./gitops.html">GitOps &amp; ArgoCD</a></li>
+        <li><a href="./observability.html">Observability</a></li>
+        <li><a href="./security-scanning.html">Security Scanning</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Linux</h3><ul class="sidebar-links">
+        <li><a href="./linux/">Linux Overview</a></li>
+        <li><a href="./linux/file-directory.html">File &amp; Directory</a></li>
+        <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+        <li><a href="./linux/network-management.html">Network Management</a></li>
+        <li><a href="./linux/service-package-management.html">Service &amp; Package Mgmt</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+        <li><a href="./networking-basics.html">Networking Basics</a></li>
+        <li><a href="./git.html">Git</a></li>
+        <li><a href="./github/">GitHub</a></li>
+        <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Containers</h3><ul class="sidebar-links">
+        <li><a href="./docker/">Docker Overview</a></li>
+        <li><a href="./docker/concepts.html">Core Concepts</a></li>
+        <li><a href="./docker/dockerfile.html">Dockerfile</a></li>
+        <li><a href="./docker/compose.html">Docker Compose</a></li>
+        <li><a href="./docker/networking.html">Docker Networking</a></li>
+        <li><a href="./docker/volumes.html">Volumes &amp; Storage</a></li>
+        <li><a href="./docker/best-practices.html">Best Practices</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Orchestration</h3><ul class="sidebar-links">
+        <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+        <li><a href="./kubernetes/architecture.html">Architecture</a></li>
+        <li><a href="./kubernetes/pods-deployments.html">Pods &amp; Deployments</a></li>
+        <li><a href="./kubernetes/services-networking.html">Services &amp; Networking</a></li>
+        <li><a href="./kubernetes/configmaps-secrets.html">ConfigMaps &amp; Secrets</a></li>
+        <li><a href="./kubernetes/storage.html">Storage</a></li>
+        <li><a href="./kubernetes/helm.html">Helm Charts</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure as Code</h3><ul class="sidebar-links">
+        <li><a href="./terraform.html">Terraform</a></li>
+        <li><a href="./ansible.html">Ansible</a></li>
+      </ul></div>
+    </nav>
+    </aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li><a href="./">DevOps</a></li>
+          <li aria-current="page">GitOps & ArgoCD</li>
+        </ol></nav>
+        <div class="article-body">
+
+          <header class="article-header">
+            <h1>GitOps &amp; ArgoCD</h1>
+            <p class="text-secondary text-lg">Deploy by merging a PR — GitOps uses Git as the single source of truth for cluster state.</p>
+          </header>
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is GitOps?</div>
+            <p>Traditional CI/CD: your pipeline <em>pushes</em> changes to the cluster ("push model"). GitOps flips this: a tool running <em>inside</em> the cluster watches a Git repo and <em>pulls</em> changes automatically ("pull model"). The Git repo becomes the exact truth about what should be running. To deploy, you just merge a PR — the cluster self-heals to match.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">GitOps Flow with ArgoCD</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">👤 Developer</div><div class="arch-box-subtitle">Merges PR → updates K8s manifests in Git</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">📁 Git Repo</div><div class="arch-box-subtitle">Single source of truth for cluster state</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-gcp" style="border-color:#e34c26;"><div class="arch-box-title">🔄 ArgoCD</div><div class="arch-box-subtitle">Watches Git repo, syncs cluster automatically</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">☸️ Kubernetes Cluster</div><div class="arch-box-subtitle">State matches Git — always</div></div>
+            </div>
+          </div>
+
+          <h2>Install ArgoCD</h2>
+          <pre><code># Create namespace and install
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Wait for pods to be ready
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=120s
+
+# Port-forward the ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# Get admin password
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d && echo</code></pre>
+
+          <h2>Connect ArgoCD CLI</h2>
+          <pre><code># Install argocd CLI
+brew install argocd  # macOS
+
+# Log in
+argocd login localhost:8080 --username admin --password &lt;password&gt; --insecure
+
+# Change password
+argocd account update-password</code></pre>
+
+          <h2>Create an ArgoCD Application</h2>
+          <pre><code"># myapp-argocd.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/myorg/myapp-k8s.git
+    targetRevision: main
+    path: manifests/           # folder with K8s YAML files
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: myapp
+  syncPolicy:
+    automated:
+      prune: true              # delete removed resources
+      selfHeal: true           # revert manual kubectl changes
+    syncOptions:
+    - CreateNamespace=true</code></pre>
+
+          <pre><code">kubectl apply -f myapp-argocd.yaml
+argocd app get myapp
+argocd app sync myapp</code></pre>
+
+          <h2>GitOps Repository Structure</h2>
+          <pre><code">myapp-k8s/
+├── base/                  # Base Kubernetes manifests
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── kustomization.yaml
+└── overlays/
+    ├── staging/           # Staging-specific patches
+    │   ├── replicas.yaml
+    │   └── kustomization.yaml
+    └── production/        # Production-specific patches
+        ├── replicas.yaml
+        └── kustomization.yaml</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Push vs Pull — Key Difference</div>
+            <p><strong>Push CI/CD (GitHub Actions, Azure Pipelines)</strong>: The pipeline needs cluster credentials stored as secrets. If someone deletes a deployment manually, it stays deleted until the next deploy.<br>
+            <strong>Pull GitOps (ArgoCD)</strong>: No external credentials needed. If someone deletes a deployment, ArgoCD recreates it within 3 minutes. Drift is impossible.</p>
+          </div>
+
+          <h2>Sync Strategies</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Strategy</th><th>Behavior</th><th>Use Case</th></tr></thead>
+            <tbody>
+              <tr><td>Manual</td><td>Changes only apply when you run <code>argocd app sync</code></td><td>Production — require human approval</td></tr>
+              <tr><td>Automated</td><td>ArgoCD syncs automatically when Git changes</td><td>Dev/staging — fast iteration</td></tr>
+              <tr><td>Automated + Self-Heal</td><td>Also reverts manual <code>kubectl</code> changes</td><td>Production with strict GitOps</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./ci-cd-pipeline.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">CI/CD Pipeline</span></a>
+          <a href="./observability.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Observability</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

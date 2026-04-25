@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observability | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+        <a href="../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./overview.html">DevOps Overview</a></li>
+        <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        <li><a href="./gitops.html">GitOps &amp; ArgoCD</a></li>
+        <li><a href="./observability.html">Observability</a></li>
+        <li><a href="./security-scanning.html">Security Scanning</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Linux</h3><ul class="sidebar-links">
+        <li><a href="./linux/">Linux Overview</a></li>
+        <li><a href="./linux/file-directory.html">File &amp; Directory</a></li>
+        <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+        <li><a href="./linux/network-management.html">Network Management</a></li>
+        <li><a href="./linux/service-package-management.html">Service &amp; Package Mgmt</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+        <li><a href="./networking-basics.html">Networking Basics</a></li>
+        <li><a href="./git.html">Git</a></li>
+        <li><a href="./github/">GitHub</a></li>
+        <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Containers</h3><ul class="sidebar-links">
+        <li><a href="./docker/">Docker Overview</a></li>
+        <li><a href="./docker/concepts.html">Core Concepts</a></li>
+        <li><a href="./docker/dockerfile.html">Dockerfile</a></li>
+        <li><a href="./docker/compose.html">Docker Compose</a></li>
+        <li><a href="./docker/networking.html">Docker Networking</a></li>
+        <li><a href="./docker/volumes.html">Volumes &amp; Storage</a></li>
+        <li><a href="./docker/best-practices.html">Best Practices</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Orchestration</h3><ul class="sidebar-links">
+        <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+        <li><a href="./kubernetes/architecture.html">Architecture</a></li>
+        <li><a href="./kubernetes/pods-deployments.html">Pods &amp; Deployments</a></li>
+        <li><a href="./kubernetes/services-networking.html">Services &amp; Networking</a></li>
+        <li><a href="./kubernetes/configmaps-secrets.html">ConfigMaps &amp; Secrets</a></li>
+        <li><a href="./kubernetes/storage.html">Storage</a></li>
+        <li><a href="./kubernetes/helm.html">Helm Charts</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure as Code</h3><ul class="sidebar-links">
+        <li><a href="./terraform.html">Terraform</a></li>
+        <li><a href="./ansible.html">Ansible</a></li>
+      </ul></div>
+    </nav>
+    </aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li><a href="./">DevOps</a></li>
+          <li aria-current="page">Observability</li>
+        </ol></nav>
+        <div class="article-body">
+
+          <header class="article-header">
+            <h1>Observability</h1>
+            <p class="text-secondary text-lg">Metrics, logs, and traces — Prometheus, Grafana, and Loki for Kubernetes.</p>
+          </header>
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">The Three Pillars of Observability</div>
+            <p><strong>Metrics</strong> are numbers over time (CPU usage, request count, error rate). Think of them as a speedometer. <strong>Logs</strong> are text records of what happened ("User 123 logged in at 14:32"). <strong>Traces</strong> follow a single request through multiple services to find where it slowed down. You need all three to understand a production system.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Observability Stack</div>
+            <div class="arch-row" style="flex-wrap:wrap;gap:1rem;">
+              <div class="arch-box arch-box-neutral" style="min-width:140px;text-align:center;">
+                <div class="arch-box-title">📊 Prometheus</div>
+                <div class="arch-box-subtitle">Scrapes metrics from pods every 15s</div>
+              </div>
+              <div class="arch-box arch-box-neutral" style="min-width:140px;text-align:center;">
+                <div class="arch-box-title">📝 Loki</div>
+                <div class="arch-box-subtitle">Aggregates pod logs</div>
+              </div>
+              <div class="arch-box arch-box-neutral" style="min-width:140px;text-align:center;">
+                <div class="arch-box-title">🔍 Tempo</div>
+                <div class="arch-box-subtitle">Distributed traces</div>
+              </div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-box arch-box-neutral" style="text-align:center;">
+              <div class="arch-box-title">📈 Grafana</div>
+              <div class="arch-box-subtitle">Single UI — dashboards, alerts, log search, trace viewer</div>
+            </div>
+          </div>
+
+          <h2>Install Prometheus + Grafana (kube-prometheus-stack)</h2>
+          <pre><code">helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --set grafana.adminPassword=admin123 \
+  --set prometheus.prometheusSpec.retention=7d
+
+# Verify pods
+kubectl get pods -n monitoring</code></pre>
+
+          <h2>Access Grafana</h2>
+          <pre><code"># Port-forward Grafana
+kubectl port-forward svc/monitoring-grafana -n monitoring 3000:80
+
+# Open http://localhost:3000
+# Username: admin
+# Password: admin123</code></pre>
+
+          <h2>Expose App Metrics from .NET 8</h2>
+          <pre><code"># Install prometheus-net NuGet package
+dotnet add package prometheus-net.AspNetCore</code></pre>
+          <pre><code">// Program.cs — expose /metrics endpoint
+using Prometheus;
+
+app.UseHttpMetrics();      // track HTTP request metrics
+app.MapMetrics();          // expose at /metrics</code></pre>
+
+          <h2>Annotate Pods for Prometheus Scraping</h2>
+          <pre><code"># In your Deployment spec:
+template:
+  metadata:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: "/metrics"</code></pre>
+
+          <h2>Essential PromQL Queries</h2>
+          <pre><code"># Request rate (requests/second, last 5 min)
+rate(http_requests_total[5m])
+
+# Error rate (% of 5xx responses)
+rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100
+
+# Pod memory usage (MiB)
+container_memory_working_set_bytes{namespace="myapp"} / 1024 / 1024
+
+# Pod CPU usage (cores)
+rate(container_cpu_usage_seconds_total{namespace="myapp"}[5m])</code></pre>
+
+          <h2>Install Loki for Logs</h2>
+          <pre><code">helm repo add grafana https://grafana.github.io/helm-charts
+helm install loki grafana/loki-stack \
+  --namespace monitoring \
+  --set grafana.enabled=false \
+  --set promtail.enabled=true
+
+# In Grafana, add Loki data source:
+# URL: http://loki:3100</code></pre>
+
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Tool</th><th>Purpose</th><th>Cloud Equivalent</th></tr></thead>
+            <tbody>
+              <tr><td>Prometheus</td><td>Metrics collection &amp; alerting</td><td>CloudWatch / Azure Monitor</td></tr>
+              <tr><td>Grafana</td><td>Dashboards &amp; visualization</td><td>CloudWatch Dashboards / Azure Workbooks</td></tr>
+              <tr><td>Loki</td><td>Log aggregation</td><td>CloudWatch Logs / Log Analytics</td></tr>
+              <tr><td>Tempo</td><td>Distributed tracing</td><td>X-Ray / Application Insights</td></tr>
+              <tr><td>Alertmanager</td><td>Route alerts to Slack/email/PagerDuty</td><td>SNS / Action Groups</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./gitops.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">GitOps &amp; ArgoCD</span></a>
+          <a href="./security-scanning.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Security Scanning</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

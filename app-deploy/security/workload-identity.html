@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure GKE Workload Identity for secure access to GCP services without service account keys.">
+  <title>Workload Identity | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./workload-identity.html" class="active">Workload Identity</a></li>
+        <li><a href="./cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Security</a></li><li aria-current="page">Workload Identity</li></ol></nav>
+        <header class="article-header"><h1>Workload Identity</h1></header>
+
+        <div class="article-body">
+          <p>Workload Identity allows Kubernetes service accounts to act as GCP service accounts, enabling pods to access GCP services without storing JSON key files.</p>
+
+          <h2 id="how-it-works">How Workload Identity Works</h2>
+          <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                         GKE Pod                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  Application                                              │  │
+│  │     │                                                     │  │
+│  │     │ 1. Request GCP credentials                          │  │
+│  │     ▼                                                     │  │
+│  │  GKE Metadata Server                                      │  │
+│  │     │                                                     │  │
+│  │     │ 2. Check K8s ServiceAccount annotation              │  │
+│  │     ▼                                                     │  │
+│  │  Workload Identity Pool                                   │  │
+│  │     │                                                     │  │
+│  │     │ 3. Exchange K8s token for GCP token                 │  │
+│  │     ▼                                                     │  │
+│  │  GCP IAM (verify binding)                                 │  │
+│  │     │                                                     │  │
+│  │     │ 4. Return short-lived GCP credentials               │  │
+│  │     ▼                                                     │  │
+│  │  Access Cloud SQL, Cloud Storage, etc.                    │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2 id="prerequisites">Prerequisites</h2>
+          <pre><code class="language-bash"># Set variables
+export PROJECT_ID="your-project-id"
+export REGION="us-central1"
+export CLUSTER_NAME="app-cluster"
+export NAMESPACE="app"
+export KSA_NAME="app-ksa"           # Kubernetes ServiceAccount
+export GSA_NAME="app-workload-sa"   # GCP ServiceAccount
+
+# Verify Workload Identity is enabled on cluster
+gcloud container clusters describe $CLUSTER_NAME \
+    --region=$REGION \
+    --format='value(workloadIdentityConfig.workloadPool)'
+# Should output: PROJECT_ID.svc.id.goog</code></pre>
+
+          <h2 id="create-gsa">Step 1: Create GCP Service Account</h2>
+          <pre><code class="language-bash"># Create GCP service account (if not already created)
+gcloud iam service-accounts create $GSA_NAME \
+    --display-name="App Workload Service Account"
+
+# Verify creation
+gcloud iam service-accounts list --filter="email:$GSA_NAME"</code></pre>
+
+          <h2 id="grant-permissions">Step 2: Grant GCP Permissions</h2>
+          <pre><code class="language-bash"># Cloud SQL access
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/cloudsql.client"
+
+# Cloud Storage access
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.objectAdmin"
+
+# Secret Manager access (optional)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"
+
+# Cloud Logging (for application logs)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+
+# Cloud Monitoring (for metrics)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/monitoring.metricWriter"</code></pre>
+
+          <h2 id="create-ksa">Step 3: Create Kubernetes ServiceAccount</h2>
+          <pre><code class="language-yaml"># k8s/security/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-ksa
+  namespace: app
+  annotations:
+    iam.gke.io/gcp-service-account: app-workload-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <pre><code class="language-bash"># Apply the ServiceAccount
+kubectl apply -f k8s/security/service-account.yaml
+
+# Or create via kubectl
+kubectl create serviceaccount $KSA_NAME -n $NAMESPACE
+
+kubectl annotate serviceaccount $KSA_NAME \
+    -n $NAMESPACE \
+    iam.gke.io/gcp-service-account=$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="bind-accounts">Step 4: Bind KSA to GSA</h2>
+          <pre><code class="language-bash"># Allow the Kubernetes ServiceAccount to impersonate the GCP ServiceAccount
+gcloud iam service-accounts add-iam-policy-binding \
+    $GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="serviceAccount:$PROJECT_ID.svc.id.goog[$NAMESPACE/$KSA_NAME]"
+
+# Verify the binding
+gcloud iam service-accounts get-iam-policy \
+    $GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="use-in-deployment">Step 5: Use in Deployment</h2>
+          <pre><code class="language-yaml"># k8s/backend/deployment.yaml (excerpt)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-api
+  namespace: app
+spec:
+  template:
+    spec:
+      serviceAccountName: app-ksa  # Reference the KSA
+      containers:
+      - name: api
+        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/backend:latest
+        # No credential files needed!
+        # GCP client libraries automatically use Workload Identity</code></pre>
+
+          <h2 id="verify-workload-identity">Verify Workload Identity</h2>
+          <pre><code class="language-bash"># Check pod is using the correct service account
+kubectl get pods -l app=dotnet-api -n app -o jsonpath='{.items[0].spec.serviceAccountName}'
+# Should output: app-ksa
+
+# Verify KSA annotation
+kubectl get serviceaccount app-ksa -n app -o yaml
+
+# Test from inside a pod
+kubectl run test-wi --rm -it \
+    --image=google/cloud-sdk:slim \
+    --serviceaccount=app-ksa \
+    --namespace=app \
+    -- /bin/bash
+
+# Inside the pod:
+gcloud auth list
+# Should show the GCP service account
+
+curl -H "Metadata-Flavor: Google" \
+    http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email
+# Should output: app-workload-sa@PROJECT_ID.iam.gserviceaccount.com
+
+# Test GCS access
+gsutil ls gs://your-bucket-name/</code></pre>
+
+          <h2 id="dotnet-code">.NET Code (No Changes Needed)</h2>
+          <p>GCP client libraries automatically detect Workload Identity.</p>
+          <pre><code class="language-csharp">// Cloud Storage - automatically uses Workload Identity
+using Google.Cloud.Storage.V1;
+
+var storage = StorageClient.Create();  // No credentials needed!
+var buckets = storage.ListBuckets(projectId);
+
+// Cloud SQL with ADO.NET - uses Workload Identity via Cloud SQL Proxy
+// Connection string uses private IP, no special auth needed
+var connectionString = "Server=10.x.x.x;Database=appdb;User=appuser;Password=xxx;";
+
+// Secret Manager - automatically uses Workload Identity
+using Google.Cloud.SecretManager.V1;
+
+var client = SecretManagerServiceClient.Create();
+var secret = client.AccessSecretVersion(
+    new SecretVersionName(projectId, "my-secret", "latest"));
+var payload = secret.Payload.Data.ToStringUtf8();</code></pre>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>Permission denied</td><td>Check GSA has required IAM roles</td></tr>
+                <tr><td>Metadata server error</td><td>Verify Workload Identity is enabled on cluster and node pool</td></tr>
+                <tr><td>Wrong identity</td><td>Check KSA annotation matches GSA email</td></tr>
+                <tr><td>Binding not found</td><td>Verify IAM binding with workloadIdentityUser role</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Check all components
+echo "=== Cluster Workload Identity Pool ==="
+gcloud container clusters describe $CLUSTER_NAME --region=$REGION \
+    --format='value(workloadIdentityConfig.workloadPool)'
+
+echo "=== KSA Annotation ==="
+kubectl get sa $KSA_NAME -n $NAMESPACE -o jsonpath='{.metadata.annotations}'
+
+echo "=== GSA IAM Bindings ==="
+gcloud iam service-accounts get-iam-policy $GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com
+
+echo "=== GSA Project Roles ==="
+gcloud projects get-iam-policy $PROJECT_ID \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --format="table(bindings.role)"
+
+echo "=== Pod ServiceAccount ==="
+kubectl get pod -l app=dotnet-api -n $NAMESPACE \
+    -o jsonpath='{.items[0].spec.serviceAccountName}'</code></pre>
+
+          <h2 id="secret-manager">Using Secret Manager (Optional)</h2>
+          <p>Access secrets securely instead of Kubernetes Secrets.</p>
+          <pre><code class="language-bash"># Create a secret in Secret Manager
+echo -n "my-database-password" | gcloud secrets create db-password \
+    --data-file=- \
+    --replication-policy="automatic"
+
+# Grant access to the GSA
+gcloud secrets add-iam-policy-binding db-password \
+    --member="serviceAccount:$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor"</code></pre>
+
+          <pre><code class="language-csharp">// Access secret in .NET
+using Google.Cloud.SecretManager.V1;
+
+public class SecretService
+{
+    private readonly SecretManagerServiceClient _client;
+
+    public SecretService()
+    {
+        _client = SecretManagerServiceClient.Create();
+    }
+
+    public string GetSecret(string projectId, string secretId)
+    {
+        var name = new SecretVersionName(projectId, secretId, "latest");
+        var response = _client.AccessSecretVersion(name);
+        return response.Payload.Data.ToStringUtf8();
+    }
+}</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Why Workload Identity?</div>
+            <p>Workload Identity eliminates the need to create, download, and manage service account key files. Keys are a security risk - they don't expire automatically and can be leaked. Workload Identity provides short-lived, automatically rotated credentials.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Node Pool Requirement</div>
+            <p>Workload Identity must be enabled on both the cluster AND the node pool. If you created the cluster before enabling Workload Identity, you may need to recreate the node pool or create a new one with Workload Identity enabled.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Security Overview</span></a>
+          <a href="./cloud-armor-iap.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud Armor & IAP</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

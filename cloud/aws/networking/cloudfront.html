@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon CloudFront | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Networking</a></li><li aria-current="page">CloudFront</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon CloudFront</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">AWS CDN — deliver content fast from 600+ edge locations worldwide.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">A CDN Puts Your Content Close to Every User</div>
+            <p>Without a CDN, every user — whether in Tokyo, London, or São Paulo — downloads your site's files from your single server in, say, us-east-1. That means 200ms latency for distant users. CloudFront caches your content at <strong>600+ edge locations</strong> worldwide. A user in Tokyo gets files from a Tokyo edge server — 10× faster. CloudFront also provides DDoS protection and can be paired with WAF to block malicious traffic.</p>
+          </div>
+
+          <h2>Common Use Cases</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">⚛️</div><div class="feature-text"><h4>React / SPA Hosting</h4><p>Store your React build in S3, put CloudFront in front. Globally distributed static site, no servers needed. Configure to return index.html for all paths (SPA routing).</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🎥</div><div class="feature-text"><h4>Media Streaming</h4><p>Distribute video, images, and downloads with automatic compression and adaptive bitrate streaming. Pay only for data transferred to users.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🔄</div><div class="feature-text"><h4>API Acceleration</h4><p>Cache API responses at the edge. Non-personalized responses (product catalog, prices) can be cached for seconds, reducing ALB and EC2 load dramatically.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🛡️</div><div class="feature-text"><h4>DDoS + WAF</h4><p>All CloudFront distributions get AWS Shield Standard (DDoS) for free. Add WAF for SQL injection, XSS, and bot protection at the edge.</p></div></div>
+          </div>
+
+          <h2>CloudFront + S3 + React (Terraform)</h2>
+          <pre><code>resource "aws_cloudfront_distribution" "frontend" {
+  origin {
+    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
+    origin_id   = "S3-frontend"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
+    }
+  }
+
+  enabled             = true
+  default_root_object = "index.html"
+  aliases             = ["myapp.com", "www.myapp.com"]
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-frontend"
+    compress         = true
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  # Return index.html for React router 404s
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  viewer_certificate {
+    acm_certificate_arn = aws_acm_certificate.cert.arn
+    ssl_support_method  = "sni-only"
+  }
+}</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./alb.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">ALB / NLB</span></a>
+          <a href="./route53.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Route 53</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

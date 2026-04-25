@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Storage setup for file uploads and application assets.">
+  <title>Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./storage.html" class="active">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Infrastructure</a></li><li aria-current="page">Storage</li></ol></nav>
+        <header class="article-header"><h1>Cloud Storage Setup</h1></header>
+
+        <div class="article-body">
+          <p>Configure Cloud Storage for file uploads, user content, and application assets.</p>
+
+          <h2 id="storage-options">Storage Options</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Option</th><th>Best For</th><th>Access Pattern</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Cloud Storage</strong></td><td>Files, images, backups, static assets</td><td>API-based (HTTP)</td></tr>
+                <tr><td><strong>Filestore</strong></td><td>Shared filesystem (NFS)</td><td>File system mount</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>For most web applications, <strong>Cloud Storage</strong> is recommended. Use Filestore only if you need traditional file system access.</p>
+
+          <h2 id="create-bucket">Create Cloud Storage Bucket</h2>
+          <pre><code class="language-bash"># Set bucket name (must be globally unique)
+export BUCKET_NAME="${PROJECT_ID}-app-uploads"
+
+# Create bucket
+gsutil mb -l $REGION -c STANDARD gs://$BUCKET_NAME
+
+# Verify bucket
+gsutil ls gs://$BUCKET_NAME</code></pre>
+
+          <h3>Storage Classes</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Class</th><th>Use Case</th><th>Min Storage</th></tr></thead>
+              <tbody>
+                <tr><td>STANDARD</td><td>Frequently accessed data</td><td>None</td></tr>
+                <tr><td>NEARLINE</td><td>Accessed &lt; 1/month</td><td>30 days</td></tr>
+                <tr><td>COLDLINE</td><td>Accessed &lt; 1/quarter</td><td>90 days</td></tr>
+                <tr><td>ARCHIVE</td><td>Accessed &lt; 1/year</td><td>365 days</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="bucket-iam">Configure Bucket IAM</h2>
+          <pre><code class="language-bash"># Grant the app service account access to the bucket
+gsutil iam ch \
+    serviceAccount:app-workload-sa@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin \
+    gs://$BUCKET_NAME
+
+# Verify permissions
+gsutil iam get gs://$BUCKET_NAME</code></pre>
+
+          <h2 id="cors-config">Configure CORS (for Direct Upload)</h2>
+          <p>If your frontend uploads directly to Cloud Storage:</p>
+          <pre><code class="language-json">// cors-config.json
+[
+  {
+    "origin": ["https://app.example.com", "http://localhost:3000"],
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Range"],
+    "maxAgeSeconds": 3600
+  }
+]</code></pre>
+
+          <pre><code class="language-bash"># Apply CORS configuration
+gsutil cors set cors-config.json gs://$BUCKET_NAME
+
+# Verify CORS
+gsutil cors get gs://$BUCKET_NAME</code></pre>
+
+          <h2 id="dotnet-integration">.NET Integration</h2>
+
+          <h3>Install NuGet Package</h3>
+          <pre><code class="language-bash"># In your .NET project
+dotnet add package Google.Cloud.Storage.V1</code></pre>
+
+          <h3>Upload Files from .NET</h3>
+          <pre><code class="language-csharp">using Google.Cloud.Storage.V1;
+
+public class StorageService
+{
+    private readonly StorageClient _storageClient;
+    private readonly string _bucketName;
+
+    public StorageService(string bucketName)
+    {
+        // Uses Workload Identity automatically when running in GKE
+        _storageClient = StorageClient.Create();
+        _bucketName = bucketName;
+    }
+
+    public async Task&lt;string&gt; UploadFileAsync(Stream fileStream, string fileName, string contentType)
+    {
+        var objectName = $"uploads/{DateTime.UtcNow:yyyy/MM/dd}/{Guid.NewGuid()}/{fileName}";
+
+        await _storageClient.UploadObjectAsync(
+            _bucketName,
+            objectName,
+            contentType,
+            fileStream
+        );
+
+        return $"gs://{_bucketName}/{objectName}";
+    }
+
+    public async Task&lt;Stream&gt; DownloadFileAsync(string objectName)
+    {
+        var stream = new MemoryStream();
+        await _storageClient.DownloadObjectAsync(_bucketName, objectName, stream);
+        stream.Position = 0;
+        return stream;
+    }
+
+    public string GetPublicUrl(string objectName)
+    {
+        return $"https://storage.googleapis.com/{_bucketName}/{objectName}";
+    }
+}</code></pre>
+
+          <h3>Register Service in Program.cs</h3>
+          <pre><code class="language-csharp">// Program.cs
+var bucketName = Environment.GetEnvironmentVariable("GCS_BUCKET")
+    ?? throw new InvalidOperationException("GCS_BUCKET not set");
+
+builder.Services.AddSingleton(new StorageService(bucketName));</code></pre>
+
+          <h2 id="kubernetes-config">Kubernetes Configuration</h2>
+          <pre><code class="language-yaml"># Pass bucket name as environment variable in deployment
+env:
+- name: GCS_BUCKET
+  value: "my-project-app-uploads"</code></pre>
+
+          <h2 id="signed-urls">Generate Signed URLs</h2>
+          <p>For secure, time-limited access to private files:</p>
+          <pre><code class="language-csharp">public string GenerateSignedUrl(string objectName, TimeSpan duration)
+{
+    var urlSigner = UrlSigner.FromServiceAccountCredential(
+        GoogleCredential.GetApplicationDefault()
+            .UnderlyingCredential as ServiceAccountCredential);
+
+    return urlSigner.Sign(
+        _bucketName,
+        objectName,
+        duration,
+        HttpMethod.Get
+    );
+}</code></pre>
+
+          <h2 id="lifecycle-policy">Lifecycle Policy (Optional)</h2>
+          <p>Auto-delete old files or move to cheaper storage:</p>
+          <pre><code class="language-json">// lifecycle-config.json
+{
+  "rule": [
+    {
+      "action": {"type": "Delete"},
+      "condition": {
+        "age": 365,
+        "matchesPrefix": ["temp/"]
+      }
+    },
+    {
+      "action": {"type": "SetStorageClass", "storageClass": "NEARLINE"},
+      "condition": {
+        "age": 30,
+        "matchesPrefix": ["uploads/"]
+      }
+    }
+  ]
+}</code></pre>
+
+          <pre><code class="language-bash"># Apply lifecycle policy
+gsutil lifecycle set lifecycle-config.json gs://$BUCKET_NAME</code></pre>
+
+          <h2 id="storage-commands">Storage Commands Reference</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>gsutil ls gs://BUCKET</code></td><td>List bucket contents</td></tr>
+                <tr><td><code>gsutil cp FILE gs://BUCKET/</code></td><td>Upload file</td></tr>
+                <tr><td><code>gsutil cp gs://BUCKET/FILE .</code></td><td>Download file</td></tr>
+                <tr><td><code>gsutil rm gs://BUCKET/FILE</code></td><td>Delete file</td></tr>
+                <tr><td><code>gsutil du -s gs://BUCKET</code></td><td>Bucket size</td></tr>
+                <tr><td><code>gsutil iam get gs://BUCKET</code></td><td>View IAM</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Workload Identity Integration</div>
+            <p>When running in GKE with Workload Identity configured, the Google Cloud client libraries automatically use the pod's service account. No credential files needed!</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./cloud-sql.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud SQL</span></a>
+          <a href="../deployment/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Deployment</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

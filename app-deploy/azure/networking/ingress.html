@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGIC Ingress — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href=".././">Overview</a></li>
+        <li><a href=".././prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href=".././foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href=".././infrastructure/">Overview</a></li>
+        <li><a href=".././infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href=".././infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href=".././infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href=".././deployment/">Overview</a></li>
+        <li><a href=".././deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href=".././deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href=".././deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href=".././networking/">Overview</a></li>
+        <li><a href=".././networking/ingress.html" class="active">AGIC Ingress</a></li>
+        <li><a href=".././networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href=".././security/">Overview</a></li>
+        <li><a href=".././security/workload-identity.html">Workload Identity</a></li>
+        <li><a href=".././security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href=".././operations/">Overview</a></li>
+        <li><a href=".././operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href=".././operations/scaling.html">Scaling</a></li>
+        <li><a href=".././operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">Azure</a></li><li><a href="./">Networking</a></li>
+          <li aria-current="page">AGIC Ingress</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>AGIC Ingress</h1>
+          <p class="text-secondary text-lg">Route HTTPS traffic to AKS pods using the Application Gateway Ingress Controller.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is AGIC?</div>
+            <p>AGIC (Application Gateway Ingress Controller) connects Azure Application Gateway (a load balancer with WAF) to your Kubernetes cluster. You write a Kubernetes Ingress manifest, and AGIC automatically configures the App Gateway to route traffic to your pods.</p>
+          </div>
+
+          <h2>Ingress Manifest</h2>
+          <pre><code"># ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  namespace: myapp
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    appgw.ingress.kubernetes.io/request-timeout: "30"
+spec:
+  tls:
+  - hosts:
+    - myapp.com
+    secretName: myapp-tls-secret
+  rules:
+  - host: myapp.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80</code></pre>
+
+          <h2>Apply and Verify</h2>
+          <pre><code">kubectl apply -f ingress.yaml -n myapp
+
+# Get the App Gateway public IP
+kubectl get ingress myapp-ingress -n myapp
+# EXTERNAL-IP is the App Gateway IP — point your DNS here</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Networking Overview</span></a>
+          <a href="./ssl-https.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">SSL / HTTPS</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Prerequisites for deploying applications to GCP GKE - tools, accounts, and prior knowledge.">
+  <title>Prerequisites | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../devops/" class="nav-link">DevOps</a><a href="../cloud/" class="nav-link">Cloud</a><a href="./" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./prerequisites.html" class="active">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Overview</a></li>
+        <li><a href="./foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="./foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/">Overview</a></li>
+        <li><a href="./infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="./infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/ingress.html">Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="./security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="./operations/scaling.html">Scaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../">Home</a></li><li><a href="./">App Deploy</a></li><li aria-current="page">Prerequisites</li></ol></nav>
+        <header class="article-header"><h1>Prerequisites</h1></header>
+
+        <div class="article-body">
+          <p>Before starting, ensure you have the required accounts, tools, and foundational knowledge.</p>
+
+          <h2 id="accounts">Required Accounts</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Account</th><th>Purpose</th><th>Link</th></tr></thead>
+              <tbody>
+                <tr><td>Google Cloud</td><td>GKE, Cloud SQL, Storage</td><td><a href="https://cloud.google.com" target="_blank">cloud.google.com</a></td></tr>
+                <tr><td>GitHub</td><td>Source code, CI/CD</td><td><a href="https://github.com" target="_blank">github.com</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Free Credits</div>
+            <p>New Google Cloud accounts receive $300 in free credits valid for 90 days. This is enough to complete this entire guide multiple times.</p>
+          </div>
+
+          <h2 id="local-tools">Local Development Tools</h2>
+
+          <h3>Required Tools</h3>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Tool</th><th>Purpose</th><th>Install Command</th></tr></thead>
+              <tbody>
+                <tr><td>gcloud CLI</td><td>GCP management</td><td>See <a href="https://cloud.google.com/sdk/docs/install" target="_blank">install guide</a></td></tr>
+                <tr><td>kubectl</td><td>Kubernetes CLI</td><td><code>gcloud components install kubectl</code></td></tr>
+                <tr><td>Docker</td><td>Container builds</td><td>See <a href="https://docs.docker.com/get-docker/" target="_blank">install guide</a></td></tr>
+                <tr><td>Git</td><td>Version control</td><td><code>apt install git</code> or <a href="https://git-scm.com" target="_blank">git-scm.com</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>For React Development</h3>
+          <pre><code class="language-bash"># Install Node.js (LTS version recommended)
+# Using nvm (Node Version Manager):
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install --lts
+nvm use --lts
+
+# Verify installation
+node --version   # Should be v18+ or v20+
+npm --version</code></pre>
+
+          <h3>For .NET Development</h3>
+          <pre><code class="language-bash"># Install .NET 8 SDK
+# Ubuntu/Debian:
+wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install -y dotnet-sdk-8.0
+
+# macOS:
+brew install dotnet@8
+
+# Verify installation
+dotnet --version   # Should be 8.x</code></pre>
+
+          <h2 id="verify-installation">Verify All Tools</h2>
+          <pre><code class="language-bash"># Run these commands to verify everything is installed
+gcloud version
+kubectl version --client
+docker --version
+git --version
+node --version
+dotnet --version
+
+# Authenticate with Google Cloud
+gcloud auth login
+gcloud auth application-default login</code></pre>
+
+          <h2 id="prior-knowledge">Prior Knowledge</h2>
+          <p>This guide assumes familiarity with the following concepts. If you're new to any of these, review the linked resources first:</p>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Topic</th><th>What You Should Know</th><th>Resource</th></tr></thead>
+              <tbody>
+                <tr><td>Docker</td><td>Images, containers, Dockerfiles</td><td><a href="../devops/docker/">Docker Guide</a></td></tr>
+                <tr><td>Kubernetes</td><td>Pods, Deployments, Services</td><td><a href="../devops/kubernetes/">Kubernetes Guide</a></td></tr>
+                <tr><td>Git</td><td>Commits, branches, push/pull</td><td><a href="../devops/git.html">Git Guide</a></td></tr>
+                <tr><td>GitHub Actions</td><td>Workflows, jobs, steps</td><td><a href="../devops/github/github-actions.html">GitHub Actions</a></td></tr>
+                <tr><td>GKE Basics</td><td>Clusters, node pools</td><td><a href="../cloud/gcp-gke/">GKE Guide</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="sample-applications">Sample Applications</h2>
+          <p>You can follow along with your own React and .NET applications, or use these sample projects:</p>
+
+          <h3>React Frontend (Sample)</h3>
+          <pre><code class="language-bash"># Create a new React app
+npx create-react-app my-frontend
+cd my-frontend
+
+# Or clone a sample
+git clone https://github.com/your-org/sample-react-app.git</code></pre>
+
+          <h3>.NET 8 Backend (Sample)</h3>
+          <pre><code class="language-bash"># Create a new .NET Web API
+dotnet new webapi -n MyApi
+cd MyApi
+
+# Or clone a sample
+git clone https://github.com/your-org/sample-dotnet-api.git</code></pre>
+
+          <h3>Minimum Application Requirements</h3>
+          <ul>
+            <li><strong>React app</strong> - Should build to static files (npm run build)</li>
+            <li><strong>.NET app</strong> - Web API with health check endpoint (/health or /healthz)</li>
+            <li><strong>Environment variables</strong> - Both apps should read config from environment variables</li>
+            <li><strong>Database connection</strong> - .NET app should use connection string from environment variable</li>
+          </ul>
+
+          <h2 id="project-structure">Recommended Project Structure</h2>
+          <pre><code class="language-bash">my-project/
+├── frontend/                    # React application
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   ├── Dockerfile
+│   └── nginx.conf
+├── backend/                     # .NET 8 application
+│   ├── Controllers/
+│   ├── Program.cs
+│   ├── appsettings.json
+│   ├── MyApi.csproj
+│   └── Dockerfile
+├── k8s/                         # Kubernetes manifests
+│   ├── frontend/
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   ├── backend/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── secrets.yaml
+│   └── ingress.yaml
+├── .github/
+│   └── workflows/
+│       ├── deploy-frontend.yml
+│       └── deploy-backend.yml
+└── README.md</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Ready to Start?</div>
+            <p>Once you have all the prerequisites in place, proceed to the Foundation section to set up your GCP project and networking.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Overview</span></a>
+          <a href="./foundation/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Foundation</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>

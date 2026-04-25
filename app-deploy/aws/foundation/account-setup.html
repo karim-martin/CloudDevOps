@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Account Setup | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/account-setup.html" class="active">AWS Account Setup</a></li>
+        <li><a href="../foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/eks-cluster.html">EKS Cluster</a></li>
+        <li><a href="../infrastructure/rds.html">RDS Database</a></li>
+        <li><a href="../infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/irsa.html">IRSA</a></li>
+        <li><a href="../security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="../operations/scaling.html">Autoscaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">AWS</a></li><li><a href="./">Foundation</a></li>
+          <li aria-current="page">AWS Account Setup</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>AWS Account Setup</h1>
+          <p class="text-secondary text-lg">Configure an AWS account, IAM users, and the AWS CLI — the prerequisites for any EKS deployment.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Why not use the root account?</div>
+            <p>The root account has unrestricted access and cannot be restricted by policies. A compromised root account means a compromised everything. Create an IAM user with only the permissions you need and use that for all day-to-day work.</p>
+          </div>
+
+          <h2>Create a Deployer IAM User</h2>
+          <pre><code># Create a non-root user for deployments
+aws iam create-user --user-name eks-deployer
+
+# Attach AdministratorAccess (tighten later with least-privilege)
+aws iam attach-user-policy \
+  --user-name eks-deployer \
+  --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+
+# Generate access keys
+aws iam create-access-key --user-name eks-deployer</code></pre>
+
+          <h2>Install and Configure the AWS CLI</h2>
+          <pre><code># macOS
+brew install awscli
+
+# Linux
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+unzip awscliv2.zip &amp;&amp; sudo ./aws/install
+
+# Configure credentials
+aws configure
+# AWS Access Key ID: AKIA...
+# AWS Secret Access Key: ...
+# Default region: us-east-1
+# Default output format: json
+
+# Verify
+aws sts get-caller-identity</code></pre>
+
+          <h2>Enable MFA on the Root Account</h2>
+          <ol>
+            <li>Sign in to the AWS console as root.</li>
+            <li>Open <strong>IAM &rarr; Security credentials</strong>.</li>
+            <li>Activate a virtual MFA device (Authy, 1Password, etc.).</li>
+            <li>Store recovery codes in a password manager.</li>
+          </ol>
+
+          <h2>Set a Billing Alarm</h2>
+          <pre><code># Create an SNS topic and subscribe your email
+aws sns create-topic --name billing-alerts
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123456789:billing-alerts \
+  --protocol email \
+  --notification-endpoint you@example.com
+
+# Create a $50 budget alarm in us-east-1 (required for billing metrics)
+aws cloudwatch put-metric-alarm \
+  --alarm-name billing-over-50usd \
+  --metric-name EstimatedCharges \
+  --namespace AWS/Billing \
+  --statistic Maximum \
+  --period 21600 \
+  --threshold 50 \
+  --comparison-operator GreaterThanThreshold \
+  --dimensions Name=Currency,Value=USD \
+  --evaluation-periods 1 \
+  --alarm-actions arn:aws:sns:us-east-1:123456789:billing-alerts</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Switch to IAM Identity Center for Teams</div>
+            <p>For multi-person teams, set up AWS IAM Identity Center (formerly SSO) instead of handing out long-lived access keys. Users sign in via SSO and get short-lived credentials.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Foundation Overview</span></a>
+          <a href="./networking.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">VPC &amp; Networking</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

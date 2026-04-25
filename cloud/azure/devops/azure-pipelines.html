@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Pipelines | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li><a href="./">DevOps</a></li><li aria-current="page">Azure Pipelines</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure Pipelines</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Cloud-native CI/CD for any language, any platform, any cloud.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Azure Pipelines Automates Build and Deploy</div>
+            <p>Azure Pipelines runs your build and deployment steps automatically on every code push. It's defined in YAML (<code>azure-pipelines.yml</code>). Microsoft-hosted agents (free tier: 1800 min/month) provide pre-installed environments for .NET, Node.js, Java, Python, Docker, and kubectl. Self-hosted agents run on your own machines for more control.</p>
+          </div>
+
+          <h2>Complete .NET + AKS Pipeline</h2>
+          <pre><code"># azure-pipelines.yml
+trigger:
+  branches:
+    include: [main]
+
+variables:
+  ACR_NAME: myappcr
+  AKS_CLUSTER: myapp-cluster
+  AKS_RG: myapp-rg
+  IMAGE_TAG: $(Build.BuildId)
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs: {command: restore, projects: '**/*.csproj'}
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs: {command: build, arguments: '--no-restore --configuration Release'}
+
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs: {command: test, arguments: '--no-build --configuration Release --collect:"Code Coverage"'}
+
+    - task: Docker@2
+      displayName: Build and push image
+      inputs:
+        command: buildAndPush
+        containerRegistry: myapp-acr-service-connection
+        repository: api
+        tags: $(IMAGE_TAG)
+
+- stage: Deploy
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToAKS
+    environment: production
+    pool:
+      vmImage: ubuntu-latest
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            inputs:
+              action: deploy
+              kubernetesServiceConnection: myapp-aks-connection
+              manifests: k8s/deployment.yaml
+              containers: $(ACR_NAME).azurecr.io/api:$(IMAGE_TAG)</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure DevOps</span></a>
+          <a href="./azure-devops.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Azure DevOps Suite</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

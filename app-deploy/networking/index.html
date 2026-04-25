@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Networking - Ingress, Load Balancing, and SSL/TLS configuration.">
+  <title>Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./ingress.html">Ingress</a></li>
+        <li><a href="./ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Networking</li></ol></nav>
+        <header class="article-header"><h1>Networking</h1></header>
+
+        <div class="article-body">
+          <p>Expose your GKE services to the internet with Ingress, load balancing, and SSL/TLS certificates for secure HTTPS traffic.</p>
+
+          <h2>What You'll Configure</h2>
+          <div class="card-grid">
+            <a href="./ingress.html" class="card card-link">
+              <h3 class="card-title">Ingress</h3>
+              <p class="card-description">Configure GKE Ingress with path-based routing to frontend and backend services.</p>
+            </a>
+            <a href="./ssl-https.html" class="card card-link">
+              <h3 class="card-title">SSL/HTTPS</h3>
+              <p class="card-description">Set up Google-managed SSL certificates and enforce HTTPS redirect.</p>
+            </a>
+          </div>
+
+          <h2>Traffic Flow Architecture</h2>
+          <pre><code>Internet
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Google Cloud Load Balancer               │
+│                    (Global HTTP(S) LB)                      │
+│                         │                                   │
+│    ┌────────────────────┴────────────────────┐              │
+│    │           GKE Ingress Controller        │              │
+│    │                                         │              │
+│    │   Path Rules:                           │              │
+│    │   /api/*  → dotnet-api:8080             │              │
+│    │   /*      → react-frontend:80           │              │
+│    └─────────────────────────────────────────┘              │
+│                         │                                   │
+└─────────────────────────┼───────────────────────────────────┘
+                          │
+          ┌───────────────┴───────────────┐
+          │                               │
+          ▼                               ▼
+┌─────────────────────┐       ┌─────────────────────┐
+│   react-frontend    │       │     dotnet-api      │
+│   Service (ClusterIP)│       │   Service (ClusterIP)│
+│   Port: 80          │       │   Port: 8080        │
+└─────────────────────┘       └─────────────────────┘
+          │                               │
+          ▼                               ▼
+┌─────────────────────┐       ┌─────────────────────┐
+│   Frontend Pods     │       │   Backend Pods      │
+│   (3 replicas)      │       │   (3 replicas)      │
+└─────────────────────┘       └─────────────────────┘</code></pre>
+
+          <h2>Key Components</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Global HTTP(S) LB</strong></td><td>Google-managed load balancer with SSL termination</td></tr>
+                <tr><td><strong>Static IP</strong></td><td>Reserved IP address for DNS records</td></tr>
+                <tr><td><strong>Ingress</strong></td><td>Kubernetes resource that configures the load balancer</td></tr>
+                <tr><td><strong>ManagedCertificate</strong></td><td>Google-managed SSL certificate for HTTPS</td></tr>
+                <tr><td><strong>FrontendConfig</strong></td><td>GKE-specific config for SSL policies, HTTPS redirect</td></tr>
+                <tr><td><strong>BackendConfig</strong></td><td>Health check, timeout, and CDN configuration</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>GKE Ingress Types</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Annotation</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td>External (default)</td><td><code>kubernetes.io/ingress.class: "gce"</code></td><td>Public internet traffic</td></tr>
+                <tr><td>Internal</td><td><code>kubernetes.io/ingress.class: "gce-internal"</code></td><td>Internal VPC traffic only</td></tr>
+                <tr><td>Multi-cluster</td><td><code>networking.gke.io/managed-certificates</code></td><td>Traffic across GKE clusters</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Prerequisites</h2>
+          <pre><code class="language-bash"># Verify static IP exists (created in Foundation)
+gcloud compute addresses describe app-ip --global
+
+# Verify services are running
+kubectl get services -n app
+
+# Both services should exist:
+# - react-frontend (ClusterIP, port 80)
+# - dotnet-api (ClusterIP, port 8080)</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">DNS Configuration</div>
+            <p>After deploying the Ingress, update your DNS records to point to the static IP. The ManagedCertificate will only provision after DNS is properly configured.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Provisioning Time</div>
+            <p>Google-managed certificates can take 15-60 minutes to provision. The Ingress will work with HTTP immediately, but HTTPS requires the certificate to be active.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../deployment/dotnet-backend.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">.NET Backend</span></a>
+          <a href="./ingress.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Ingress</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

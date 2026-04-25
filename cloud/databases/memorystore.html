@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Memorystore - Managed Redis and Memcached for caching and session storage.">
+  <title>Memorystore | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./firestore.html">Firestore</a></li>
+        <li><a href="./memorystore.html" class="active">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Databases</a></li><li aria-current="page">Memorystore</li></ol></nav>
+        <header class="article-header"><h1>Memorystore</h1></header>
+
+        <div class="article-body">
+          <p>Memorystore provides managed Redis and Memcached instances for caching, session storage, and real-time analytics.</p>
+
+          <h2 id="redis-vs-memcached">Redis vs Memcached</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Redis</th><th>Memcached</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Data types</strong></td><td>Strings, lists, sets, hashes, sorted sets</td><td>Strings only</td></tr>
+                <tr><td><strong>Persistence</strong></td><td>Yes (RDB, AOF)</td><td>No</td></tr>
+                <tr><td><strong>Replication</strong></td><td>Yes (Standard tier)</td><td>No</td></tr>
+                <tr><td><strong>Pub/Sub</strong></td><td>Yes</td><td>No</td></tr>
+                <tr><td><strong>Transactions</strong></td><td>Yes</td><td>No</td></tr>
+                <tr><td><strong>Use cases</strong></td><td>Session store, queues, leaderboards</td><td>Simple caching</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="create-redis">Create Redis Instance</h2>
+          <pre><code class="language-bash"># Basic tier (no replication)
+gcloud redis instances create my-redis \
+    --region=us-central1 \
+    --tier=BASIC \
+    --size=1 \
+    --redis-version=redis_7_0 \
+    --network=projects/PROJECT_ID/global/networks/my-vpc
+
+# Standard tier (with HA)
+gcloud redis instances create my-redis-ha \
+    --region=us-central1 \
+    --tier=STANDARD \
+    --size=5 \
+    --redis-version=redis_7_0 \
+    --network=projects/PROJECT_ID/global/networks/my-vpc \
+    --replica-count=1
+
+# Get connection info
+gcloud redis instances describe my-redis --region=us-central1 \
+    --format='value(host,port)'</code></pre>
+
+          <h2 id="create-memcached">Create Memcached Instance</h2>
+          <pre><code class="language-bash"># Create Memcached instance
+gcloud memcache instances create my-memcached \
+    --region=us-central1 \
+    --node-count=3 \
+    --node-cpu=1 \
+    --node-memory=1GB \
+    --network=projects/PROJECT_ID/global/networks/my-vpc
+
+# Get node IPs
+gcloud memcache instances describe my-memcached --region=us-central1 \
+    --format='value(memcacheNodes[].host)'</code></pre>
+
+          <h2 id="connect-gke">Connect from GKE</h2>
+          <pre><code class="language-yaml"># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        env:
+        - name: REDIS_HOST
+          value: "10.x.x.x"  # Memorystore private IP
+        - name: REDIS_PORT
+          value: "6379"</code></pre>
+
+          <h2 id="connect-cloudrun">Connect from Cloud Run</h2>
+          <pre><code class="language-bash"># Cloud Run requires VPC connector
+gcloud compute networks vpc-access connectors create redis-connector \
+    --region=us-central1 \
+    --network=my-vpc \
+    --range=10.8.0.0/28
+
+# Deploy with VPC connector
+gcloud run deploy my-service \
+    --image=my-image \
+    --vpc-connector=redis-connector \
+    --set-env-vars="REDIS_HOST=10.x.x.x,REDIS_PORT=6379"</code></pre>
+
+          <h2 id="nodejs-redis">Node.js (Redis)</h2>
+          <pre><code class="language-javascript">const redis = require('redis');
+
+const client = redis.createClient({
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT || 6379
+  }
+});
+
+await client.connect();
+
+// String operations
+await client.set('key', 'value');
+await client.set('key', 'value', { EX: 3600 }); // 1 hour TTL
+const value = await client.get('key');
+
+// Hash operations
+await client.hSet('user:123', { name: 'John', email: 'john@example.com' });
+const user = await client.hGetAll('user:123');
+
+// List operations (queue)
+await client.lPush('queue', 'task1');
+const task = await client.rPop('queue');
+
+// Set operations
+await client.sAdd('tags', ['redis', 'cache', 'nosql']);
+const tags = await client.sMembers('tags');
+
+// Sorted set (leaderboard)
+await client.zAdd('leaderboard', [
+  { score: 100, value: 'player1' },
+  { score: 200, value: 'player2' }
+]);
+const top10 = await client.zRange('leaderboard', 0, 9, { REV: true });
+
+// Pub/Sub
+const subscriber = client.duplicate();
+await subscriber.subscribe('channel', (message) => {
+  console.log('Received:', message);
+});
+
+await client.publish('channel', 'Hello!');</code></pre>
+
+          <h2 id="python-redis">Python (Redis)</h2>
+          <pre><code class="language-python">import redis
+import os
+
+r = redis.Redis(
+    host=os.environ['REDIS_HOST'],
+    port=int(os.environ.get('REDIS_PORT', 6379))
+)
+
+# String operations
+r.set('key', 'value')
+r.setex('key', 3600, 'value')  # 1 hour TTL
+value = r.get('key')
+
+# Hash operations
+r.hset('user:123', mapping={'name': 'John', 'email': 'john@example.com'})
+user = r.hgetall('user:123')
+
+# List (queue)
+r.lpush('queue', 'task1')
+task = r.rpop('queue')
+
+# Set
+r.sadd('tags', 'redis', 'cache', 'nosql')
+tags = r.smembers('tags')
+
+# Sorted set
+r.zadd('leaderboard', {'player1': 100, 'player2': 200})
+top10 = r.zrevrange('leaderboard', 0, 9, withscores=True)</code></pre>
+
+          <h2 id="dotnet-redis">C# / .NET (Redis)</h2>
+          <pre><code class="language-csharp">using StackExchange.Redis;
+
+var connection = ConnectionMultiplexer.Connect(
+    $"{Environment.GetEnvironmentVariable("REDIS_HOST")}:{Environment.GetEnvironmentVariable("REDIS_PORT")}"
+);
+var db = connection.GetDatabase();
+
+// String operations
+await db.StringSetAsync("key", "value");
+await db.StringSetAsync("key", "value", TimeSpan.FromHours(1));
+var value = await db.StringGetAsync("key");
+
+// Hash operations
+await db.HashSetAsync("user:123", new HashEntry[] {
+    new HashEntry("name", "John"),
+    new HashEntry("email", "john@example.com")
+});
+var user = await db.HashGetAllAsync("user:123");
+
+// List (queue)
+await db.ListLeftPushAsync("queue", "task1");
+var task = await db.ListRightPopAsync("queue");
+
+// Sorted set
+await db.SortedSetAddAsync("leaderboard", "player1", 100);
+var top10 = await db.SortedSetRangeByRankAsync("leaderboard", 0, 9, Order.Descending);</code></pre>
+
+          <h2 id="caching-patterns">Caching Patterns</h2>
+          <pre><code class="language-javascript">// Cache-aside pattern
+async function getUser(userId) {
+  // Try cache first
+  const cached = await redis.get(`user:${userId}`);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  // Cache miss - get from database
+  const user = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+
+  // Store in cache with TTL
+  await redis.set(`user:${userId}`, JSON.stringify(user), { EX: 3600 });
+
+  return user;
+}
+
+// Write-through pattern
+async function updateUser(userId, data) {
+  // Update database
+  await db.query('UPDATE users SET ? WHERE id = ?', [data, userId]);
+
+  // Update cache
+  await redis.set(`user:${userId}`, JSON.stringify(data), { EX: 3600 });
+}
+
+// Cache invalidation
+async function deleteUser(userId) {
+  await db.query('DELETE FROM users WHERE id = ?', [userId]);
+  await redis.del(`user:${userId}`);
+}</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List Redis instances
+gcloud redis instances list --region=us-central1
+
+# Describe instance
+gcloud redis instances describe my-redis --region=us-central1
+
+# Scale instance
+gcloud redis instances update my-redis \
+    --region=us-central1 \
+    --size=5
+
+# Delete instance
+gcloud redis instances delete my-redis --region=us-central1
+
+# Import/Export (Standard tier only)
+gcloud redis instances export gs://bucket/backup.rdb \
+    --instance=my-redis \
+    --region=us-central1</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">VPC Only</div>
+            <p>Memorystore instances are only accessible from the same VPC. For Cloud Run, you must configure a VPC connector. There's no public IP option.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">AUTH Support</div>
+            <p>Memorystore for Redis supports AUTH for password protection. Enable it during instance creation or update with <code>--auth-enabled</code>.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./firestore.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Firestore</span></a>
+          <a href="../storage/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Storage</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

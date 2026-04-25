@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Foundation - project setup, IAM, and networking configuration.">
+  <title>Foundation | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./project-setup.html">Project Setup</a></li>
+        <li><a href="./networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Foundation</li></ol></nav>
+        <header class="article-header"><h1>Foundation</h1></header>
+
+        <div class="article-body">
+          <p>Before deploying applications, you need to set up the GCP foundation: a project, proper IAM permissions, and networking infrastructure.</p>
+
+          <h2>What You'll Configure</h2>
+          <div class="card-grid">
+            <a href="./project-setup.html" class="card card-link">
+              <h3 class="card-title">Project Setup</h3>
+              <p class="card-description">Create a GCP project, enable APIs, and configure IAM service accounts.</p>
+            </a>
+            <a href="./networking.html" class="card card-link">
+              <h3 class="card-title">Networking</h3>
+              <p class="card-description">Create a VPC, subnets, firewall rules, and Cloud NAT for private nodes.</p>
+            </a>
+          </div>
+
+          <h2>Foundation Architecture</h2>
+          <pre><code>┌────────────────────────────────────────────────────────────┐
+│                      GCP Project                           │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                        VPC                           │  │
+│  │  ┌─────────────────┐    ┌─────────────────────────┐  │  │
+│  │  │  Public Subnet  │    │     Private Subnet      │  │  │
+│  │  │  (Load Balancer)│    │  (GKE Nodes, Cloud SQL) │  │  │
+│  │  └─────────────────┘    └─────────────────────────┘  │  │
+│  │                              │                       │  │
+│  │                         Cloud NAT                    │  │
+│  │                      (Outbound Internet)             │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                            │
+│  IAM: Service Accounts, Roles, Workload Identity           │
+└────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2>Key Concepts</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>GCP Project</strong></td><td>Isolated container for all resources and billing</td></tr>
+                <tr><td><strong>APIs</strong></td><td>Must be enabled before using GCP services</td></tr>
+                <tr><td><strong>Service Accounts</strong></td><td>Identity for applications and automation</td></tr>
+                <tr><td><strong>IAM Roles</strong></td><td>Permissions granted to users and service accounts</td></tr>
+                <tr><td><strong>VPC</strong></td><td>Virtual network isolating your resources</td></tr>
+                <tr><td><strong>Subnets</strong></td><td>IP ranges within your VPC for different purposes</td></tr>
+                <tr><td><strong>Firewall Rules</strong></td><td>Control traffic in and out of your network</td></tr>
+                <tr><td><strong>Cloud NAT</strong></td><td>Allows private resources to access the internet</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Why This Matters</div>
+            <p>A properly configured foundation ensures security, network isolation, and least-privilege access. Skipping these steps often leads to security issues and difficult troubleshooting later.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../prerequisites.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Prerequisites</span></a>
+          <a href="./project-setup.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Project Setup</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

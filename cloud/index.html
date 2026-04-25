@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn cloud computing on AWS, GCP, and Azure. Beginner-friendly guides covering compute, databases, storage, networking, security, and DevOps.">
+  <title>Cloud | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body class="layout-landing">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../devops/" class="nav-link">DevOps</a>
+        <a href="../cloud/" class="nav-link active">Cloud</a>
+        <a href="../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="Mobile navigation">
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Cloud Providers</h3>
+          <ul class="sidebar-links">
+            <li><a href="./">Overview</a></li>
+            <li><a href="./gcp/">GCP Services</a></li>
+            <li><a href="./aws/">AWS Services</a></li>
+            <li><a href="./azure/">Azure Services</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main id="main-content" class="main-content">
+
+      <!-- Hero -->
+      <section class="hero">
+        <p class="hero-eyebrow">Cloud Computing</p>
+        <h1 class="hero-title">Choose Your Cloud Provider</h1>
+        <p class="hero-subtitle">
+          Learn GCP, AWS, and Azure from scratch. Each guide covers compute, databases, storage,
+          networking, security, and DevOps — with beginner-friendly explanations and real-world examples.
+        </p>
+      </section>
+
+      <!-- What is Cloud? Beginner Section -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:1rem;">What is Cloud Computing?</h2>
+
+        <div class="callout-beginner">
+          <div class="callout-beginner-title">Think of it like renting electricity</div>
+          <p>
+            Before cloud computing, every company had to buy and maintain their own servers — like building your own power plant.
+            Cloud computing lets you <strong>rent computing power, storage, and software over the internet</strong>, just like
+            paying for electricity. You use only what you need, pay for what you use, and let someone else handle the hardware.
+          </p>
+        </div>
+
+        <div class="feature-grid" style="margin-top:2rem;">
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+              <h4>Scale Instantly</h4>
+              <p>Go from serving 10 users to 10 million without buying new hardware. The cloud scales up or down automatically.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">💰</div>
+            <div class="feature-text">
+              <h4>Pay As You Go</h4>
+              <p>No upfront costs. Pay only for what you use — like a utility bill. Stop using it, stop paying.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🌍</div>
+            <div class="feature-text">
+              <h4>Global Reach</h4>
+              <p>Deploy your app in data centers across every continent in minutes. Users get fast responses no matter where they are.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+              <h4>Built-in Security</h4>
+              <p>World-class physical and network security, compliance certifications, and encryption — out of the box.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Architecture Diagram: Cloud vs On-Premise -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:1.5rem;">Cloud vs On-Premise</h2>
+
+        <div class="arch-diagram">
+          <div class="arch-diagram-title">How Traditional vs Cloud Infrastructure Differs</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;text-align:center;">
+            <!-- On-Premise -->
+            <div>
+              <div style="font-weight:600;margin-bottom:1rem;color:#64748b;">Traditional (On-Premise)</div>
+              <div class="arch-box arch-box-neutral" style="margin-bottom:0.5rem;">
+                <div class="arch-box-title">🏢 Your Data Center</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral" style="margin-bottom:0.5rem;">
+                <div class="arch-box-title">🖥️ Physical Servers</div>
+                <div class="arch-box-subtitle">You buy &amp; maintain</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral" style="margin-bottom:0.5rem;">
+                <div class="arch-box-title">⚙️ Your IT Team</div>
+                <div class="arch-box-subtitle">Patches, backups, uptime</div>
+              </div>
+              <div style="margin-top:1rem;padding:0.5rem;background:#fef2f2;border-radius:8px;font-size:0.8rem;color:#991b1b;">
+                High upfront cost · Slow to scale · You manage everything
+              </div>
+            </div>
+            <!-- Cloud -->
+            <div>
+              <div style="font-weight:600;margin-bottom:1rem;color:#2563eb;">Cloud (AWS / GCP / Azure)</div>
+              <div class="arch-box arch-box-internet" style="margin-bottom:0.5rem;">
+                <div class="arch-box-title">🌐 Your App</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box" style="margin-bottom:0.5rem;border-color:#4285F4;">
+                <div class="arch-box-title">☁️ Cloud Provider</div>
+                <div class="arch-box-subtitle">Runs &amp; manages servers</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box" style="margin-bottom:0.5rem;border-color:#10b981;">
+                <div class="arch-box-title">📦 Managed Services</div>
+                <div class="arch-box-subtitle">DB, Storage, Security, CDN</div>
+              </div>
+              <div style="margin-top:1rem;padding:0.5rem;background:#f0fdf4;border-radius:8px;font-size:0.8rem;color:#166534;">
+                Pay per use · Scales instantly · Provider manages hardware
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Provider Selection -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:0.5rem;">Select Your Cloud Provider</h2>
+        <p style="text-align:center;color:#64748b;margin-bottom:2rem;">
+          All three are excellent choices. Pick the one your team or job uses — the concepts transfer between them.
+        </p>
+
+        <div class="provider-grid">
+          <!-- GCP -->
+          <a href="./gcp/" class="provider-card provider-card-gcp">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="#4285F4"/>
+              </svg>
+            </span>
+            <h3>Cloud (GCP)</h3>
+            <p>Google Cloud Platform — known for Kubernetes (GKE), BigQuery, and AI/ML tools.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">GKE</span>
+              <span class="provider-service-tag">Cloud Run</span>
+              <span class="provider-service-tag">Cloud SQL</span>
+              <span class="provider-service-tag">Firestore</span>
+              <span class="provider-service-tag">IAM</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-gcp">Google Cloud</span>
+            </div>
+          </a>
+
+          <!-- AWS -->
+          <a href="./aws/" class="provider-card provider-card-aws">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.064.056.128.056.184 0 .08-.048.16-.152.24l-.504.336c-.072.048-.144.072-.208.072-.08 0-.16-.04-.24-.112-.112-.12-.208-.248-.288-.376-.08-.136-.16-.288-.248-.472-.624.736-1.408 1.104-2.352 1.104-.672 0-1.208-.192-1.6-.576-.392-.384-.592-.896-.592-1.536 0-.68.24-1.232.728-1.648.488-.416 1.136-.624 1.96-.624.272 0 .552.024.848.064.296.04.6.104.92.176v-.584c0-.608-.128-1.032-.376-1.28-.256-.248-.688-.368-1.304-.368-.28 0-.568.032-.864.104-.296.072-.584.16-.864.272-.128.056-.224.088-.272.104-.048.016-.08.024-.104.024-.096 0-.144-.072-.144-.224v-.352c0-.12.016-.208.056-.264.04-.056.112-.112.224-.168.28-.144.616-.264 1.008-.36.392-.104.808-.152 1.248-.152.952 0 1.648.216 2.096.648.44.432.664 1.088.664 1.968v2.592zm-3.24 1.208c.264 0 .536-.048.824-.144.288-.096.544-.272.76-.512.128-.152.224-.32.272-.512.048-.192.08-.424.08-.696v-.336c-.232-.056-.48-.104-.736-.136-.256-.032-.504-.048-.752-.048-.536 0-.928.104-1.192.32-.264.216-.392.52-.392.92 0 .376.096.656.296.848.192.2.472.296.84.296zm6.44.864c-.136 0-.224-.024-.28-.08-.056-.048-.104-.16-.144-.312l-1.608-5.296c-.04-.16-.064-.264-.064-.32 0-.128.064-.2.192-.2h.784c.144 0 .24.024.288.08.056.048.096.16.136.312l1.152 4.536 1.064-4.536c.032-.16.072-.264.128-.312.056-.056.16-.08.296-.08h.64c.144 0 .24.024.296.08.056.048.104.16.128.312l1.08 4.592 1.184-4.592c.04-.16.088-.264.136-.312.056-.056.144-.08.28-.08h.744c.128 0 .2.064.2.2 0 .04-.008.08-.016.128-.016.048-.032.112-.064.2l-1.648 5.296c-.04.16-.088.264-.144.312-.056.056-.152.08-.28.08h-.688c-.144 0-.24-.024-.296-.08-.056-.056-.104-.16-.128-.32l-1.056-4.384-1.048 4.376c-.032.16-.072.264-.128.32-.056.056-.16.08-.296.08h-.688zm8.864.176c-.416 0-.832-.048-1.232-.144-.4-.096-.712-.2-.92-.32-.128-.072-.216-.152-.248-.224-.032-.072-.048-.152-.048-.224v-.368c0-.152.056-.224.16-.224.04 0 .08.008.12.024.04.016.1.04.168.072.232.104.488.184.768.24.288.056.568.088.856.088.456 0 .808-.08 1.056-.24.248-.16.376-.392.376-.688 0-.2-.064-.368-.192-.504-.128-.136-.368-.256-.712-.368l-1.024-.32c-.52-.16-.904-.4-1.144-.72-.24-.312-.36-.664-.36-1.04 0-.304.064-.568.2-.8.136-.232.32-.432.544-.592.224-.16.48-.28.776-.36.296-.08.608-.12.936-.12.168 0 .344.008.512.032.176.024.336.056.488.096.144.04.28.08.408.128.128.048.224.096.296.152.072.056.128.112.16.176.032.064.048.144.048.24v.336c0 .152-.056.232-.16.232-.056 0-.144-.024-.256-.072-.384-.176-.816-.264-1.296-.264-.408 0-.728.064-.952.2-.224.136-.336.344-.336.632 0 .2.072.368.216.504.144.136.408.272.792.392l1 .312c.512.16.888.384 1.12.672.232.288.344.616.344.984 0 .312-.064.592-.192.84-.128.248-.304.464-.536.64-.232.184-.504.32-.824.416-.328.104-.68.152-1.056.152z" fill="#FF9900"/>
+              </svg>
+            </span>
+            <h3>Cloud (AWS)</h3>
+            <p>Amazon Web Services — the largest cloud with the widest service selection and market share.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">EKS</span>
+              <span class="provider-service-tag">Lambda</span>
+              <span class="provider-service-tag">RDS</span>
+              <span class="provider-service-tag">S3</span>
+              <span class="provider-service-tag">CloudWatch</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-aws">Amazon Web Services</span>
+            </div>
+          </a>
+
+          <!-- Azure -->
+          <a href="./azure/" class="provider-card provider-card-azure">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.05 4.24L6.56 18.05l2.47.01 1.28-2.94h3.64l1.42 3h2.47L13.05 4.24zM11.98 8.56l1.8 4.16H11l.98-4.16z" fill="#0078D4"/>
+              </svg>
+            </span>
+            <h3>Cloud (Azure)</h3>
+            <p>Microsoft Azure — best integration with Windows, .NET, and enterprise Microsoft tools.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">AKS</span>
+              <span class="provider-service-tag">Container Apps</span>
+              <span class="provider-service-tag">Cosmos DB</span>
+              <span class="provider-service-tag">Blob Storage</span>
+              <span class="provider-service-tag">Entra ID</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-azure">Microsoft Azure</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Provider Comparison -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:1.5rem;">Service Comparison at a Glance</h2>
+
+        <div class="table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th class="th-gcp">GCP Service</th>
+                <th class="th-aws">AWS Service</th>
+                <th class="th-azure">Azure Service</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="category-row"><td colspan="4">Compute</td></tr>
+              <tr>
+                <td>Managed Kubernetes</td>
+                <td>GKE</td>
+                <td>EKS</td>
+                <td>AKS</td>
+              </tr>
+              <tr>
+                <td>Serverless Containers</td>
+                <td>Cloud Run</td>
+                <td>Fargate / Lambda</td>
+                <td>Container Apps</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">Databases</td></tr>
+              <tr>
+                <td>Managed SQL</td>
+                <td>Cloud SQL</td>
+                <td>RDS</td>
+                <td>Azure SQL</td>
+              </tr>
+              <tr>
+                <td>NoSQL / Document</td>
+                <td>Firestore</td>
+                <td>DynamoDB</td>
+                <td>Cosmos DB</td>
+              </tr>
+              <tr>
+                <td>In-Memory Cache</td>
+                <td>Memorystore</td>
+                <td>ElastiCache</td>
+                <td>Azure Cache for Redis</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">Storage</td></tr>
+              <tr>
+                <td>Object Storage</td>
+                <td>Cloud Storage</td>
+                <td>S3</td>
+                <td>Blob Storage</td>
+              </tr>
+              <tr>
+                <td>Container Registry</td>
+                <td>Artifact Registry</td>
+                <td>ECR</td>
+                <td>Azure Container Registry</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">Networking</td></tr>
+              <tr>
+                <td>Virtual Network</td>
+                <td>VPC</td>
+                <td>VPC</td>
+                <td>VNet</td>
+              </tr>
+              <tr>
+                <td>Load Balancer</td>
+                <td>Cloud Load Balancing</td>
+                <td>ALB / NLB</td>
+                <td>Azure Load Balancer</td>
+              </tr>
+              <tr>
+                <td>CDN</td>
+                <td>Cloud CDN</td>
+                <td>CloudFront</td>
+                <td>Azure CDN / Front Door</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">Security &amp; Identity</td></tr>
+              <tr>
+                <td>IAM / Access Control</td>
+                <td>Cloud IAM</td>
+                <td>IAM</td>
+                <td>Entra ID (Azure AD)</td>
+              </tr>
+              <tr>
+                <td>Secrets / Key Management</td>
+                <td>Secret Manager</td>
+                <td>Secrets Manager</td>
+                <td>Key Vault</td>
+              </tr>
+              <tr>
+                <td>WAF / DDoS</td>
+                <td>Cloud Armor</td>
+                <td>WAF / Shield</td>
+                <td>Azure DDoS Protection</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">CI/CD &amp; DevOps</td></tr>
+              <tr>
+                <td>Build Service</td>
+                <td>Cloud Build</td>
+                <td>CodeBuild</td>
+                <td>Azure Pipelines</td>
+              </tr>
+              <tr>
+                <td>Continuous Delivery</td>
+                <td>Cloud Deploy</td>
+                <td>CodeDeploy</td>
+                <td>Azure DevOps</td>
+              </tr>
+              <tr class="category-row"><td colspan="4">Monitoring</td></tr>
+              <tr>
+                <td>Metrics &amp; Alerts</td>
+                <td>Cloud Monitoring</td>
+                <td>CloudWatch</td>
+                <td>Azure Monitor</td>
+              </tr>
+              <tr>
+                <td>Logging</td>
+                <td>Cloud Logging</td>
+                <td>CloudWatch Logs</td>
+                <td>Log Analytics</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Core Cloud Concepts -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:0.5rem;">Core Concepts Across All Clouds</h2>
+        <p style="text-align:center;color:#64748b;margin-bottom:2rem;">These ideas apply to GCP, AWS, and Azure equally.</p>
+
+        <div class="arch-diagram">
+          <div class="arch-diagram-title">Typical Cloud-Native Application Stack</div>
+          <div class="arch-flow">
+            <div class="arch-box arch-box-user">
+              <div class="arch-box-title">👤 User / Browser</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-box arch-box-internet">
+              <div class="arch-box-title">🌐 CDN + DNS</div>
+              <div class="arch-box-subtitle">Fast global delivery</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-box" style="border-color:#2563eb;">
+              <div class="arch-box-title">⚖️ Load Balancer</div>
+              <div class="arch-box-subtitle">Distributes traffic + SSL termination</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-cluster" style="width:100%;">
+              <span class="arch-cluster-label">Kubernetes Cluster (GKE / EKS / AKS)</span>
+              <div class="arch-row" style="margin-top:0.5rem;">
+                <div class="arch-box" style="border-color:#10b981;min-width:120px;">
+                  <div class="arch-box-title">🖥️ Frontend</div>
+                  <div class="arch-box-subtitle">React / Vue</div>
+                </div>
+                <div class="arch-arrow-right">→</div>
+                <div class="arch-box" style="border-color:#10b981;min-width:120px;">
+                  <div class="arch-box-title">⚙️ Backend API</div>
+                  <div class="arch-box-subtitle">.NET / Node / Go</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-row">
+              <div class="arch-box arch-box-neutral" style="min-width:130px;">
+                <div class="arch-box-title">🗄️ Database</div>
+                <div class="arch-box-subtitle">SQL / NoSQL</div>
+              </div>
+              <div style="width:2rem;"></div>
+              <div class="arch-box arch-box-neutral" style="min-width:130px;">
+                <div class="arch-box-title">📦 Object Storage</div>
+                <div class="arch-box-subtitle">Files / Images</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4 class="card-title">Regions &amp; Availability Zones</h4>
+            <p class="card-description">Data centers are grouped into regions (e.g., us-east-1). Each region has multiple availability zones for fault tolerance. Put your app in 2+ zones and it stays up even if one fails.</p>
+          </div>
+          <div class="card">
+            <h4 class="card-title">IAM &amp; Least Privilege</h4>
+            <p class="card-description">Every cloud service needs permissions. IAM (Identity and Access Management) controls who can do what. Always grant the minimum permissions needed — never use admin accounts for apps.</p>
+          </div>
+          <div class="card">
+            <h4 class="card-title">Managed vs Self-Managed</h4>
+            <p class="card-description">Managed services (like Cloud SQL / RDS) handle backups, patches, and failover automatically. Self-managed means you install and maintain the software yourself on a VM.</p>
+          </div>
+          <div class="card">
+            <h4 class="card-title">Infrastructure as Code</h4>
+            <p class="card-description">Instead of clicking through a web console, define your cloud resources in code (Terraform, Pulumi). This makes your infrastructure repeatable, version-controlled, and auditable.</p>
+          </div>
+          <div class="card">
+            <h4 class="card-title">Containers &amp; Kubernetes</h4>
+            <p class="card-description">All three clouds offer managed Kubernetes. Package your app in a Docker container, then Kubernetes handles running it, restarting crashed instances, and scaling under load.</p>
+          </div>
+          <div class="card">
+            <h4 class="card-title">Observability</h4>
+            <p class="card-description">You can't fix what you can't see. Each cloud has logging, metrics, and alerting. Set up dashboards and alerts so you know when something breaks before your users do.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="copyright">CloudDevOps — Learn cloud computing across GCP, AWS, and Azure</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

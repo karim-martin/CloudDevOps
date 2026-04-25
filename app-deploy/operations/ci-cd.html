@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub Actions CI/CD pipeline for GKE with Workload Identity Federation.">
+  <title>CI/CD | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./ci-cd.html" class="active">CI/CD</a></li>
+        <li><a href="./scaling.html">Scaling</a></li>
+        <li><a href="./monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Operations</a></li><li aria-current="page">CI/CD</li></ol></nav>
+        <header class="article-header"><h1>CI/CD Pipeline</h1></header>
+
+        <div class="article-body">
+          <p>Set up GitHub Actions CI/CD pipeline using Workload Identity Federation for secure, keyless authentication to GCP.</p>
+
+          <h2 id="workload-identity-federation">Step 1: Configure Workload Identity Federation</h2>
+          <p>Allow GitHub Actions to authenticate to GCP without service account keys.</p>
+
+          <pre><code class="language-bash"># Set variables
+export PROJECT_ID="your-project-id"
+export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+export GITHUB_ORG="your-github-org"      # or username
+export GITHUB_REPO="your-repo-name"
+export POOL_NAME="github-pool"
+export PROVIDER_NAME="github-provider"
+export SA_NAME="github-actions-sa"
+
+# Create Workload Identity Pool
+gcloud iam workload-identity-pools create $POOL_NAME \
+    --location="global" \
+    --display-name="GitHub Actions Pool"
+
+# Create Workload Identity Provider
+gcloud iam workload-identity-pools providers create-oidc $PROVIDER_NAME \
+    --location="global" \
+    --workload-identity-pool=$POOL_NAME \
+    --display-name="GitHub Provider" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner" \
+    --issuer-uri="https://token.actions.githubusercontent.com"
+
+# Get the full provider name
+export WORKLOAD_IDENTITY_PROVIDER="projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_NAME/providers/$PROVIDER_NAME"
+echo "Workload Identity Provider: $WORKLOAD_IDENTITY_PROVIDER"</code></pre>
+
+          <h2 id="service-account">Step 2: Create CI/CD Service Account</h2>
+          <pre><code class="language-bash"># Create service account for GitHub Actions
+gcloud iam service-accounts create $SA_NAME \
+    --display-name="GitHub Actions Service Account"
+
+# Grant required permissions
+# Artifact Registry (push images)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+
+# GKE (deploy to cluster)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/container.developer"
+
+# Allow GitHub to impersonate the service account
+gcloud iam service-accounts add-iam-policy-binding \
+    $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_NAME/attribute.repository/$GITHUB_ORG/$GITHUB_REPO"</code></pre>
+
+          <h2 id="github-secrets">Step 3: Add GitHub Secrets</h2>
+          <p>Add these secrets to your GitHub repository (Settings → Secrets → Actions):</p>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Secret Name</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td><code>GCP_PROJECT_ID</code></td><td>your-project-id</td></tr>
+                <tr><td><code>GCP_WORKLOAD_IDENTITY_PROVIDER</code></td><td>projects/123.../providers/github-provider</td></tr>
+                <tr><td><code>GCP_SERVICE_ACCOUNT</code></td><td>github-actions-sa@project.iam.gserviceaccount.com</td></tr>
+                <tr><td><code>GKE_CLUSTER</code></td><td>app-cluster</td></tr>
+                <tr><td><code>GKE_REGION</code></td><td>us-central1</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="github-workflow">Step 4: GitHub Actions Workflow</h2>
+          <pre><code class="language-yaml"># .github/workflows/deploy.yaml
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_REGION: ${{ secrets.GKE_REGION }}
+  REGISTRY: us-central1-docker.pkg.dev
+  REPOSITORY: app-repo
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write  # Required for Workload Identity Federation
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker for Artifact Registry
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+    - name: Build Frontend Image
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }} \
+                     -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:latest \
+                     -f frontend/Dockerfile frontend/
+
+    - name: Build Backend Image
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:${{ github.sha }} \
+                     -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:latest \
+                     -f backend/Dockerfile backend/
+
+    - name: Push Frontend Image
+      run: |
+        docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:latest
+
+    - name: Push Backend Image
+      run: |
+        docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:latest
+
+    - name: Get GKE credentials
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_REGION }}
+
+    - name: Deploy to GKE
+      run: |
+        # Update image tags in deployment files
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/frontend/deployment.yaml
+        sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/backend/deployment.yaml
+        sed -i "s|PROJECT_ID|${{ env.PROJECT_ID }}|g" k8s/frontend/deployment.yaml
+        sed -i "s|PROJECT_ID|${{ env.PROJECT_ID }}|g" k8s/backend/deployment.yaml
+
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/frontend/
+        kubectl apply -f k8s/backend/
+
+        # Wait for rollout
+        kubectl rollout status deployment/react-frontend -n app --timeout=300s
+        kubectl rollout status deployment/dotnet-api -n app --timeout=300s
+
+    - name: Verify deployment
+      run: |
+        kubectl get pods -n app
+        kubectl get services -n app</code></pre>
+
+          <h2 id="pr-workflow">Pull Request Workflow (Build Only)</h2>
+          <pre><code class="language-yaml"># .github/workflows/pr.yaml
+name: PR Build Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGISTRY: us-central1-docker.pkg.dev
+  REPOSITORY: app-repo
+
+jobs:
+  build:
+    name: Build Images
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+    - name: Configure Docker for Artifact Registry
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+    - name: Build Frontend (no push)
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:pr-${{ github.event.number }} \
+                     -f frontend/Dockerfile frontend/
+
+    - name: Build Backend (no push)
+      run: |
+        docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:pr-${{ github.event.number }} \
+                     -f backend/Dockerfile backend/
+
+    - name: Run Tests
+      run: |
+        # Add your test commands here
+        echo "Running tests..."
+        # cd frontend && npm test
+        # cd backend && dotnet test</code></pre>
+
+          <h2 id="deployment-yaml">Deployment YAML with Image Tag</h2>
+          <pre><code class="language-yaml"># k8s/backend/deployment.yaml (template)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-api
+  namespace: app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dotnet-api
+  template:
+    metadata:
+      labels:
+        app: dotnet-api
+    spec:
+      serviceAccountName: app-ksa
+      containers:
+      - name: api
+        # IMAGE_TAG and PROJECT_ID replaced by CI/CD pipeline
+        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/backend:IMAGE_TAG
+        ports:
+        - containerPort: 8080</code></pre>
+
+          <h2 id="rollback">Rollback Procedure</h2>
+          <pre><code class="language-bash"># View rollout history
+kubectl rollout history deployment/dotnet-api -n app
+
+# Rollback to previous version
+kubectl rollout undo deployment/dotnet-api -n app
+
+# Rollback to specific revision
+kubectl rollout undo deployment/dotnet-api -n app --to-revision=2
+
+# Check rollback status
+kubectl rollout status deployment/dotnet-api -n app
+
+# If needed, manually update to specific image
+kubectl set image deployment/dotnet-api \
+    api=us-central1-docker.pkg.dev/PROJECT_ID/app-repo/backend:abc123 \
+    -n app</code></pre>
+
+          <h2 id="branch-environments">Branch-Based Environments (Optional)</h2>
+          <pre><code class="language-yaml"># Deploy to different namespaces based on branch
+- name: Set environment
+  run: |
+    if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+      echo "NAMESPACE=production" >> $GITHUB_ENV
+    elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+      echo "NAMESPACE=staging" >> $GITHUB_ENV
+    else
+      echo "NAMESPACE=development" >> $GITHUB_ENV
+    fi
+
+- name: Deploy
+  run: |
+    kubectl apply -f k8s/ -n ${{ env.NAMESPACE }}</code></pre>
+
+          <h2 id="troubleshooting">Troubleshooting</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>Permission denied to GCP</td><td>Check Workload Identity Federation setup and IAM bindings</td></tr>
+                <tr><td>Cannot push to Artifact Registry</td><td>Verify artifactregistry.writer role on service account</td></tr>
+                <tr><td>kubectl: unauthorized</td><td>Check container.developer role and GKE credentials step</td></tr>
+                <tr><td>Image pull error in GKE</td><td>Ensure GKE nodes have access to Artifact Registry</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <pre><code class="language-bash"># Debug Workload Identity Federation
+# In GitHub Actions, add this step to debug:
+- name: Debug Auth
+  run: |
+    gcloud auth list
+    gcloud config list project
+
+# Verify service account permissions
+gcloud projects get-iam-policy $PROJECT_ID \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+
+# Test authentication locally
+gcloud iam service-accounts get-iam-policy \
+    $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Why Workload Identity Federation?</div>
+            <p>Workload Identity Federation eliminates the need for long-lived service account keys. GitHub's OIDC tokens are exchanged for short-lived GCP credentials, reducing security risks from key exposure.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">id-token Permission</div>
+            <p>The <code>permissions: id-token: write</code> is required for Workload Identity Federation. Without it, GitHub Actions cannot request the OIDC token needed for GCP authentication.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Image Tags</div>
+            <p>Using <code>${{ github.sha }}</code> as the image tag ensures each deployment uses a unique, traceable image. The <code>latest</code> tag is also pushed for convenience but should not be used in production deployments.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Operations Overview</span></a>
+          <a href="./scaling.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Scaling</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

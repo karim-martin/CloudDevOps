@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Compute Services - GKE and Cloud Run for containerized workloads.">
+  <title>Compute | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./gke.html">GKE</a></li>
+        <li><a href="./cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="../databases/">Overview</a></li>
+        <li><a href="../databases/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../databases/firestore.html">Firestore</a></li>
+        <li><a href="../databases/memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li aria-current="page">Compute</li></ol></nav>
+        <header class="article-header"><h1>Compute Services</h1></header>
+
+        <div class="article-body">
+          <p>GCP provides multiple compute options for running containerized workloads, from fully managed Kubernetes to serverless containers.</p>
+
+          <h2>Container Compute Options</h2>
+          <div class="card-grid">
+            <a href="./gke.html" class="card card-link">
+              <h3 class="card-title">Google Kubernetes Engine (GKE)</h3>
+              <p class="card-description">Managed Kubernetes for complex, scalable container orchestration with full control.</p>
+            </a>
+            <a href="./cloud-run.html" class="card card-link">
+              <h3 class="card-title">Cloud Run</h3>
+              <p class="card-description">Serverless containers that scale to zero. Pay only for what you use.</p>
+            </a>
+          </div>
+
+          <h2>Choosing the Right Service</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Criteria</th><th>GKE</th><th>Cloud Run</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Management</strong></td><td>You manage workloads, Google manages control plane</td><td>Fully managed, serverless</td></tr>
+                <tr><td><strong>Scaling</strong></td><td>HPA, VPA, Cluster Autoscaler</td><td>Automatic, scales to zero</td></tr>
+                <tr><td><strong>Pricing</strong></td><td>Pay for cluster nodes (always on)</td><td>Pay per request/CPU time</td></tr>
+                <tr><td><strong>Networking</strong></td><td>Full Kubernetes networking, custom CNI</td><td>HTTP/gRPC endpoints</td></tr>
+                <tr><td><strong>State</strong></td><td>Stateful workloads supported</td><td>Stateless only</td></tr>
+                <tr><td><strong>Customization</strong></td><td>Full K8s API, any workload</td><td>Limited to container settings</td></tr>
+                <tr><td><strong>Best For</strong></td><td>Complex microservices, stateful apps</td><td>APIs, webhooks, async processing</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Decision Guide</h2>
+          <pre><code>                    Container Workload
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+         Need K8s features?        Simple HTTP/gRPC?
+         Stateful workloads?       Scale to zero?
+         Complex networking?       Pay-per-use?
+              │                         │
+              ▼                         ▼
+            GKE                    Cloud Run
+              │                         │
+    ┌─────────┴─────────┐              │
+    │                   │              │
+Standard          Autopilot        Services
+(manage nodes)   (serverless       or Jobs
+                  nodes)</code></pre>
+
+          <h2>Quick Comparison</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>GKE Standard</th><th>GKE Autopilot</th><th>Cloud Run</th></tr></thead>
+              <tbody>
+                <tr><td>Node management</td><td>You manage</td><td>Google manages</td><td>N/A (serverless)</td></tr>
+                <tr><td>Billing unit</td><td>Node hours</td><td>Pod resources</td><td>Request + CPU time</td></tr>
+                <tr><td>Min cost</td><td>~$70/mo (1 node)</td><td>Pay for pods only</td><td>Free tier available</td></tr>
+                <tr><td>Scale to zero</td><td>No</td><td>No</td><td>Yes</td></tr>
+                <tr><td>GPU support</td><td>Yes</td><td>Yes</td><td>Yes (preview)</td></tr>
+                <tr><td>Max request timeout</td><td>Unlimited</td><td>Unlimited</td><td>60 minutes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Hybrid Approach</div>
+            <p>Many teams use both: GKE for core services requiring complex orchestration, and Cloud Run for event-driven workloads, webhooks, and APIs that benefit from scale-to-zero.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud Overview</span></a>
+          <a href="./gke.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">GKE</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

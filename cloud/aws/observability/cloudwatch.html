@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon CloudWatch | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Observability</a></li><li aria-current="page">CloudWatch</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon CloudWatch</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Metrics, logs, alarms, and dashboards for AWS services.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">CloudWatch is Your App's Health Monitor</div>
+            <p>AWS services automatically send metrics to CloudWatch — your EKS nodes' CPU usage, RDS connections, ALB request count, etc. You can also send custom metrics from your app. Set <strong>Alarms</strong> that notify you (via SNS → email/Slack) when something is wrong. Create <strong>Dashboards</strong> to visualize key metrics at a glance. CloudWatch Logs stores all your application logs in a searchable, queryable format.</p>
+          </div>
+
+          <h2>Key CloudWatch Features</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-text"><h4>Metrics</h4><p>Thousands of built-in AWS metrics. Send custom metrics from your app with PutMetricData. Resolution from 1-second to 1-hour.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🚨</div><div class="feature-text"><h4>Alarms</h4><p>Alert when a metric exceeds a threshold. Trigger SNS notifications, Lambda functions, or EC2/ASG actions automatically.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">📝</div><div class="feature-text"><h4>Logs Insights</h4><p>Query logs with SQL-like syntax. Find all errors in the last hour across all pods. Aggregate, filter, and visualize log patterns.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🗺️</div><div class="feature-text"><h4>Container Insights</h4><p>Enhanced monitoring for EKS/ECS. Pod-level CPU, memory, network metrics. View performance by cluster, node, pod, or container.</p></div></div>
+          </div>
+
+          <h2>Enable Container Insights for EKS</h2>
+          <pre><code>aws eks create-addon \
+  --cluster-name my-cluster \
+  --addon-name amazon-cloudwatch-observability \
+  --service-account-role-arn arn:aws:iam::123:role/CWAgentRole</code></pre>
+
+          <h2>CloudWatch Logs Insights Query</h2>
+          <pre><code># Find all 5xx errors in the last hour
+fields @timestamp, @message
+| filter @message like /ERROR/ or @message like /5[0-9][0-9]/
+| sort @timestamp desc
+| limit 100
+
+# Count errors per minute
+fields @timestamp, @message
+| filter @message like /ERROR/
+| stats count(*) as errorCount by bin(1m)
+| sort @timestamp asc</code></pre>
+
+          <h2>Create an Alarm (Terraform)</h2>
+          <pre><code>resource "aws_cloudwatch_metric_alarm" "high_error_rate" {
+  alarm_name          = "myapp-high-error-rate"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HTTPCode_Target_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60  # 1 minute
+  statistic           = "Sum"
+  threshold           = 10
+  alarm_description   = "More than 10 5xx errors per minute"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    LoadBalancer = aws_lb.main.arn_suffix
+  }
+}</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS Observability</span></a>
+          <a href="./xray.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">X-Ray</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

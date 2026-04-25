@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Load Balancer &amp; Application Gateway | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li><a href="./">Networking</a></li><li aria-current="page">Load Balancer</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure Load Balancer &amp; Application Gateway</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Distribute traffic to your AKS workloads with SSL termination and WAF.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Two Load Balancers for Two Different Jobs</div>
+            <p><strong>Azure Load Balancer</strong> operates at Layer 4 (TCP/UDP) — it just forwards packets without looking at HTTP content. It's simple, fast, and ultra-low latency. <strong>Application Gateway</strong> operates at Layer 7 (HTTP/HTTPS) — it can inspect URLs, headers, and cookies, do SSL termination, WAF protection, and route <code>/api</code> traffic to your backend and <code>/</code> to your frontend. For AKS Ingress, use Application Gateway via the AGIC add-on.</p>
+          </div>
+
+          <h2>AGIC — Application Gateway Ingress Controller</h2>
+          <pre><code"># Enable AGIC when creating AKS
+az aks create \
+  --name myapp-cluster \
+  --resource-group myapp-rg \
+  --enable-addons ingress-appgw \
+  --appgw-name myapp-gateway \
+  --appgw-subnet-cidr 10.1.0.0/16</code></pre>
+          <pre><code"># ingress.yaml — Application Gateway routes automatically created
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts: [myapp.example.com]
+    secretName: myapp-tls
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service: {name: backend-svc, port: {number: 8080}}
+      - path: /
+        pathType: Prefix
+        backend:
+          service: {name: frontend-svc, port: {number: 80}}</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./vnet.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">VNet</span></a>
+          <a href="./cdn.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">CDN / Front Door</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

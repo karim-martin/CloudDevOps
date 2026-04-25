@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoring on AWS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/account-setup.html">AWS Account Setup</a></li>
+        <li><a href="../foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/eks-cluster.html">EKS Cluster</a></li>
+        <li><a href="../infrastructure/rds.html">RDS Database</a></li>
+        <li><a href="../infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/irsa.html">IRSA</a></li>
+        <li><a href="../security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="../operations/scaling.html">Autoscaling</a></li>
+        <li><a href="../operations/monitoring.html" class="active">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li><li><a href="../">AWS</a></li><li><a href="./">Operations</a></li><li aria-current="page">Monitoring</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Monitoring on AWS</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">CloudWatch Container Insights, alarms, and dashboards for EKS.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Enable Container Insights</h2>
+          <pre><code"># Enable Container Insights for EKS
+aws eks create-addon \
+  --cluster-name myapp-cluster \
+  --addon-name amazon-cloudwatch-observability \
+  --service-account-role-arn arn:aws:iam::123:role/CloudWatchAgentRole \
+  --region us-east-1</code></pre>
+
+          <h2>Create CloudWatch Dashboard (Terraform)</h2>
+          <pre><code"># Important metrics to track:
+# - Pod CPU/Memory utilization
+# - HTTP 5xx error rate from ALB
+# - RDS connections and read/write IOPS
+# - EKS node disk pressure
+
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "myapp-production"
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric"
+        properties = {
+          metrics = [
+            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", aws_lb.main.arn_suffix]
+          ]
+          period = 60
+          title  = "5xx Errors"
+        }
+      },
+      {
+        type = "metric"
+        properties = {
+          metrics = [
+            ["ContainerInsights", "pod_cpu_utilization", "Namespace", "production", "ClusterName", "myapp-cluster"]
+          ]
+          title = "Pod CPU Utilization"
+        }
+      }
+    ]
+  })
+}</code></pre>
+
+          <h2>Key Alarms to Create</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Alarm</th><th>Metric</th><th>Threshold</th></tr></thead>
+            <tbody>
+              <tr><td>High error rate</td><td>ALB HTTPCode_Target_5XX_Count</td><td>&gt; 10 errors/min</td></tr>
+              <tr><td>High latency</td><td>ALB TargetResponseTime</td><td>&gt; 2s p95</td></tr>
+              <tr><td>Pod CPU</td><td>ContainerInsights pod_cpu_utilization</td><td>&gt; 80%</td></tr>
+              <tr><td>RDS connections</td><td>RDS DatabaseConnections</td><td>&gt; 80% max_connections</td></tr>
+              <tr><td>Low free disk</td><td>Node disk_free</td><td>&lt; 20%</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./scaling.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Autoscaling</span></a>
+          <a href="../../" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">App Deploy Overview</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

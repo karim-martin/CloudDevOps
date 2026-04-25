@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fargate &amp; Lambda | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Compute</a></li><li aria-current="page">Fargate &amp; Lambda</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Fargate &amp; Lambda</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Serverless compute — run containers and functions without managing servers.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Serverless = No Servers to Manage</div>
+            <p><strong>Fargate</strong> runs your Docker containers without you needing to provision or manage EC2 instances. <strong>Lambda</strong> runs a function (a piece of code) in response to an event — an HTTP request, a file upload, a scheduled timer — and you pay only for the milliseconds it runs. Both scale automatically from zero to thousands of concurrent executions.</p>
+          </div>
+
+          <h2>AWS Fargate</h2>
+          <p>Fargate is a serverless compute engine for containers. Use it with ECS (Elastic Container Service) or EKS. No nodes, no patching, no capacity planning.</p>
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Fargate vs EC2 Nodes</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+              <div>
+                <div style="font-weight:600;text-align:center;margin-bottom:0.75rem;color:#64748b;">EC2 Node Group</div>
+                <div class="arch-box arch-box-neutral" style="margin-bottom:0.5rem;"><div class="arch-box-title">EC2 Instance</div><div class="arch-box-subtitle">You manage: size, patching, scaling</div></div>
+                <div class="arch-box arch-box-neutral"><div class="arch-box-title">📦 Pod  📦 Pod  📦 Pod</div><div class="arch-box-subtitle">Multiple pods share the node</div></div>
+              </div>
+              <div>
+                <div style="font-weight:600;text-align:center;margin-bottom:0.75rem;color:#FF9900;">Fargate</div>
+                <div class="arch-box arch-box-aws" style="margin-bottom:0.5rem;"><div class="arch-box-title">📦 Pod</div><div class="arch-box-subtitle">AWS manages dedicated micro-VM per pod</div></div>
+                <div class="arch-box arch-box-aws"><div class="arch-box-title">📦 Pod</div><div class="arch-box-subtitle">Isolated, secure, no shared OS</div></div>
+              </div>
+            </div>
+          </div>
+          <pre><code># EKS Fargate Profile — run matching pods serverlessly
+aws eks create-fargate-profile \
+  --cluster-name my-cluster \
+  --fargate-profile-name fp-default \
+  --pod-execution-role-arn arn:aws:iam::123:role/FargatePodRole \
+  --selectors namespace=production</code></pre>
+
+          <h2>AWS Lambda</h2>
+          <p>Lambda runs code in response to events. Common triggers: API Gateway (HTTP), S3 (file uploads), SQS (messages), EventBridge (scheduled), DynamoDB streams.</p>
+          <pre><code># Simple Lambda function (Python)
+import json
+
+def handler(event, context):
+    name = event.get('name', 'World')
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'message': f'Hello, {name}!'})
+    }</code></pre>
+          <pre><code># Deploy with AWS CLI
+aws lambda create-function \
+  --function-name hello-world \
+  --runtime python3.12 \
+  --role arn:aws:iam::123:role/lambda-role \
+  --handler lambda_function.handler \
+  --zip-file fileb://function.zip</code></pre>
+
+          <h2>When to Use What</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Scenario</th><th>Use</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Long-running microservices</td><td>EKS + Fargate</td><td>Containers stay running</td></tr>
+              <tr><td>Event-driven processing</td><td>Lambda</td><td>Pay per invocation, instant scale</td></tr>
+              <tr><td>Batch jobs / CI steps</td><td>Fargate (ECS)</td><td>Run-to-completion tasks</td></tr>
+              <tr><td>Simple API endpoints</td><td>Lambda + API Gateway</td><td>Zero infrastructure</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./eks.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">EKS</span></a>
+          <a href="../databases/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AWS Databases</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

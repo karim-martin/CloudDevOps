@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKS Cluster | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/account-setup.html">AWS Account Setup</a></li>
+        <li><a href="../foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/eks-cluster.html" class="active">EKS Cluster</a></li>
+        <li><a href="../infrastructure/rds.html">RDS Database</a></li>
+        <li><a href="../infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/irsa.html">IRSA</a></li>
+        <li><a href="../security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="../operations/scaling.html">Autoscaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">AWS</a></li><li><a href="./">Infrastructure</a></li>
+          <li aria-current="page">EKS Cluster</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>EKS Cluster</h1>
+          <p class="text-secondary text-lg">Create a managed Kubernetes cluster with managed node groups and IRSA enabled.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is EKS?</div>
+            <p>EKS (Elastic Kubernetes Service) runs the Kubernetes control plane for you across multiple AZs. You only manage the worker nodes (EC2 instances or Fargate pods). Amazon handles upgrades, patching, and control-plane HA.</p>
+          </div>
+
+          <h2>Create EKS with Terraform</h2>
+          <pre><code># eks.tf
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~&gt; 20.0"
+
+  cluster_name    = "myapp-cluster"
+  cluster_version = "1.29"
+
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.private_subnets
+
+  cluster_endpoint_public_access = true
+
+  # Required for IRSA
+  enable_irsa = true
+
+  eks_managed_node_groups = {
+    system = {
+      min_size     = 2
+      max_size     = 4
+      desired_size = 2
+
+      instance_types = ["t3.medium"]
+      capacity_type  = "ON_DEMAND"
+      labels         = { role = "system" }
+    }
+
+    workloads = {
+      min_size     = 2
+      max_size     = 10
+      desired_size = 3
+
+      instance_types = ["t3.large"]
+      capacity_type  = "ON_DEMAND"
+      labels         = { role = "workloads" }
+    }
+  }
+
+  # Add-ons: use the latest compatible versions
+  cluster_addons = {
+    coredns                = { most_recent = true }
+    kube-proxy             = { most_recent = true }
+    vpc-cni                = { most_recent = true }
+    aws-ebs-csi-driver     = { most_recent = true }
+  }
+
+  tags = { Environment = "production", Project = "myapp" }
+}
+
+output "cluster_name"     { value = module.eks.cluster_name }
+output "cluster_endpoint" { value = module.eks.cluster_endpoint }
+output "oidc_provider_arn" { value = module.eks.oidc_provider_arn }</code></pre>
+
+          <h2>Connect kubectl</h2>
+          <pre><code>aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name myapp-cluster
+
+# Verify
+kubectl get nodes
+kubectl get pods --all-namespaces</code></pre>
+
+          <h2>Install AWS Load Balancer Controller</h2>
+          <pre><code># Needed to provision ALBs from Ingress resources
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=myapp-cluster \
+  --set serviceAccount.create=true \
+  --set serviceAccount.name=aws-load-balancer-controller</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Separate System and Workload Node Groups</div>
+            <p>The system node group runs cluster add-ons (CoreDNS, metrics-server, controllers). The workloads node group runs your app pods. This lets you scale or upgrade them independently.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Infrastructure Overview</span></a>
+          <a href="./rds.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">RDS Database</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

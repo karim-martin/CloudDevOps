@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Azure Cloud Services — AKS, Container Apps, Azure SQL, Cosmos DB, Key Vault, and more on Microsoft Azure.">
+  <title>Cloud (Azure) | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="./compute/">Overview</a></li>
+        <li><a href="./compute/aks.html">AKS</a></li>
+        <li><a href="./compute/container-apps.html">Container Apps</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./databases/">Overview</a></li>
+        <li><a href="./databases/azure-sql.html">Azure SQL</a></li>
+        <li><a href="./databases/cosmos-db.html">Cosmos DB</a></li>
+        <li><a href="./databases/azure-cache.html">Azure Cache for Redis</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="./storage/">Overview</a></li>
+        <li><a href="./storage/blob-storage.html">Blob Storage</a></li>
+        <li><a href="./storage/acr.html">Container Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/vnet.html">VNet</a></li>
+        <li><a href="./networking/load-balancer.html">Load Balancer</a></li>
+        <li><a href="./networking/cdn.html">CDN / Front Door</a></li>
+        <li><a href="./networking/dns.html">Azure DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/entra-id.html">Entra ID</a></li>
+        <li><a href="./security/key-vault.html">Key Vault</a></li>
+        <li><a href="./security/ddos-protection.html">DDoS Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./devops/">Overview</a></li>
+        <li><a href="./devops/azure-pipelines.html">Azure Pipelines</a></li>
+        <li><a href="./devops/azure-devops.html">Azure DevOps</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="./observability/">Overview</a></li>
+        <li><a href="./observability/azure-monitor.html">Azure Monitor</a></li>
+        <li><a href="./observability/log-analytics.html">Log Analytics</a></li>
+      </ul></div>
+    </nav></aside>
+
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">Cloud</a></li>
+          <li aria-current="page">Azure</li>
+        </ol></nav>
+
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+            <h1 style="margin:0;">Azure Cloud Services</h1>
+            <span class="provider-badge provider-badge-azure">Microsoft Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Microsoft's cloud platform — deeply integrated with Windows, .NET, and enterprise Microsoft tools.</p>
+        </header>
+
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">New to Azure?</div>
+            <p>Microsoft Azure is the <strong>second-largest cloud provider</strong>. It has the strongest integration with Microsoft products — Active Directory, SQL Server, Visual Studio, and .NET. If your company already uses Microsoft 365, Teams, or Windows Server, Azure is the natural fit. New accounts get <strong>$200 in free credits</strong> for 30 days plus 12 months of free services.</p>
+          </div>
+
+          <!-- Azure Architecture Diagram -->
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Azure Infrastructure Overview</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user">
+                <div class="arch-box-title">👤 User / Browser</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-azure">
+                <div class="arch-box-title">🌐 Azure DNS + Front Door CDN</div>
+                <div class="arch-box-subtitle">Global routing + WAF + CDN</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-azure">
+                <div class="arch-box-title">⚖️ Azure Load Balancer / App Gateway</div>
+                <div class="arch-box-subtitle">HTTP/HTTPS routing + SSL termination</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">Azure VNet — East US (Private Subnet)</span>
+                <div class="arch-row" style="margin-top:0.5rem;">
+                  <div class="arch-box arch-box-azure">
+                    <div class="arch-box-title">⚙️ AKS Cluster</div>
+                    <div class="arch-box-subtitle">Managed Kubernetes</div>
+                  </div>
+                  <div class="arch-arrow-right">→</div>
+                  <div class="arch-box arch-box-azure">
+                    <div class="arch-box-title">📦 ACR</div>
+                    <div class="arch-box-subtitle">Container Registry</div>
+                  </div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-azure" style="min-width:130px;">
+                  <div class="arch-box-title">🗄️ Azure SQL</div>
+                  <div class="arch-box-subtitle">Managed SQL Server</div>
+                </div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-azure" style="min-width:130px;">
+                  <div class="arch-box-title">📦 Blob Storage</div>
+                  <div class="arch-box-subtitle">Object Storage</div>
+                </div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-azure" style="min-width:130px;">
+                  <div class="arch-box-title">🔑 Key Vault</div>
+                  <div class="arch-box-subtitle">Secrets &amp; Certs</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Compute</h2>
+          <p>Run containerized and serverless workloads on Azure's global infrastructure.</p>
+          <div class="card-grid">
+            <a href="./compute/aks.html" class="card card-link">
+              <h3 class="card-title">AKS</h3>
+              <p class="card-description">Azure Kubernetes Service — managed Kubernetes with deep integration into Azure AD, Key Vault, and Azure Monitor.</p>
+            </a>
+            <a href="./compute/container-apps.html" class="card card-link">
+              <h3 class="card-title">Container Apps</h3>
+              <p class="card-description">Serverless containers built on Kubernetes and KEDA. Scale to zero, run microservices without managing nodes.</p>
+            </a>
+          </div>
+
+          <h2>Databases</h2>
+          <p>Fully managed database services with enterprise-grade reliability.</p>
+          <div class="card-grid">
+            <a href="./databases/azure-sql.html" class="card card-link">
+              <h3 class="card-title">Azure SQL</h3>
+              <p class="card-description">Managed SQL Server (fully compatible with on-prem SQL Server). Auto-scaling, built-in HA, and intelligent performance tuning.</p>
+            </a>
+            <a href="./databases/cosmos-db.html" class="card card-link">
+              <h3 class="card-title">Cosmos DB</h3>
+              <p class="card-description">Globally distributed multi-model database. Supports SQL, MongoDB, Cassandra, and Gremlin APIs with single-digit ms latency worldwide.</p>
+            </a>
+            <a href="./databases/azure-cache.html" class="card card-link">
+              <h3 class="card-title">Azure Cache for Redis</h3>
+              <p class="card-description">Managed Redis cache. Speed up database-heavy apps by caching frequently-read data in memory.</p>
+            </a>
+          </div>
+
+          <h2>Storage</h2>
+          <p>Massively scalable storage for any type of data.</p>
+          <div class="card-grid">
+            <a href="./storage/blob-storage.html" class="card card-link">
+              <h3 class="card-title">Blob Storage</h3>
+              <p class="card-description">Object storage for unstructured data — images, videos, backups, and logs. Tiered storage reduces cost for infrequently accessed data.</p>
+            </a>
+            <a href="./storage/acr.html" class="card card-link">
+              <h3 class="card-title">Azure Container Registry</h3>
+              <p class="card-description">Private Docker registry. Store, manage, and deploy container images integrated with AKS and Azure Pipelines.</p>
+            </a>
+          </div>
+
+          <h2>Networking</h2>
+          <p>Secure, high-performance networking for Azure applications.</p>
+          <div class="card-grid">
+            <a href="./networking/vnet.html" class="card card-link">
+              <h3 class="card-title">VNet</h3>
+              <p class="card-description">Azure Virtual Network — your private network in Azure. Subnets, Network Security Groups, and private endpoints for secure communication.</p>
+            </a>
+            <a href="./networking/load-balancer.html" class="card card-link">
+              <h3 class="card-title">Load Balancer &amp; App Gateway</h3>
+              <p class="card-description">Azure Load Balancer (L4) and Application Gateway (L7/WAF). App Gateway is the typical choice for AKS Ingress with HTTPS.</p>
+            </a>
+            <a href="./networking/cdn.html" class="card card-link">
+              <h3 class="card-title">CDN / Front Door</h3>
+              <p class="card-description">Azure CDN caches content at edge. Azure Front Door adds global load balancing, WAF, and URL-based routing in one service.</p>
+            </a>
+            <a href="./networking/dns.html" class="card card-link">
+              <h3 class="card-title">Azure DNS</h3>
+              <p class="card-description">Host your DNS zones in Azure. 100% SLA, anycast routing, and seamless integration with other Azure services.</p>
+            </a>
+          </div>
+
+          <h2>Security</h2>
+          <p>Enterprise identity management, secrets, and threat protection.</p>
+          <div class="card-grid">
+            <a href="./security/entra-id.html" class="card card-link">
+              <h3 class="card-title">Entra ID (Azure AD)</h3>
+              <p class="card-description">Microsoft's cloud identity platform. Single sign-on, MFA, conditional access, and workload identity for AKS pods.</p>
+            </a>
+            <a href="./security/key-vault.html" class="card card-link">
+              <h3 class="card-title">Key Vault</h3>
+              <p class="card-description">Centrally store secrets, keys, and certificates. Applications retrieve them at runtime via managed identity — no hardcoded credentials.</p>
+            </a>
+            <a href="./security/ddos-protection.html" class="card card-link">
+              <h3 class="card-title">DDoS Protection</h3>
+              <p class="card-description">Azure's always-on DDoS mitigation. Standard tier provides adaptive tuning, attack telemetry, and SLA guarantees.</p>
+            </a>
+          </div>
+
+          <h2>DevOps</h2>
+          <p>Microsoft's comprehensive DevOps platform — tightly integrated with Azure services.</p>
+          <div class="card-grid">
+            <a href="./devops/azure-pipelines.html" class="card card-link">
+              <h3 class="card-title">Azure Pipelines</h3>
+              <p class="card-description">Multi-platform CI/CD — build on Linux, Mac, Windows. Supports any language, deploys to any target including AKS and Azure.</p>
+            </a>
+            <a href="./devops/azure-devops.html" class="card card-link">
+              <h3 class="card-title">Azure DevOps</h3>
+              <p class="card-description">Full DevOps suite — Boards (project tracking), Repos (Git), Pipelines, Test Plans, and Artifacts. One platform for your whole team.</p>
+            </a>
+          </div>
+
+          <h2>Observability</h2>
+          <p>Monitor, log, and alert on Azure workloads in real time.</p>
+          <div class="card-grid">
+            <a href="./observability/azure-monitor.html" class="card card-link">
+              <h3 class="card-title">Azure Monitor</h3>
+              <p class="card-description">Collect metrics and logs from Azure resources, apps, and infrastructure. Set alerts and auto-scale rules based on any metric.</p>
+            </a>
+            <a href="./observability/log-analytics.html" class="card card-link">
+              <h3 class="card-title">Log Analytics</h3>
+              <p class="card-description">Centralized log storage and query engine (KQL). Used by Azure Monitor, Defender, and Sentinel for security and operational analysis.</p>
+            </a>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Comparing with GCP or AWS?</div>
+            <p>See the <a href="../">provider comparison table</a> for a side-by-side mapping of Azure, GCP, and AWS services. The underlying concepts are the same across all three clouds.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Back</span><span class="nav-title">Cloud Overview</span></a>
+          <a href="./compute/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Azure Compute</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

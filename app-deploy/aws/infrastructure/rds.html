@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RDS Database | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (AWS)</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/account-setup.html">AWS Account Setup</a></li>
+        <li><a href="../foundation/networking.html">VPC &amp; Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/eks-cluster.html">EKS Cluster</a></li>
+        <li><a href="../infrastructure/rds.html" class="active">RDS Database</a></li>
+        <li><a href="../infrastructure/storage.html">S3 Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET 8 Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/alb-ingress.html">ALB Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/irsa.html">IRSA</a></li>
+        <li><a href="../security/waf.html">WAF Protection</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="../operations/scaling.html">Autoscaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">AWS</a></li><li><a href="./">Infrastructure</a></li>
+          <li aria-current="page">RDS Database</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>RDS for SQL Server</h1>
+          <p class="text-secondary text-lg">Managed SQL Server on RDS for the .NET 8 backend — private, Multi-AZ, with automatic backups.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Create RDS with Terraform</h2>
+          <pre><code># rds.tf
+resource "aws_db_subnet_group" "main" {
+  name       = "myapp-db-subnets"
+  subnet_ids = module.vpc.database_subnets
+  tags       = { Name = "myapp-db-subnets" }
+}
+
+resource "aws_security_group" "rds" {
+  name        = "myapp-rds-sg"
+  description = "Allow SQL Server from EKS nodes only"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port       = 1433
+    to_port         = 1433
+    protocol        = "tcp"
+    security_groups = [module.eks.node_security_group_id]
+  }
+}
+
+resource "aws_db_instance" "main" {
+  identifier             = "myapp-sqlserver"
+  engine                 = "sqlserver-ex"
+  engine_version         = "15.00.4335.1.v1"
+  instance_class         = "db.t3.small"
+  allocated_storage      = 20
+  storage_encrypted      = true
+
+  username               = "sqladmin"
+  password               = var.db_password
+  db_subnet_group_name   = aws_db_subnet_group.main.name
+  vpc_security_group_ids = [aws_security_group.rds.id]
+
+  multi_az                = true
+  backup_retention_period = 7
+  skip_final_snapshot     = false
+  final_snapshot_identifier = "myapp-sqlserver-final"
+
+  deletion_protection = true
+  tags = { Environment = "production", Project = "myapp" }
+}
+
+output "rds_endpoint" { value = aws_db_instance.main.address }</code></pre>
+
+          <h2>.NET 8 Connection String</h2>
+          <pre><code>// appsettings.json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=myapp-sqlserver.xxxxx.us-east-1.rds.amazonaws.com,1433;Database=myapp;User Id=sqladmin;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+  }
+}
+
+// Program.cs — Entity Framework Core
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Store the Password in Secrets Manager</div>
+            <p>Don't put the DB password in <code>appsettings.json</code> or a plain Kubernetes Secret. Store it in AWS Secrets Manager and retrieve it at runtime via IRSA — see the <a href="../security/irsa.html">IRSA</a> section.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./eks-cluster.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">EKS Cluster</span></a>
+          <a href="./storage.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">S3 Storage</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

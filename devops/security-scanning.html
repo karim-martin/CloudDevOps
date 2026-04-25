@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Scanning | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../devops/" class="nav-link active">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+        <a href="../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="DevOps navigation">
+    <nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./overview.html">DevOps Overview</a></li>
+        <li><a href="./ci-cd-pipeline.html">CI/CD Pipeline</a></li>
+        <li><a href="./gitops.html">GitOps &amp; ArgoCD</a></li>
+        <li><a href="./observability.html">Observability</a></li>
+        <li><a href="./security-scanning.html">Security Scanning</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Linux</h3><ul class="sidebar-links">
+        <li><a href="./linux/">Linux Overview</a></li>
+        <li><a href="./linux/file-directory.html">File &amp; Directory</a></li>
+        <li><a href="./linux/vim-editor.html">Vim Editor</a></li>
+        <li><a href="./linux/network-management.html">Network Management</a></li>
+        <li><a href="./linux/service-package-management.html">Service &amp; Package Mgmt</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Version Control</h3><ul class="sidebar-links">
+        <li><a href="./networking-basics.html">Networking Basics</a></li>
+        <li><a href="./git.html">Git</a></li>
+        <li><a href="./github/">GitHub</a></li>
+        <li><a href="./github/github-actions.html">GitHub Actions</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Containers</h3><ul class="sidebar-links">
+        <li><a href="./docker/">Docker Overview</a></li>
+        <li><a href="./docker/concepts.html">Core Concepts</a></li>
+        <li><a href="./docker/dockerfile.html">Dockerfile</a></li>
+        <li><a href="./docker/compose.html">Docker Compose</a></li>
+        <li><a href="./docker/networking.html">Docker Networking</a></li>
+        <li><a href="./docker/volumes.html">Volumes &amp; Storage</a></li>
+        <li><a href="./docker/best-practices.html">Best Practices</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Orchestration</h3><ul class="sidebar-links">
+        <li><a href="./kubernetes/">Kubernetes Overview</a></li>
+        <li><a href="./kubernetes/architecture.html">Architecture</a></li>
+        <li><a href="./kubernetes/pods-deployments.html">Pods &amp; Deployments</a></li>
+        <li><a href="./kubernetes/services-networking.html">Services &amp; Networking</a></li>
+        <li><a href="./kubernetes/configmaps-secrets.html">ConfigMaps &amp; Secrets</a></li>
+        <li><a href="./kubernetes/storage.html">Storage</a></li>
+        <li><a href="./kubernetes/helm.html">Helm Charts</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure as Code</h3><ul class="sidebar-links">
+        <li><a href="./terraform.html">Terraform</a></li>
+        <li><a href="./ansible.html">Ansible</a></li>
+      </ul></div>
+    </nav>
+    </aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../">Home</a></li>
+          <li><a href="./">DevOps</a></li>
+          <li aria-current="page">Security Scanning</li>
+        </ol></nav>
+        <div class="article-body">
+
+          <header class="article-header">
+            <h1>Security Scanning</h1>
+            <p class="text-secondary text-lg">SAST, container scanning, dependency audits, and secret detection — shift security left.</p>
+          </header>
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is "Shifting Left"?</div>
+            <p>Traditionally, security teams checked the final product before release. "Shifting left" means catching security issues <em>earlier</em> — in the developer's editor, in the CI pipeline, before code merges. It's much cheaper to fix a vulnerability at PR review than after a breach.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Security Gates in CI/CD</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">📝 Code Written</div><div class="arch-box-subtitle">IDE lint + secret detection (pre-commit)</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">🔀 Pull Request</div><div class="arch-box-subtitle">SAST scan + dependency audit (CI)</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">🐳 Docker Build</div><div class="arch-box-subtitle">Container image scan (Trivy / Snyk)</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">☸️ Deploy to Staging</div><div class="arch-box-subtitle">DAST scan against running app (OWASP ZAP)</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-neutral"><div class="arch-box-title">🚀 Production</div><div class="arch-box-subtitle">Runtime monitoring + policy enforcement</div></div>
+            </div>
+          </div>
+
+          <h2>Container Image Scanning — Trivy</h2>
+          <p>Trivy scans Docker images for known CVEs (Common Vulnerabilities and Exposures) in OS packages and language dependencies.</p>
+          <pre><code"># Install Trivy
+brew install trivy  # macOS
+# or: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+
+# Scan a local image
+trivy image myapp-backend:latest
+
+# Scan with severity filter (fail CI on CRITICAL)
+trivy image --exit-code 1 --severity CRITICAL myapp-backend:latest
+
+# Scan in GitHub Actions
+- name: Scan image for vulnerabilities
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: myappacr.azurecr.io/backend:${{ github.sha }}
+    exit-code: 1
+    severity: CRITICAL,HIGH</code></pre>
+
+          <h2>Dependency Auditing</h2>
+          <pre><code"># .NET — check for known vulnerable NuGet packages
+dotnet list package --vulnerable
+
+# Node.js / React
+npm audit
+npm audit --audit-level=high   # fail on high/critical only
+
+# In GitHub Actions (Node)
+- name: Audit dependencies
+  run: npm audit --audit-level=high</code></pre>
+
+          <h2>Secret Detection — GitLeaks</h2>
+          <p>GitLeaks scans your git history for accidentally committed secrets (API keys, passwords, tokens).</p>
+          <pre><code"># Install
+brew install gitleaks
+
+# Scan current repo
+gitleaks detect --source . --verbose
+
+# Scan git history
+gitleaks detect --source . --log-opts="HEAD~10..HEAD"
+
+# Use as pre-commit hook (.pre-commit-config.yaml)
+repos:
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.18.0
+  hooks:
+  - id: gitleaks</code></pre>
+
+          <h2>SAST — Static Analysis</h2>
+          <pre><code"># .NET — use Roslyn analyzers (built-in)
+# Add to your .csproj:
+&lt;ItemGroup&gt;
+  &lt;PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.*" /&gt;
+  &lt;PackageReference Include="SecurityCodeScan.VS2019" Version="5.*" /&gt;
+&lt;/ItemGroup&gt;
+
+# JavaScript / TypeScript — ESLint with security plugin
+npm install --save-dev eslint-plugin-security
+# Add to .eslintrc:
+{ "plugins": ["security"], "extends": ["plugin:security/recommended"] }</code></pre>
+
+          <h2>Kubernetes Policy Enforcement</h2>
+          <pre><code"># Install OPA Gatekeeper
+kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/release-3.15/deploy/gatekeeper.yaml
+
+# Example: Block containers running as root
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPAllowPrivilegeEscalationContainer
+metadata:
+  name: no-root-containers
+spec:
+  match:
+    kinds:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment"]
+  parameters:
+    allowPrivilegeEscalation: false</code></pre>
+
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Tool</th><th>Type</th><th>What It Finds</th></tr></thead>
+            <tbody>
+              <tr><td>Trivy</td><td>Container scan</td><td>CVEs in OS packages + language libs</td></tr>
+              <tr><td>Snyk</td><td>SCA + container</td><td>Vulnerabilities + license issues</td></tr>
+              <tr><td>GitLeaks</td><td>Secret detection</td><td>API keys, passwords in git history</td></tr>
+              <tr><td>OWASP ZAP</td><td>DAST</td><td>XSS, SQL injection, CSRF on running app</td></tr>
+              <tr><td>Semgrep</td><td>SAST</td><td>Code patterns: SQL injection, path traversal</td></tr>
+              <tr><td>OPA Gatekeeper</td><td>Policy</td><td>Kubernetes policy violations at admission</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./observability.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Observability</span></a>
+          <a href="./ci-cd-pipeline.html" class="nav-next"><span class="nav-label">See Also</span><span class="nav-title">CI/CD Pipeline</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

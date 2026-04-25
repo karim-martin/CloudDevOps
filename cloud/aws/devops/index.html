@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS DevOps | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li aria-current="page">DevOps</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS DevOps</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">CI/CD with CodePipeline and CodeBuild on Amazon Web Services.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">CI/CD = Automating the Path from Code to Production</div>
+            <p>CI (Continuous Integration) means every code commit is automatically built and tested. CD (Continuous Delivery/Deployment) means passing builds are automatically deployed to staging or production. AWS CodePipeline orchestrates the flow: <strong>Source</strong> (GitHub) → <strong>Build</strong> (CodeBuild) → <strong>Test</strong> → <strong>Deploy</strong> (to EKS). This replaces manual deployment steps and catches bugs before they reach users.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">AWS CI/CD Pipeline Flow</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user"><div class="arch-box-title">👨‍💻 Developer</div><div class="arch-box-subtitle">git push to main</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws"><div class="arch-box-title">📋 CodePipeline</div><div class="arch-box-subtitle">Orchestrates the pipeline</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-aws"><div class="arch-box-title">🔨 CodeBuild</div><div class="arch-box-subtitle">Build + Test + Docker push to ECR</div></div>
+                <div class="arch-arrow-right">→</div>
+                <div class="arch-box arch-box-aws"><div class="arch-box-title">🚀 Deploy to EKS</div><div class="arch-box-subtitle">kubectl apply / Helm upgrade</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-grid">
+            <a href="./codepipeline.html" class="card card-link"><h3 class="card-title">CodePipeline</h3><p class="card-description">Visual pipeline orchestration. Connects source, build, test, and deploy stages with approval gates.</p></a>
+            <a href="./codebuild.html" class="card card-link"><h3 class="card-title">CodeBuild</h3><p class="card-description">Managed build environment. Run tests, build Docker images, and push to ECR without managing servers.</p></a>
+          </div>
+          <div class="callout callout-tip">
+            <div class="callout-title">GitHub Actions Alternative</div>
+            <p>Many teams use <strong>GitHub Actions</strong> instead of AWS CodePipeline — it's simpler and works with any cloud. See the <a href="../../../devops/">DevOps section</a> for GitHub Actions CI/CD guides. Both approaches work well with EKS.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../security/waf.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">WAF &amp; Shield</span></a>
+          <a href="./codepipeline.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">CodePipeline</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

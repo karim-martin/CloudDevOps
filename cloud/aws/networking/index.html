@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li aria-current="page">Networking</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS Networking</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">VPC, load balancers, CloudFront CDN, and Route 53 DNS on AWS.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Cloud Networking in Plain English</div>
+            <p>Every resource in AWS runs inside a <strong>VPC</strong> (Virtual Private Cloud) — your isolated network. Within the VPC you have subnets (public ones can reach the internet, private ones can't). A <strong>Load Balancer</strong> receives traffic from the internet and distributes it to your containers. <strong>CloudFront</strong> caches your content at edge locations worldwide for speed. <strong>Route 53</strong> translates domain names (myapp.com) to IP addresses.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">AWS Networking Stack</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user"><div class="arch-box-title">👤 User</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws"><div class="arch-box-title">🌐 Route 53</div><div class="arch-box-subtitle">DNS — myapp.com → IP</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws"><div class="arch-box-title">☁️ CloudFront CDN</div><div class="arch-box-subtitle">Cache + WAF at 600+ edge locations</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">VPC (us-east-1)</span>
+                <div class="arch-flow">
+                  <div class="arch-box arch-box-aws"><div class="arch-box-title">⚖️ ALB (Public Subnet)</div><div class="arch-box-subtitle">HTTP/HTTPS → pods</div></div>
+                  <div class="arch-arrow-down"></div>
+                  <div class="arch-box arch-box-aws"><div class="arch-box-title">⚙️ EKS (Private Subnet)</div><div class="arch-box-subtitle">Your app pods</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-grid">
+            <a href="./vpc.html" class="card card-link"><h3 class="card-title">VPC</h3><p class="card-description">Your private network. Subnets, route tables, internet/NAT gateways, security groups, and network ACLs.</p></a>
+            <a href="./alb.html" class="card card-link"><h3 class="card-title">ALB / NLB</h3><p class="card-description">Application Load Balancer (HTTP routing) and Network Load Balancer (TCP/UDP, ultra-low latency).</p></a>
+            <a href="./cloudfront.html" class="card card-link"><h3 class="card-title">CloudFront</h3><p class="card-description">AWS CDN with 600+ edge locations. Serve content fast and secure globally.</p></a>
+            <a href="./route53.html" class="card card-link"><h3 class="card-title">Route 53</h3><p class="card-description">Scalable DNS with health checks, routing policies, and domain registration.</p></a>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../storage/ecr.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">ECR</span></a>
+          <a href="./vpc.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">VPC</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

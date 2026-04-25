@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CloudDevOps — A comprehensive guide to DevOps practices and Cloud technologies on GCP, AWS, and Azure.">
+  <title>CloudDevOps - DevOps & Cloud Learning</title>
+  <link rel="stylesheet" href="./assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg">
+  <meta property="og:title" content="CloudDevOps - DevOps & Cloud Learning">
+  <meta property="og:description" content="Learn DevOps, GCP, AWS, and Azure with hands-on guides and architecture diagrams.">
+  <meta property="og:type" content="website">
+</head>
+<body class="layout-landing">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="./" class="logo">
+        <img src="./assets/images/logo.svg" alt="CloudDevOps Logo">
+        <span>CloudDevOps</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="./devops/" class="nav-link">DevOps</a>
+        <a href="./cloud/" class="nav-link">Cloud</a>
+        <a href="./app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="Mobile navigation">
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Navigation</h3>
+          <ul class="sidebar-links">
+            <li><a href="./">Home</a></li>
+            <li><a href="./devops/">DevOps</a></li>
+            <li><a href="./cloud/">Cloud</a></li>
+            <li><a href="./app-deploy/">App Deploy</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+    <main id="main-content" class="main-content">
+
+      <section class="hero">
+        <p class="hero-eyebrow">Learn cloud engineering, step by step</p>
+        <h1 class="hero-title">CloudDevOps</h1>
+        <p class="hero-subtitle">A hands-on guide to DevOps practices and cloud deployment on GCP, AWS, and Azure — with architecture diagrams, code examples, and plain-English explanations.</p>
+        <div class="hero-actions">
+          <a href="./devops/" class="btn btn-primary">Start with DevOps</a>
+          <a href="./cloud/" class="btn btn-secondary">Explore Cloud</a>
+        </div>
+      </section>
+
+      <div class="card-grid card-grid-large" style="margin-top:2rem;">
+        <a href="./devops/" class="card card-large card-link">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+          </div>
+          <h3 class="card-title">DevOps</h3>
+          <p class="card-description">Linux, Git, Docker, Kubernetes, Terraform, Ansible, CI/CD, GitOps, security scanning, and observability with Prometheus & Grafana.</p>
+        </a>
+        <a href="./cloud/" class="card card-large card-link">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+          </div>
+          <h3 class="card-title">Cloud</h3>
+          <p class="card-description">Compare GCP, AWS, and Azure side-by-side. Compute, databases, storage, networking, security, and observability for all three providers.</p>
+        </a>
+        <a href="./app-deploy/" class="card card-large card-link">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <h3 class="card-title">App Deploy</h3>
+          <p class="card-description">End-to-end guides for deploying a React + .NET 8 app to GKE, EKS, or AKS — with CI/CD, SSL, scaling, and monitoring.</p>
+        </a>
+      </div>
+
+      <section style="margin-top:3rem;">
+        <h2 class="section-title text-center">Three Cloud Providers, One Skill Set</h2>
+        <p class="text-secondary text-center" style="margin-bottom:1.5rem;">The concepts are the same across GCP, AWS, and Azure — only the names differ. Learn one, understand all three.</p>
+        <div class="table-wrapper">
+          <table class="cheatsheet-table">
+            <thead>
+              <tr>
+                <th>Concept</th>
+                <th style="color:#4285F4;">GCP</th>
+                <th style="color:#FF9900;">AWS</th>
+                <th style="color:#0078D4;">Azure</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Managed Kubernetes</td><td>GKE</td><td>EKS</td><td>AKS</td></tr>
+              <tr><td>Serverless Containers</td><td>Cloud Run</td><td>Fargate</td><td>Container Apps</td></tr>
+              <tr><td>Managed SQL</td><td>Cloud SQL</td><td>RDS</td><td>Azure SQL</td></tr>
+              <tr><td>NoSQL Database</td><td>Firestore / Bigtable</td><td>DynamoDB</td><td>Cosmos DB</td></tr>
+              <tr><td>Object Storage</td><td>Cloud Storage (GCS)</td><td>S3</td><td>Blob Storage</td></tr>
+              <tr><td>Container Registry</td><td>Artifact Registry</td><td>ECR</td><td>ACR</td></tr>
+              <tr><td>Load Balancer</td><td>Cloud Load Balancing</td><td>ALB / NLB</td><td>App Gateway / LB</td></tr>
+              <tr><td>CDN</td><td>Cloud CDN</td><td>CloudFront</td><td>Azure Front Door</td></tr>
+              <tr><td>DNS</td><td>Cloud DNS</td><td>Route 53</td><td>Azure DNS</td></tr>
+              <tr><td>Identity for Pods</td><td>Workload Identity</td><td>IRSA</td><td>Workload Identity</td></tr>
+              <tr><td>Secrets</td><td>Secret Manager</td><td>Secrets Manager</td><td>Key Vault</td></tr>
+              <tr><td>CI/CD</td><td>Cloud Build</td><td>CodePipeline / CodeBuild</td><td>Azure Pipelines</td></tr>
+              <tr><td>Monitoring</td><td>Cloud Monitoring</td><td>CloudWatch</td><td>Azure Monitor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section style="margin-top:3rem;">
+        <h2 class="section-title text-center">What You'll Learn</h2>
+        <div class="feature-grid" style="margin-top:1.5rem;">
+          <div class="feature-item"><div class="feature-icon">🐧</div><div class="feature-text"><h4>Linux & Git</h4><p>Shell commands, Vim, networking, Git workflows, and GitHub Actions.</p></div></div>
+          <div class="feature-item"><div class="feature-icon">🐳</div><div class="feature-text"><h4>Docker & Kubernetes</h4><p>Container fundamentals, Dockerfile patterns, Kubernetes deployments, Helm charts.</p></div></div>
+          <div class="feature-item"><div class="feature-icon">🏗️</div><div class="feature-text"><h4>Infrastructure as Code</h4><p>Terraform and Ansible — provision and configure cloud resources reproducibly.</p></div></div>
+          <div class="feature-item"><div class="feature-icon">🔄</div><div class="feature-text"><h4>CI/CD & GitOps</h4><p>GitHub Actions, Azure Pipelines, ArgoCD — automated deploy on every commit.</p></div></div>
+          <div class="feature-item"><div class="feature-icon">☁️</div><div class="feature-text"><h4>Multi-Cloud</h4><p>GCP, AWS, and Azure — compute, storage, networking, and security for each.</p></div></div>
+          <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-text"><h4>Observability</h4><p>Prometheus, Grafana, CloudWatch, Azure Monitor — metrics, logs, and alerting.</p></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="copyright">CloudDevOps</p>
+    </div>
+  </footer>
+  <script src="./assets/js/navigation.js"></script>
+  <script src="./assets/js/main.js"></script>
+</body>
+</html>

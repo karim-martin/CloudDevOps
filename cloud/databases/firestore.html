@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Firestore - Serverless NoSQL document database with real-time sync.">
+  <title>Firestore | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="./firestore.html" class="active">Firestore</a></li>
+        <li><a href="./memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Databases</a></li><li aria-current="page">Firestore</li></ol></nav>
+        <header class="article-header"><h1>Firestore</h1></header>
+
+        <div class="article-body">
+          <p>Firestore is a serverless, NoSQL document database that scales automatically. It's ideal for web/mobile apps requiring real-time sync and offline support.</p>
+
+          <h2 id="modes">Firestore Modes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Mode</th><th>Description</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Native</strong></td><td>Full Firestore features, real-time</td><td>Web/mobile apps, real-time updates</td></tr>
+                <tr><td><strong>Datastore</strong></td><td>Datastore-compatible mode</td><td>Legacy Datastore apps, backend services</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="setup">Setup Firestore</h2>
+          <pre><code class="language-bash"># Create Firestore database (Native mode)
+gcloud firestore databases create \
+    --location=us-central \
+    --type=firestore-native
+
+# Enable API
+gcloud services enable firestore.googleapis.com</code></pre>
+
+          <h2 id="data-model">Data Model</h2>
+          <pre><code>Firestore Database
+│
+├── Collection: users
+│   ├── Document: user123
+│   │   ├── name: "John"
+│   │   ├── email: "john@example.com"
+│   │   └── Subcollection: orders
+│   │       ├── Document: order1
+│   │       └── Document: order2
+│   └── Document: user456
+│
+└── Collection: products
+    ├── Document: prod1
+    └── Document: prod2</code></pre>
+
+          <h2 id="nodejs">Node.js / JavaScript</h2>
+          <pre><code class="language-javascript">const { Firestore } = require('@google-cloud/firestore');
+
+// Initialize (uses Application Default Credentials)
+const db = new Firestore();
+
+// Add document
+await db.collection('users').doc('user123').set({
+  name: 'John',
+  email: 'john@example.com',
+  createdAt: Firestore.Timestamp.now()
+});
+
+// Add with auto-generated ID
+const docRef = await db.collection('users').add({
+  name: 'Jane',
+  email: 'jane@example.com'
+});
+console.log('Document ID:', docRef.id);
+
+// Get document
+const doc = await db.collection('users').doc('user123').get();
+if (doc.exists) {
+  console.log(doc.data());
+}
+
+// Query documents
+const snapshot = await db.collection('users')
+  .where('email', '==', 'john@example.com')
+  .get();
+
+snapshot.forEach(doc => {
+  console.log(doc.id, '=>', doc.data());
+});
+
+// Update document
+await db.collection('users').doc('user123').update({
+  name: 'John Updated'
+});
+
+// Delete document
+await db.collection('users').doc('user123').delete();</code></pre>
+
+          <h2 id="python">Python</h2>
+          <pre><code class="language-python">from google.cloud import firestore
+
+# Initialize
+db = firestore.Client()
+
+# Add document
+db.collection('users').document('user123').set({
+    'name': 'John',
+    'email': 'john@example.com'
+})
+
+# Get document
+doc = db.collection('users').document('user123').get()
+if doc.exists:
+    print(doc.to_dict())
+
+# Query
+users = db.collection('users').where('email', '==', 'john@example.com').stream()
+for user in users:
+    print(f'{user.id} => {user.to_dict()}')
+
+# Update
+db.collection('users').document('user123').update({
+    'name': 'John Updated'
+})
+
+# Delete
+db.collection('users').document('user123').delete()</code></pre>
+
+          <h2 id="dotnet">C# / .NET</h2>
+          <pre><code class="language-csharp">using Google.Cloud.Firestore;
+
+// Initialize
+FirestoreDb db = FirestoreDb.Create(projectId);
+
+// Add document
+DocumentReference docRef = db.Collection("users").Document("user123");
+await docRef.SetAsync(new Dictionary<string, object>
+{
+    { "name", "John" },
+    { "email", "john@example.com" }
+});
+
+// Get document
+DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+if (snapshot.Exists)
+{
+    Dictionary<string, object> user = snapshot.ToDictionary();
+}
+
+// Query
+Query query = db.Collection("users").WhereEqualTo("email", "john@example.com");
+QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+foreach (DocumentSnapshot doc in querySnapshot.Documents)
+{
+    Console.WriteLine($"{doc.Id} => {doc.ToDictionary()}");
+}
+
+// Update
+await docRef.UpdateAsync("name", "John Updated");
+
+// Delete
+await docRef.DeleteAsync();</code></pre>
+
+          <h2 id="queries">Common Queries</h2>
+          <pre><code class="language-javascript">// Equality
+db.collection('products').where('category', '==', 'electronics')
+
+// Comparison
+db.collection('products').where('price', '>', 100)
+db.collection('products').where('price', '>=', 50)
+db.collection('products').where('price', '<', 200)
+
+// Array contains
+db.collection('products').where('tags', 'array-contains', 'sale')
+
+// In operator
+db.collection('products').where('category', 'in', ['electronics', 'books'])
+
+// Compound queries (requires composite index)
+db.collection('products')
+  .where('category', '==', 'electronics')
+  .where('price', '<', 500)
+  .orderBy('price')
+
+// Ordering and limiting
+db.collection('products')
+  .orderBy('createdAt', 'desc')
+  .limit(10)
+
+// Pagination
+const first = db.collection('products').orderBy('name').limit(25);
+const snapshot = await first.get();
+const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+const next = db.collection('products').orderBy('name').startAfter(lastDoc).limit(25);</code></pre>
+
+          <h2 id="indexes">Indexes</h2>
+          <pre><code class="language-bash"># Create composite index
+gcloud firestore indexes composite create \
+    --collection-group=products \
+    --field-config field-path=category,order=ASCENDING \
+    --field-config field-path=price,order=DESCENDING
+
+# List indexes
+gcloud firestore indexes composite list
+
+# firestore.indexes.json
+{
+  "indexes": [
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "price", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
+
+# Deploy indexes
+firebase deploy --only firestore:indexes</code></pre>
+
+          <h2 id="transactions">Transactions</h2>
+          <pre><code class="language-javascript">// Transaction - atomic read/write
+const result = await db.runTransaction(async (transaction) => {
+  const docRef = db.collection('accounts').doc('account1');
+  const doc = await transaction.get(docRef);
+
+  const currentBalance = doc.data().balance;
+  const newBalance = currentBalance - 100;
+
+  if (newBalance < 0) {
+    throw new Error('Insufficient funds');
+  }
+
+  transaction.update(docRef, { balance: newBalance });
+  return newBalance;
+});
+
+// Batch writes (no reads, up to 500 operations)
+const batch = db.batch();
+
+batch.set(db.collection('users').doc('user1'), { name: 'User 1' });
+batch.update(db.collection('users').doc('user2'), { name: 'Updated' });
+batch.delete(db.collection('users').doc('user3'));
+
+await batch.commit();</code></pre>
+
+          <h2 id="security-rules">Security Rules</h2>
+          <pre><code class="language-javascript">// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Public read, authenticated write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Admin only
+    match /admin/{document=**} {
+      allow read, write: if request.auth.token.admin == true;
+    }
+  }
+}</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Server-Side Access</div>
+            <p>From GKE or Cloud Run with a service account, Firestore bypasses security rules. Rules only apply to client-side access (web/mobile SDKs).</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Query Limitations</div>
+            <p>Firestore has specific query limitations: no inequality filters on multiple fields, no OR queries (use 'in'), and compound queries require composite indexes.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./cloud-sql.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud SQL</span></a>
+          <a href="./memorystore.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Memorystore</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS WAF &amp; Shield | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Security</a></li><li aria-current="page">WAF &amp; Shield</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">AWS WAF &amp; Shield</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Protect web applications from common attacks and DDoS.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">WAF Blocks Bad Requests Before They Hit Your App</div>
+            <p>A Web Application Firewall (WAF) inspects HTTP requests and blocks ones that look malicious — SQL injection attempts, cross-site scripting, bots scraping your site. AWS WAF sits in front of CloudFront or ALB and filters traffic at the edge. <strong>AWS Shield Standard</strong> is automatically enabled for all AWS accounts at no cost — it defends against volumetric DDoS attacks. <strong>Shield Advanced</strong> ($3000/month) adds 24/7 DDoS response team support.</p>
+          </div>
+
+          <h2>Attach WAF to CloudFront</h2>
+          <pre><code>resource "aws_wafv2_web_acl" "main" {
+  name  = "myapp-waf"
+  scope = "CLOUDFRONT"  # or "REGIONAL" for ALB
+
+  default_action { allow {} }
+
+  # Block known bad IPs
+  rule {
+    name     = "AWSManagedRulesAmazonIpReputationList"
+    priority = 1
+    override_action { none {} }
+    statement {
+      managed_rule_group_statement {
+        vendor_name = "AWS"
+        name        = "AWSManagedRulesAmazonIpReputationList"
+      }
+    }
+    visibility_config { cloudwatch_metrics_enabled = true; metric_name = "IpReputation"; sampled_requests_enabled = true }
+  }
+
+  # Block SQL injection
+  rule {
+    name     = "AWSManagedRulesSQLiRuleSet"
+    priority = 2
+    override_action { none {} }
+    statement {
+      managed_rule_group_statement {
+        vendor_name = "AWS"
+        name        = "AWSManagedRulesSQLiRuleSet"
+      }
+    }
+    visibility_config { cloudwatch_metrics_enabled = true; metric_name = "SQLi"; sampled_requests_enabled = true }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "myapp-waf"
+    sampled_requests_enabled   = true
+  }
+}</code></pre>
+
+          <h2>AWS Shield Tiers</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Feature</th><th>Shield Standard (Free)</th><th>Shield Advanced ($3K/mo)</th></tr></thead>
+            <tbody>
+              <tr><td>Layer 3/4 DDoS Protection</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Layer 7 DDoS Protection</td><td>❌</td><td>✅</td></tr>
+              <tr><td>DDoS Response Team (DRT)</td><td>❌</td><td>✅ 24/7</td></tr>
+              <tr><td>Cost Protection</td><td>❌</td><td>✅ AWS credits for spike costs</td></tr>
+              <tr><td>Real-time Metrics</td><td>Limited</td><td>Full visibility</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./secrets-manager.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Secrets Manager</span></a>
+          <a href="../devops/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AWS DevOps</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

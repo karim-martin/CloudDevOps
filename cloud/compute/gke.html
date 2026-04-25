@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Google Kubernetes Engine (GKE) - Managed Kubernetes for container orchestration.">
+  <title>GKE | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./gke.html" class="active">GKE</a></li>
+        <li><a href="./cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="../databases/">Overview</a></li>
+        <li><a href="../databases/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../databases/firestore.html">Firestore</a></li>
+        <li><a href="../databases/memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li><a href="./">Compute</a></li><li aria-current="page">GKE</li></ol></nav>
+        <header class="article-header"><h1>Google Kubernetes Engine (GKE)</h1></header>
+
+        <div class="article-body">
+          <p>GKE is Google's managed Kubernetes service that handles the control plane, upgrades, and integrations with GCP services.</p>
+
+          <h2 id="modes">GKE Modes</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Standard</th><th>Autopilot</th></tr></thead>
+              <tbody>
+                <tr><td>Node management</td><td>You manage node pools</td><td>Google manages nodes</td></tr>
+                <tr><td>Billing</td><td>Pay for nodes</td><td>Pay for pod resources</td></tr>
+                <tr><td>Node customization</td><td>Full control</td><td>Limited</td></tr>
+                <tr><td>Security defaults</td><td>Configurable</td><td>Hardened by default</td></tr>
+                <tr><td>Privileged containers</td><td>Allowed</td><td>Not allowed</td></tr>
+                <tr><td>DaemonSets</td><td>Allowed</td><td>Limited</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="create-cluster">Create Cluster</h2>
+          <h3>Standard Cluster</h3>
+          <pre><code class="language-bash"># Create standard cluster
+gcloud container clusters create my-cluster \
+    --region=us-central1 \
+    --num-nodes=1 \
+    --machine-type=e2-medium \
+    --enable-ip-alias \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=5
+
+# Create with more options
+gcloud container clusters create my-cluster \
+    --region=us-central1 \
+    --num-nodes=2 \
+    --machine-type=e2-standard-4 \
+    --disk-size=50GB \
+    --disk-type=pd-standard \
+    --enable-ip-alias \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10 \
+    --enable-autorepair \
+    --enable-autoupgrade \
+    --workload-pool=PROJECT_ID.svc.id.goog \
+    --enable-shielded-nodes \
+    --release-channel=regular</code></pre>
+
+          <h3>Autopilot Cluster</h3>
+          <pre><code class="language-bash"># Create Autopilot cluster (recommended for most workloads)
+gcloud container clusters create-auto my-autopilot \
+    --region=us-central1 \
+    --release-channel=regular
+
+# With private nodes
+gcloud container clusters create-auto my-autopilot \
+    --region=us-central1 \
+    --enable-private-nodes \
+    --enable-master-authorized-networks \
+    --master-authorized-networks=10.0.0.0/8</code></pre>
+
+          <h2 id="private-cluster">Private Cluster</h2>
+          <pre><code class="language-bash"># Create private cluster (no public IPs on nodes)
+gcloud container clusters create private-cluster \
+    --region=us-central1 \
+    --enable-private-nodes \
+    --enable-private-endpoint \
+    --master-ipv4-cidr=172.16.0.0/28 \
+    --enable-ip-alias \
+    --enable-master-authorized-networks \
+    --master-authorized-networks=10.0.0.0/8 \
+    --network=my-vpc \
+    --subnetwork=my-subnet \
+    --cluster-secondary-range-name=pods \
+    --services-secondary-range-name=services</code></pre>
+
+          <h2 id="connect">Connect to Cluster</h2>
+          <pre><code class="language-bash"># Get credentials (updates ~/.kube/config)
+gcloud container clusters get-credentials my-cluster \
+    --region=us-central1
+
+# Verify connection
+kubectl cluster-info
+kubectl get nodes</code></pre>
+
+          <h2 id="node-pools">Node Pools</h2>
+          <pre><code class="language-bash"># Add node pool
+gcloud container node-pools create high-memory \
+    --cluster=my-cluster \
+    --region=us-central1 \
+    --machine-type=e2-highmem-4 \
+    --num-nodes=2 \
+    --enable-autoscaling \
+    --min-nodes=0 \
+    --max-nodes=10
+
+# Add GPU node pool
+gcloud container node-pools create gpu-pool \
+    --cluster=my-cluster \
+    --region=us-central1 \
+    --machine-type=n1-standard-4 \
+    --accelerator=type=nvidia-tesla-t4,count=1 \
+    --num-nodes=1
+
+# Add spot/preemptible node pool (cost savings)
+gcloud container node-pools create spot-pool \
+    --cluster=my-cluster \
+    --region=us-central1 \
+    --machine-type=e2-standard-4 \
+    --spot \
+    --num-nodes=3 \
+    --enable-autoscaling \
+    --min-nodes=0 \
+    --max-nodes=20
+
+# List node pools
+gcloud container node-pools list --cluster=my-cluster --region=us-central1
+
+# Delete node pool
+gcloud container node-pools delete old-pool \
+    --cluster=my-cluster \
+    --region=us-central1</code></pre>
+
+          <h2 id="workload-identity">Workload Identity</h2>
+          <pre><code class="language-bash"># Enable on cluster (if not enabled at creation)
+gcloud container clusters update my-cluster \
+    --region=us-central1 \
+    --workload-pool=PROJECT_ID.svc.id.goog
+
+# Create GCP service account
+gcloud iam service-accounts create app-sa
+
+# Grant permissions
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:app-sa@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+
+# Create K8s service account
+kubectl create serviceaccount app-ksa -n default
+
+# Bind K8s SA to GCP SA
+gcloud iam service-accounts add-iam-policy-binding \
+    app-sa@PROJECT_ID.iam.gserviceaccount.com \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="serviceAccount:PROJECT_ID.svc.id.goog[default/app-ksa]"
+
+# Annotate K8s SA
+kubectl annotate serviceaccount app-ksa \
+    -n default \
+    iam.gke.io/gcp-service-account=app-sa@PROJECT_ID.iam.gserviceaccount.com</code></pre>
+
+          <h2 id="upgrades">Cluster Upgrades</h2>
+          <pre><code class="language-bash"># Check available versions
+gcloud container get-server-config --region=us-central1
+
+# Upgrade control plane
+gcloud container clusters upgrade my-cluster \
+    --region=us-central1 \
+    --master \
+    --cluster-version=1.28
+
+# Upgrade node pool
+gcloud container clusters upgrade my-cluster \
+    --region=us-central1 \
+    --node-pool=default-pool
+
+# Set release channel
+gcloud container clusters update my-cluster \
+    --region=us-central1 \
+    --release-channel=regular</code></pre>
+
+          <h2 id="maintenance">Maintenance Windows</h2>
+          <pre><code class="language-bash"># Set maintenance window (UTC)
+gcloud container clusters update my-cluster \
+    --region=us-central1 \
+    --maintenance-window-start=2024-01-01T02:00:00Z \
+    --maintenance-window-end=2024-01-01T06:00:00Z \
+    --maintenance-window-recurrence="FREQ=WEEKLY;BYDAY=SA,SU"
+
+# Set maintenance exclusion (no upgrades during this period)
+gcloud container clusters update my-cluster \
+    --region=us-central1 \
+    --add-maintenance-exclusion-name=holiday \
+    --add-maintenance-exclusion-start=2024-12-20T00:00:00Z \
+    --add-maintenance-exclusion-end=2025-01-05T00:00:00Z</code></pre>
+
+          <h2 id="common-commands">Common Commands</h2>
+          <pre><code class="language-bash"># List clusters
+gcloud container clusters list
+
+# Describe cluster
+gcloud container clusters describe my-cluster --region=us-central1
+
+# Resize node pool
+gcloud container clusters resize my-cluster \
+    --region=us-central1 \
+    --node-pool=default-pool \
+    --num-nodes=5
+
+# Delete cluster
+gcloud container clusters delete my-cluster --region=us-central1</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Regional vs Zonal</div>
+            <p>Regional clusters have 3 control plane replicas across zones for high availability. Zonal clusters have a single control plane. Use regional for production workloads.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Autopilot Limitations</div>
+            <p>Autopilot doesn't allow privileged containers, host network access, or certain DaemonSets. Use Standard mode if you need these features.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Compute Overview</span></a>
+          <a href="./cloud-run.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud Run</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

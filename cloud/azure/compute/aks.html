@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure AKS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li><a href="./">Compute</a></li><li aria-current="page">AKS</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure AKS</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Azure Kubernetes Service — managed Kubernetes with enterprise integrations.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">AKS = Kubernetes, Managed by Microsoft</div>
+            <p>AKS handles the Kubernetes control plane (the brain) — you just create a cluster and deploy your apps. AKS integrates deeply with Azure services: <strong>Entra ID</strong> for authentication, <strong>Key Vault</strong> for secrets (mounted as files in pods), <strong>Azure Monitor</strong> for observability, and <strong>Azure Container Registry</strong> for images. It also supports <strong>Workload Identity</strong> — pods get Azure permissions without any credentials.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">AKS Architecture</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-azure"><div class="arch-box-title">🧠 AKS Control Plane</div><div class="arch-box-subtitle">Microsoft managed — free!</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">Node Pools — your Azure VNet</span>
+                <div class="arch-row" style="margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                  <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">📦 Pod</div><div class="arch-box-subtitle">Frontend</div></div>
+                  <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">📦 Pod</div><div class="arch-box-subtitle">Backend API</div></div>
+                  <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">📦 Pod</div><div class="arch-box-subtitle">Worker</div></div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">📦 ACR</div><div class="arch-box-subtitle">Images</div></div>
+                <div style="width:1rem;"></div>
+                <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">🔑 Key Vault</div><div class="arch-box-subtitle">Secrets</div></div>
+                <div style="width:1rem;"></div>
+                <div class="arch-box arch-box-azure" style="min-width:120px;"><div class="arch-box-title">📊 Monitor</div><div class="arch-box-subtitle">Logs &amp; metrics</div></div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Create AKS Cluster</h2>
+          <pre><code># Create resource group
+az group create --name myapp-rg --location eastus
+
+# Create AKS cluster with Workload Identity enabled
+az aks create \
+  --resource-group myapp-rg \
+  --name myapp-cluster \
+  --node-count 3 \
+  --node-vm-size Standard_D2s_v3 \
+  --enable-oidc-issuer \
+  --enable-workload-identity \
+  --enable-addons monitoring \
+  --attach-acr myappcr \
+  --network-plugin azure \
+  --generate-ssh-keys
+
+# Get credentials for kubectl
+az aks get-credentials --resource-group myapp-rg --name myapp-cluster</code></pre>
+
+          <h2>Workload Identity (keyless auth to Azure)</h2>
+          <pre><code># Create managed identity
+az identity create --name myapp-identity --resource-group myapp-rg
+
+# Get OIDC issuer URL
+OIDC_URL=$(az aks show --resource-group myapp-rg --name myapp-cluster \
+  --query "oidcIssuerProfile.issuerUrl" -o tsv)
+
+# Create federated credential linking K8s ServiceAccount to managed identity
+az identity federated-credential create \
+  --name myapp-fedcred \
+  --identity-name myapp-identity \
+  --resource-group myapp-rg \
+  --issuer "$OIDC_URL" \
+  --subject "system:serviceaccount:production:myapp-sa"
+
+# Now annotate the Kubernetes ServiceAccount
+kubectl annotate serviceaccount myapp-sa \
+  azure.workload.identity/client-id=$(az identity show --name myapp-identity -g myapp-rg --query clientId -o tsv)</code></pre>
+
+          <h2>AKS vs EKS vs GKE</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Feature</th><th>AKS (Azure)</th><th>EKS (AWS)</th><th>GKE (GCP)</th></tr></thead>
+            <tbody>
+              <tr><td>Control Plane Cost</td><td>Free ✅</td><td>$0.10/hr</td><td>Free (Autopilot) / $0.10/hr</td></tr>
+              <tr><td>Identity for Pods</td><td>Workload Identity</td><td>IRSA</td><td>Workload Identity</td></tr>
+              <tr><td>Best Integration</td><td>Azure AD, .NET, SQL Server</td><td>AWS services</td><td>GCP AI/ML, BigQuery</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure Compute</span></a>
+          <a href="./container-apps.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Container Apps</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

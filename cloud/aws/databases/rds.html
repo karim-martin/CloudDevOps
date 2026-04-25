@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon RDS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Databases</a></li><li aria-current="page">RDS</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon RDS</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Managed relational databases — MySQL, PostgreSQL, SQL Server, and more.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">RDS = A Database You Never Have to Maintain</div>
+            <p>RDS (Relational Database Service) runs MySQL, PostgreSQL, MariaDB, Oracle, or SQL Server for you. AWS handles automated backups (daily + continuous transaction logs), software patches, Multi-AZ failover, and read replicas. You connect to it exactly like a self-hosted database — it's just the servers that AWS manages.</p>
+          </div>
+
+          <h2>Key Features</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">🔄</div><div class="feature-text"><h4>Multi-AZ Deployment</h4><p>RDS maintains a synchronous standby replica in a different AZ. If the primary fails, failover happens automatically in ~60 seconds with no data loss.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">📖</div><div class="feature-text"><h4>Read Replicas</h4><p>Offload read-heavy traffic to up to 5 asynchronous read replicas. Promote a replica to primary instantly if needed.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">💾</div><div class="feature-text"><h4>Automated Backups</h4><p>Daily snapshots + continuous transaction log backups. Restore to any point in the last 35 days in minutes.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">📈</div><div class="feature-text"><h4>Storage Auto Scaling</h4><p>Enable storage autoscaling and RDS grows disk automatically when usage exceeds your threshold — no manual resize.</p></div></div>
+          </div>
+
+          <h2>Create RDS (PostgreSQL) with AWS CLI</h2>
+          <pre><code>aws rds create-db-instance \
+  --db-instance-identifier myapp-db \
+  --db-instance-class db.t3.medium \
+  --engine postgres \
+  --engine-version 15.4 \
+  --master-username admin \
+  --master-user-password MySecretPassword123 \
+  --allocated-storage 20 \
+  --vpc-security-group-ids sg-0123456789 \
+  --db-subnet-group-name my-db-subnet-group \
+  --multi-az \
+  --no-publicly-accessible \
+  --backup-retention-period 7</code></pre>
+
+          <h2>Connect from EKS Pod</h2>
+          <pre><code># Store credentials in Secrets Manager (never hardcode!)
+aws secretsmanager create-secret \
+  --name myapp/database \
+  --secret-string '{"host":"myapp-db.cluster.us-east-1.rds.amazonaws.com","port":5432,"username":"app","password":"secret"}'
+
+# In your app, retrieve the secret at startup:
+# python example
+import boto3, json
+client = boto3.client('secretsmanager')
+secret = json.loads(client.get_secret_value(SecretId='myapp/database')['SecretString'])</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Security Best Practice</div>
+            <p>Always deploy RDS in a <strong>private subnet</strong> with no public IP. Access it only from within the VPC. Use <strong>Security Groups</strong> to allow only your EKS node security group to connect on port 5432/3306.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS Databases</span></a>
+          <a href="./dynamodb.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">DynamoDB</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

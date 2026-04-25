@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Cloud Services — compute, databases, storage, networking, security, and DevOps on Google Cloud Platform.">
+  <title>Cloud (GCP) | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">GCP Cloud</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="../databases/">Overview</a></li>
+        <li><a href="../databases/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../databases/firestore.html">Firestore</a></li>
+        <li><a href="../databases/memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="../storage/">Overview</a></li>
+        <li><a href="../storage/cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="../storage/artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">Cloud</a></li>
+          <li aria-current="page">GCP</li>
+        </ol></nav>
+
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+            <h1 style="margin:0;">GCP Cloud Services</h1>
+            <span class="provider-badge provider-badge-gcp">Google Cloud</span>
+          </div>
+          <p class="text-secondary text-lg">Google Cloud Platform services for containerized workloads.</p>
+        </header>
+
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">New to GCP?</div>
+            <p>Google Cloud Platform (GCP) is Google's suite of cloud services. GCP is famous for its Kubernetes engine (GKE — Google literally created Kubernetes), its data analytics tools like BigQuery, and cutting-edge AI/ML APIs. Most of GCP's services have a generous <strong>free tier</strong> and new accounts get $300 in credits.</p>
+          </div>
+
+          <!-- GCP Architecture Diagram -->
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">GCP Service Categories</div>
+            <div class="arch-flow">
+              <div class="arch-row">
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">⚙️ Compute</div>
+                  <div class="arch-box-subtitle">GKE · Cloud Run</div>
+                </div>
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">🗄️ Databases</div>
+                  <div class="arch-box-subtitle">Cloud SQL · Firestore · Memorystore</div>
+                </div>
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">📦 Storage</div>
+                  <div class="arch-box-subtitle">Cloud Storage · Artifact Registry</div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">🌐 Networking</div>
+                  <div class="arch-box-subtitle">VPC · LB · CDN · DNS</div>
+                </div>
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">🔒 Security</div>
+                  <div class="arch-box-subtitle">IAM · Secret Manager · Armor</div>
+                </div>
+                <div class="arch-box arch-box-gcp" style="min-width:160px;">
+                  <div class="arch-box-title">📊 Observability</div>
+                  <div class="arch-box-subtitle">Monitoring · Logging</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Compute</h2>
+          <p>Run containers and serverless workloads on Google's global infrastructure.</p>
+          <div class="card-grid">
+            <a href="../compute/gke.html" class="card card-link">
+              <h3 class="card-title">GKE</h3>
+              <p class="card-description">Google Kubernetes Engine — managed Kubernetes from the creators of Kubernetes. Autopilot mode removes all node management overhead.</p>
+            </a>
+            <a href="../compute/cloud-run.html" class="card card-link">
+              <h3 class="card-title">Cloud Run</h3>
+              <p class="card-description">Deploy containers without managing servers. Scales to zero when idle (you pay nothing when not in use).</p>
+            </a>
+          </div>
+
+          <h2>Databases</h2>
+          <p>Fully managed databases — GCP handles backups, patches, and failover automatically.</p>
+          <div class="card-grid">
+            <a href="../databases/cloud-sql.html" class="card card-link">
+              <h3 class="card-title">Cloud SQL</h3>
+              <p class="card-description">Managed MySQL, PostgreSQL, and SQL Server with automatic backups and high availability.</p>
+            </a>
+            <a href="../databases/firestore.html" class="card card-link">
+              <h3 class="card-title">Firestore</h3>
+              <p class="card-description">Serverless NoSQL document database. Real-time sync, offline support, and global scale.</p>
+            </a>
+            <a href="../databases/memorystore.html" class="card card-link">
+              <h3 class="card-title">Memorystore</h3>
+              <p class="card-description">Managed Redis and Memcached for sub-millisecond caching. Dramatically speeds up database-heavy apps.</p>
+            </a>
+          </div>
+
+          <h2>Storage</h2>
+          <p>Scalable storage for files, images, container images, and build artifacts.</p>
+          <div class="card-grid">
+            <a href="../storage/cloud-storage.html" class="card card-link">
+              <h3 class="card-title">Cloud Storage</h3>
+              <p class="card-description">Object storage for any file type. Store backups, user uploads, static assets, and logs.</p>
+            </a>
+            <a href="../storage/artifact-registry.html" class="card card-link">
+              <h3 class="card-title">Artifact Registry</h3>
+              <p class="card-description">Private registry for Docker container images and language packages (npm, Maven, PyPI).</p>
+            </a>
+          </div>
+
+          <h2>Networking</h2>
+          <p>Global networking infrastructure — VPC, load balancers, CDN, and DNS.</p>
+          <div class="card-grid">
+            <a href="../networking/vpc.html" class="card card-link">
+              <h3 class="card-title">VPC</h3>
+              <p class="card-description">Virtual Private Cloud — a private network inside GCP. Isolate resources and control traffic flow.</p>
+            </a>
+            <a href="../networking/load-balancing.html" class="card card-link">
+              <h3 class="card-title">Load Balancing</h3>
+              <p class="card-description">Global HTTP(S) load balancer. Distributes traffic across regions and handles SSL termination.</p>
+            </a>
+            <a href="../networking/cloud-cdn.html" class="card card-link">
+              <h3 class="card-title">Cloud CDN</h3>
+              <p class="card-description">Cache content at edge nodes worldwide for fast delivery to users regardless of location.</p>
+            </a>
+            <a href="../networking/cloud-dns.html" class="card card-link">
+              <h3 class="card-title">Cloud DNS</h3>
+              <p class="card-description">100% uptime SLA DNS service. Manage domain records for your applications.</p>
+            </a>
+          </div>
+
+          <h2>Security</h2>
+          <p>Identity management, secrets, and application protection.</p>
+          <div class="card-grid">
+            <a href="../security/iam.html" class="card card-link">
+              <h3 class="card-title">IAM</h3>
+              <p class="card-description">Control who can do what across all GCP services. Includes Workload Identity for keyless auth.</p>
+            </a>
+            <a href="../security/secret-manager.html" class="card card-link">
+              <h3 class="card-title">Secret Manager</h3>
+              <p class="card-description">Store API keys, passwords, and certificates securely. Apps fetch secrets at runtime — no hardcoded credentials.</p>
+            </a>
+            <a href="../security/cloud-armor.html" class="card card-link">
+              <h3 class="card-title">Cloud Armor</h3>
+              <p class="card-description">DDoS protection and Web Application Firewall (WAF). Block malicious traffic at Google's edge.</p>
+            </a>
+          </div>
+
+          <h2>DevOps</h2>
+          <p>CI/CD services to automate building, testing, and deploying your applications.</p>
+          <div class="card-grid">
+            <a href="../devops/cloud-build.html" class="card card-link">
+              <h3 class="card-title">Cloud Build</h3>
+              <p class="card-description">Serverless CI/CD. Build Docker images, run tests, and push to Artifact Registry automatically.</p>
+            </a>
+            <a href="../devops/cloud-deploy.html" class="card card-link">
+              <h3 class="card-title">Cloud Deploy</h3>
+              <p class="card-description">Managed continuous delivery to GKE and Cloud Run with approval gates and rollback.</p>
+            </a>
+          </div>
+
+          <h2>Observability</h2>
+          <p>Monitor, log, and alert on your applications running on GCP.</p>
+          <div class="card-grid">
+            <a href="../observability/cloud-monitoring.html" class="card card-link">
+              <h3 class="card-title">Cloud Monitoring</h3>
+              <p class="card-description">Metrics, dashboards, and alerting for GCP services and custom application metrics.</p>
+            </a>
+            <a href="../observability/cloud-logging.html" class="card card-link">
+              <h3 class="card-title">Cloud Logging</h3>
+              <p class="card-description">Centralized log ingestion, search, and analysis. All GCP services write logs here automatically.</p>
+            </a>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Other Providers</div>
+            <p>Looking for AWS or Azure equivalents? See <a href="../aws/">Cloud (AWS)</a> or <a href="../azure/">Cloud (Azure)</a>. The <a href="../../cloud/">provider comparison table</a> maps services across all three clouds.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Back</span><span class="nav-title">Cloud Overview</span></a>
+          <a href="../compute/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">GCP Compute</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

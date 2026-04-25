@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Networking - VPC, subnets, firewall rules, and Cloud NAT configuration.">
+  <title>Networking | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./project-setup.html">Project Setup</a></li>
+        <li><a href="./networking.html" class="active">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Foundation</a></li><li aria-current="page">Networking</li></ol></nav>
+        <header class="article-header"><h1>Networking Setup</h1></header>
+
+        <div class="article-body">
+          <p>Create a VPC network with subnets, firewall rules, and Cloud NAT for your GKE cluster and Cloud SQL.</p>
+
+          <h2 id="network-design">Network Design</h2>
+          <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                           VPC: app-vpc                              │
+│                                                                     │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                    Subnet: app-subnet                          │ │
+│  │                    Primary: 10.0.0.0/20                        │ │
+│  │                                                                │ │
+│  │  Secondary Ranges:                                             │ │
+│  │  ├── pods: 10.4.0.0/14     (262,144 IPs for pods)             │ │
+│  │  └── services: 10.0.32.0/20 (4,096 IPs for services)          │ │
+│  │                                                                │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │ │
+│  │  │ GKE Nodes   │  │ Cloud SQL   │  │ Private Service Connect │ │ │
+│  │  │ 10.0.0.x    │  │ 10.0.16.x   │  │ 10.0.16.0/20           │ │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                              │                                      │
+│                         Cloud NAT                                   │
+│                    (Outbound Internet)                              │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2 id="create-vpc">Create VPC Network</h2>
+          <pre><code class="language-bash"># Create custom VPC (not auto-mode)
+gcloud compute networks create app-vpc \
+    --subnet-mode=custom \
+    --bgp-routing-mode=regional
+
+# Verify VPC created
+gcloud compute networks describe app-vpc</code></pre>
+
+          <h2 id="create-subnet">Create Subnet with Secondary Ranges</h2>
+          <p>Create a subnet with secondary IP ranges for GKE pods and services:</p>
+          <pre><code class="language-bash"># Create subnet with secondary ranges for GKE
+gcloud compute networks subnets create app-subnet \
+    --network=app-vpc \
+    --region=$REGION \
+    --range=10.0.0.0/20 \
+    --secondary-range=pods=10.4.0.0/14,services=10.0.32.0/20 \
+    --enable-private-ip-google-access
+
+# Verify subnet
+gcloud compute networks subnets describe app-subnet --region=$REGION</code></pre>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Range</th><th>CIDR</th><th>IPs Available</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Primary</td><td>10.0.0.0/20</td><td>4,096</td><td>GKE nodes</td></tr>
+                <tr><td>Pods</td><td>10.4.0.0/14</td><td>262,144</td><td>Kubernetes pods</td></tr>
+                <tr><td>Services</td><td>10.0.32.0/20</td><td>4,096</td><td>Kubernetes services</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="private-services">Configure Private Services Access</h2>
+          <p>Required for Cloud SQL private IP connectivity:</p>
+          <pre><code class="language-bash"># Allocate IP range for private services (Cloud SQL)
+gcloud compute addresses create private-services-range \
+    --global \
+    --purpose=VPC_PEERING \
+    --prefix-length=20 \
+    --network=app-vpc
+
+# Create private connection
+gcloud services vpc-peerings connect \
+    --service=servicenetworking.googleapis.com \
+    --ranges=private-services-range \
+    --network=app-vpc
+
+# Verify peering
+gcloud compute networks peerings list --network=app-vpc</code></pre>
+
+          <h2 id="firewall-rules">Create Firewall Rules</h2>
+
+          <h3>Allow Internal Traffic</h3>
+          <pre><code class="language-bash"># Allow all internal traffic within VPC
+gcloud compute firewall-rules create app-allow-internal \
+    --network=app-vpc \
+    --allow=tcp,udp,icmp \
+    --source-ranges=10.0.0.0/8</code></pre>
+
+          <h3>Allow Health Checks</h3>
+          <pre><code class="language-bash"># Allow Google health check ranges
+# Required for load balancer health checks
+gcloud compute firewall-rules create app-allow-health-checks \
+    --network=app-vpc \
+    --allow=tcp:80,tcp:443,tcp:8080 \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --target-tags=gke-node</code></pre>
+
+          <h3>Allow SSH (Optional - for debugging)</h3>
+          <pre><code class="language-bash"># Allow SSH from IAP (Identity-Aware Proxy)
+gcloud compute firewall-rules create app-allow-ssh-iap \
+    --network=app-vpc \
+    --allow=tcp:22 \
+    --source-ranges=35.235.240.0/20 \
+    --target-tags=gke-node</code></pre>
+
+          <h3>View Firewall Rules</h3>
+          <pre><code class="language-bash"># List all firewall rules for this VPC
+gcloud compute firewall-rules list --filter="network:app-vpc"</code></pre>
+
+          <h2 id="cloud-nat">Configure Cloud NAT</h2>
+          <p>Cloud NAT allows private GKE nodes to access the internet (for pulling images, etc.):</p>
+          <pre><code class="language-bash"># Create Cloud Router (required for NAT)
+gcloud compute routers create app-router \
+    --network=app-vpc \
+    --region=$REGION
+
+# Create Cloud NAT
+gcloud compute routers nats create app-nat \
+    --router=app-router \
+    --region=$REGION \
+    --nat-all-subnet-ip-ranges \
+    --auto-allocate-nat-external-ips
+
+# Verify NAT configuration
+gcloud compute routers nats describe app-nat \
+    --router=app-router \
+    --region=$REGION</code></pre>
+
+          <h2 id="reserve-static-ip">Reserve Static IP for Ingress</h2>
+          <pre><code class="language-bash"># Reserve global static IP for the load balancer
+gcloud compute addresses create app-static-ip \
+    --global
+
+# Get the IP address
+gcloud compute addresses describe app-static-ip --global --format="get(address)"
+
+# Save for later use
+export STATIC_IP=$(gcloud compute addresses describe app-static-ip --global --format="get(address)")
+echo "Static IP: $STATIC_IP"</code></pre>
+
+          <h2 id="verify-networking">Verify Network Setup</h2>
+          <pre><code class="language-bash"># Summary of network resources
+echo "=== VPC ==="
+gcloud compute networks describe app-vpc --format="table(name,subnetworks)"
+
+echo "=== Subnets ==="
+gcloud compute networks subnets list --filter="network:app-vpc"
+
+echo "=== Firewall Rules ==="
+gcloud compute firewall-rules list --filter="network:app-vpc" \
+    --format="table(name,direction,allowed,sourceRanges)"
+
+echo "=== Cloud NAT ==="
+gcloud compute routers nats list --router=app-router --region=$REGION
+
+echo "=== Static IP ==="
+gcloud compute addresses list --filter="name:app-static-ip"</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">IP Planning</div>
+            <p>The IP ranges chosen here support up to 4,096 nodes and 262,144 pods. For smaller deployments, you can use smaller ranges like /22 for nodes and /16 for pods.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Don't Skip Cloud NAT</div>
+            <p>Without Cloud NAT, private GKE nodes cannot pull container images from the internet or external registries. This is a common cause of deployment failures.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./project-setup.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Project Setup</span></a>
+          <a href="../infrastructure/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Infrastructure</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

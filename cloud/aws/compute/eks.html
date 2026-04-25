@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AWS EKS — Elastic Kubernetes Service. Managed Kubernetes on Amazon Web Services.">
+  <title>EKS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="./">Overview</a></li><li><a href="./eks.html" class="active">EKS</a></li><li><a href="./fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Compute</a></li><li aria-current="page">EKS</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon EKS</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Elastic Kubernetes Service — managed Kubernetes on AWS.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is EKS?</div>
+            <p>EKS (Elastic Kubernetes Service) lets you run Kubernetes on AWS <strong>without installing or managing the Kubernetes control plane yourself</strong>. Think of Kubernetes as an "operating system for containers" — it decides which machine runs which container, restarts crashed containers, and balances traffic. EKS means AWS manages the control plane (the brain), and you just deploy your apps.</p>
+          </div>
+
+          <!-- EKS Architecture Diagram -->
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">EKS Architecture</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-aws">
+                <div class="arch-box-title">🧠 EKS Control Plane</div>
+                <div class="arch-box-subtitle">AWS managed — API server, etcd, scheduler</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">Worker Nodes (EC2 or Fargate) — your VPC</span>
+                <div class="arch-row" style="margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                  <div class="arch-box arch-box-aws" style="min-width:130px;">
+                    <div class="arch-box-title">📦 Pod</div>
+                    <div class="arch-box-subtitle">Frontend container</div>
+                  </div>
+                  <div class="arch-box arch-box-aws" style="min-width:130px;">
+                    <div class="arch-box-title">📦 Pod</div>
+                    <div class="arch-box-subtitle">Backend container</div>
+                  </div>
+                  <div class="arch-box arch-box-aws" style="min-width:130px;">
+                    <div class="arch-box-title">📦 Pod</div>
+                    <div class="arch-box-subtitle">Worker service</div>
+                  </div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-aws" style="min-width:130px;"><div class="arch-box-title">📦 ECR</div><div class="arch-box-subtitle">Container images</div></div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:130px;"><div class="arch-box-title">⚖️ ALB</div><div class="arch-box-subtitle">Ingress traffic</div></div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:130px;"><div class="arch-box-title">🔒 IAM IRSA</div><div class="arch-box-subtitle">Pod permissions</div></div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Key Concepts</h2>
+
+          <h3>Node Groups</h3>
+          <p>A <strong>Node Group</strong> is a set of EC2 instances that act as Kubernetes worker nodes. You define the instance type (e.g., <code>t3.medium</code>), min/max count, and AWS manages launching and registering them with EKS.</p>
+          <div class="callout callout-tip">
+            <div class="callout-title">Managed vs Self-Managed Nodes</div>
+            <p>Use <strong>Managed Node Groups</strong> — AWS handles node updates, draining, and replacement. Self-managed nodes give more control but require more ops work.</p>
+          </div>
+
+          <h3>Fargate Profiles</h3>
+          <p>Instead of EC2 nodes, EKS can run pods on <strong>AWS Fargate</strong> — fully serverless. No nodes to manage, patch, or scale. Fargate is ideal for bursty workloads and CI/CD jobs.</p>
+
+          <h3>IRSA — IAM Roles for Service Accounts</h3>
+          <p>This is how EKS pods authenticate to AWS services (S3, RDS, Secrets Manager) <strong>without any credentials</strong>. Each pod gets a Kubernetes Service Account linked to an IAM Role. AWS verifies the pod's identity via OIDC and grants the IAM permissions.</p>
+          <pre><code># Annotate a Service Account to use an IAM role
+kubectl annotate serviceaccount my-app \
+  eks.amazonaws.com/role-arn=arn:aws:iam::123456789:role/MyAppRole</code></pre>
+
+          <h2>Create an EKS Cluster</h2>
+          <pre><code># Using eksctl (recommended CLI for EKS)
+eksctl create cluster \
+  --name my-cluster \
+  --region us-east-1 \
+  --nodegroup-name workers \
+  --node-type t3.medium \
+  --nodes 2 \
+  --nodes-min 1 \
+  --nodes-max 4 \
+  --managed</code></pre>
+
+          <pre><code># Configure kubectl to use the new cluster
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name my-cluster
+
+# Verify nodes are ready
+kubectl get nodes</code></pre>
+
+          <h2>Deploy an Application</h2>
+          <pre><code># deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: app
+        image: 123456789.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"</code></pre>
+
+          <h2>EKS vs GKE vs AKS</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>EKS (AWS)</th><th>GKE (GCP)</th><th>AKS (Azure)</th></tr></thead>
+              <tbody>
+                <tr><td>Control Plane Cost</td><td>$0.10/hr per cluster</td><td>Free (Autopilot) or $0.10/hr</td><td>Free</td></tr>
+                <tr><td>Serverless Nodes</td><td>Fargate</td><td>Autopilot / GKE Sandbox</td><td>Virtual Nodes (ACI)</td></tr>
+                <tr><td>Identity for Pods</td><td>IRSA</td><td>Workload Identity</td><td>Workload Identity / Pod Identity</td></tr>
+                <tr><td>Managed Add-ons</td><td>VPC CNI, CoreDNS, kube-proxy</td><td>Built-in (GKE manages)</td><td>AGIC, Key Vault CSI</td></tr>
+                <tr><td>Best For</td><td>AWS-heavy orgs</td><td>Kubernetes-native teams</td><td>Microsoft/.NET shops</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Ready to deploy?</div>
+            <p>See the <a href="../../../app-deploy/aws/">AWS App Deploy guide</a> for a full end-to-end walkthrough of deploying a React + .NET application to EKS with CI/CD, SSL, and monitoring.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS Compute</span></a>
+          <a href="./fargate.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Fargate &amp; Lambda</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

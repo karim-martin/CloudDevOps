@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud DNS - Managed DNS service for containers.">
+  <title>Cloud DNS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./vpc.html">VPC</a></li>
+        <li><a href="./load-balancing.html">Load Balancing</a></li>
+        <li><a href="./cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="./cloud-dns.html" class="active">Cloud DNS</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud DNS</h1></header>
+        <div class="article-body">
+          <p>Cloud DNS is a managed DNS service for publishing domain names to the global DNS.</p>
+
+          <h2>Create Managed Zone</h2>
+          <pre><code class="language-bash"># Public zone
+gcloud dns managed-zones create my-zone \
+    --dns-name="example.com." \
+    --description="Public zone" \
+    --visibility=public
+
+# Private zone (for internal resolution)
+gcloud dns managed-zones create internal-zone \
+    --dns-name="internal.example.com." \
+    --description="Private zone" \
+    --visibility=private \
+    --networks=my-vpc</code></pre>
+
+          <h2>DNS Records</h2>
+          <pre><code class="language-bash"># Add A record
+gcloud dns record-sets create app.example.com. \
+    --zone=my-zone \
+    --type=A \
+    --ttl=300 \
+    --rrdatas="35.190.80.1"
+
+# Add CNAME record
+gcloud dns record-sets create www.example.com. \
+    --zone=my-zone \
+    --type=CNAME \
+    --ttl=300 \
+    --rrdatas="app.example.com."
+
+# List records
+gcloud dns record-sets list --zone=my-zone</code></pre>
+
+          <h2>GKE ExternalDNS</h2>
+          <pre><code class="language-yaml"># Automatically manage DNS from Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: app.example.com
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80</code></pre>
+
+          <h2>Private DNS for GKE</h2>
+          <pre><code class="language-bash"># Create private zone for internal services
+gcloud dns managed-zones create gke-internal \
+    --dns-name="cluster.local." \
+    --description="GKE internal DNS" \
+    --visibility=private \
+    --networks=my-vpc
+
+# GKE services are automatically resolvable:
+# service-name.namespace.svc.cluster.local</code></pre>
+
+          <h2>DNS Peering</h2>
+          <pre><code class="language-bash"># Peer DNS zones between VPCs
+gcloud dns managed-zones create peer-zone \
+    --dns-name="other.example.com." \
+    --description="Peered zone" \
+    --visibility=private \
+    --networks=my-vpc \
+    --target-network=other-vpc \
+    --target-project=other-project</code></pre>
+
+          <h2>Common Commands</h2>
+          <pre><code class="language-bash"># List zones
+gcloud dns managed-zones list
+
+# Describe zone
+gcloud dns managed-zones describe my-zone
+
+# Delete record
+gcloud dns record-sets delete app.example.com. \
+    --zone=my-zone \
+    --type=A
+
+# Get nameservers (for domain registrar)
+gcloud dns managed-zones describe my-zone \
+    --format="value(nameServers)"</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

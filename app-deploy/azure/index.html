@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deploy to Azure AKS | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="./foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./infrastructure/" class="active">Overview</a></li>
+        <li><a href="./infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href="./infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href="./infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="./deployment/" class="active">Overview</a></li>
+        <li><a href="./deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href="./deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="./deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/" class="active">Overview</a></li>
+        <li><a href="./networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href="./networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/" class="active">Overview</a></li>
+        <li><a href="./security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="./security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./operations/" class="active">Overview</a></li>
+        <li><a href="./operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href="./operations/scaling.html">Scaling</a></li>
+        <li><a href="./operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">App Deploy</a></li>
+          <li aria-current="page">Azure</li>
+        </ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Deploy to Azure AKS</h1>
+            <span class="provider-badge provider-badge-azure">Microsoft Azure</span>
+          </div>
+          <p class="text-secondary text-lg">End-to-end guide: deploy a React + .NET 8 app to Azure Kubernetes Service with CI/CD, SSL, and monitoring.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What You'll Build</div>
+            <p>You'll deploy a production-ready web application to Azure — the same thing a DevOps team at a company would do. Your React frontend will be served from Azure CDN, your .NET 8 API will run in Kubernetes (AKS), and your data will live in Azure SQL with automated backups. Azure Pipelines will deploy new versions automatically whenever you push code.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Target Architecture — Azure AKS</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user"><div class="arch-box-title">👤 User / Browser</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-azure"><div class="arch-box-title">🌐 Azure Front Door + CDN</div><div class="arch-box-subtitle">Global routing, WAF, React static files</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-azure"><div class="arch-box-title">⚖️ App Gateway (AGIC)</div><div class="arch-box-subtitle">HTTPS Ingress for AKS — SSL termination</div></div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">Azure VNet — East US (Private Subnet)</span>
+                <div class="arch-row" style="margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                  <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">⚛️ React Pod</div><div class="arch-box-subtitle">Nginx container</div></div>
+                  <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">⚙️ .NET API Pod</div><div class="arch-box-subtitle">ASP.NET Core 8</div></div>
+                  <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">📦 ACR</div><div class="arch-box-subtitle">Container images</div></div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row" style="flex-wrap:wrap;gap:0.5rem;">
+                <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">🗄️ Azure SQL</div><div class="arch-box-subtitle">Managed SQL Server</div></div>
+                <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">📦 Blob Storage</div><div class="arch-box-subtitle">User uploads</div></div>
+                <div class="arch-box arch-box-azure" style="min-width:130px;"><div class="arch-box-title">🔑 Key Vault</div><div class="arch-box-subtitle">Secrets at runtime</div></div>
+              </div>
+            </div>
+          </div>
+
+          <h2>What You'll Learn</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">🏗️</div><div class="feature-text"><h4>Infrastructure as Code</h4><p>Provision VNet, AKS, Azure SQL, and Key Vault using Terraform — reproducible and version-controlled.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🐳</div><div class="feature-text"><h4>Containerization</h4><p>Build production Docker images for React (multi-stage) and .NET 8 with security best practices.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🔐</div><div class="feature-text"><h4>Workload Identity</h4><p>AKS pods authenticate to Azure services (Key Vault, SQL) without any passwords — using managed identity.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🔄</div><div class="feature-text"><h4>Azure Pipelines CI/CD</h4><p>Automate build, test, and deployment on every git push using Azure Pipelines and OIDC authentication.</p></div></div>
+          </div>
+
+          <h2>Learning Path</h2>
+          <div class="steps-timeline">
+            <div class="step-item"><div class="step-number">1</div><div class="step-content"><h4><a href="./prerequisites.html">Prerequisites</a></h4><p>Install Azure CLI, kubectl, Helm, Terraform, and Docker. Set up your Azure subscription.</p></div></div>
+            <div class="step-item"><div class="step-number">2</div><div class="step-content"><h4><a href="./foundation/">Foundation</a></h4><p>Create resource group, VNet with subnets, and set up Terraform state in Azure Storage.</p></div></div>
+            <div class="step-item"><div class="step-number">3</div><div class="step-content"><h4><a href="./infrastructure/">Infrastructure</a></h4><p>Provision AKS cluster, Azure SQL, Blob Storage, ACR, and Key Vault with Terraform.</p></div></div>
+            <div class="step-item"><div class="step-number">4</div><div class="step-content"><h4><a href="./deployment/">Deployment</a></h4><p>Containerize your apps, push to ACR, and deploy Kubernetes manifests.</p></div></div>
+            <div class="step-item"><div class="step-number">5</div><div class="step-content"><h4><a href="./networking/">Networking</a></h4><p>Configure AGIC ingress, SSL certificates, and custom domain.</p></div></div>
+            <div class="step-item"><div class="step-number">6</div><div class="step-content"><h4><a href="./security/">Security</a></h4><p>Enable Workload Identity and integrate Key Vault for zero-credential secret management.</p></div></div>
+            <div class="step-item"><div class="step-number">7</div><div class="step-content"><h4><a href="./operations/">Operations</a></h4><p>Set up Azure Pipelines CI/CD, HPA auto-scaling, and Azure Monitor observability.</p></div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Layer</th><th>Technology</th><th>Azure Service</th></tr></thead>
+              <tbody>
+                <tr><td>Frontend</td><td>React 18 + Vite</td><td>Nginx container on AKS + Blob Static Hosting</td></tr>
+                <tr><td>Backend</td><td>.NET 8 Web API</td><td>ASP.NET Core on AKS</td></tr>
+                <tr><td>Container Runtime</td><td>Kubernetes 1.29</td><td>AKS (Azure Kubernetes Service)</td></tr>
+                <tr><td>Container Registry</td><td>Docker</td><td>ACR (Azure Container Registry)</td></tr>
+                <tr><td>Database</td><td>SQL Server</td><td>Azure SQL (Managed SQL Server)</td></tr>
+                <tr><td>File Storage</td><td>Object Storage</td><td>Azure Blob Storage</td></tr>
+                <tr><td>Secrets</td><td>Vault</td><td>Azure Key Vault</td></tr>
+                <tr><td>Identity</td><td>OIDC / Managed Identity</td><td>Workload Identity (Entra ID)</td></tr>
+                <tr><td>Ingress / SSL</td><td>HTTPS</td><td>Application Gateway Ingress Controller</td></tr>
+                <tr><td>CDN</td><td>Edge Caching</td><td>Azure Front Door</td></tr>
+                <tr><td>CI/CD</td><td>Pipelines</td><td>Azure Pipelines</td></tr>
+                <tr><td>Monitoring</td><td>Metrics + Logs</td><td>Azure Monitor + Log Analytics</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Estimated Cost</div>
+            <p>Running this stack on Azure costs roughly <strong>$100–180/month</strong>: AKS (~$75 for 2× Standard_B2s nodes), Azure SQL Basic (~$5), Key Vault (~$1), Front Door (~$20+). Always delete resources when done practicing — use <code>az group delete --name myapp-rg</code> to tear down everything.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Back</span><span class="nav-title">App Deploy</span></a>
+          <a href="./prerequisites.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Prerequisites</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

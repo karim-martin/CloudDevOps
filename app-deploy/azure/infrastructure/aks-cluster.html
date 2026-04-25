@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AKS Cluster — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href=".././">Overview</a></li>
+        <li><a href=".././prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href=".././foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href=".././infrastructure/">Overview</a></li>
+        <li><a href=".././infrastructure/aks-cluster.html" class="active">AKS Cluster</a></li>
+        <li><a href=".././infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href=".././infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href=".././deployment/">Overview</a></li>
+        <li><a href=".././deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href=".././deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href=".././deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href=".././networking/">Overview</a></li>
+        <li><a href=".././networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href=".././networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href=".././security/">Overview</a></li>
+        <li><a href=".././security/workload-identity.html">Workload Identity</a></li>
+        <li><a href=".././security/key-vault.html">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href=".././operations/">Overview</a></li>
+        <li><a href=".././operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href=".././operations/scaling.html">Scaling</a></li>
+        <li><a href=".././operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">Azure</a></li><li><a href="./">Infrastructure</a></li>
+          <li aria-current="page">AKS Cluster</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>AKS Cluster</h1>
+          <p class="text-secondary text-lg">Create and configure an Azure Kubernetes Service cluster with Terraform.</p>
+        </header>
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">What is AKS?</div>
+            <p>AKS (Azure Kubernetes Service) manages the Kubernetes control plane (the "brain") for you. You only pay for and manage the worker nodes (VMs) where your app actually runs. Azure handles upgrades, repairs, and HA for the control plane.</p>
+          </div>
+
+          <h2>Create AKS with Terraform</h2>
+          <pre><code># aks.tf
+resource "azurerm_kubernetes_cluster" "main" {
+  name                = "myapp-aks"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  dns_prefix          = "myapp"
+  kubernetes_version  = "1.29"
+
+  default_node_pool {
+    name                = "system"
+    node_count          = 2
+    vm_size             = "Standard_B2s"
+    vnet_subnet_id      = azurerm_subnet.aks_nodes.id
+    enable_auto_scaling = true
+    min_count           = 2
+    max_count           = 5
+    os_disk_size_gb     = 30
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  # Enable Workload Identity
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+
+  # Enable AGIC add-on
+  ingress_application_gateway {
+    gateway_name = "myapp-agw"
+    subnet_id    = azurerm_subnet.app_gateway.id
+  }
+
+  # Enable Azure Monitor
+  oms_agent {
+    log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  }
+
+  network_profile {
+    network_plugin    = "azure"
+    load_balancer_sku = "standard"
+  }
+
+  tags = {
+    Environment = "production"
+    Project     = "myapp"
+  }
+}
+
+resource "azurerm_log_analytics_workspace" "main" {
+  name                = "myapp-logs"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}</code></pre>
+
+          <h2>Connect kubectl</h2>
+          <pre><code>az aks get-credentials \
+  --resource-group myapp-rg \
+  --name myapp-aks
+
+# Verify cluster is ready
+kubectl get nodes
+kubectl get pods --all-namespaces</code></pre>
+
+          <h2>Grant ACR Pull Access</h2>
+          <pre><code># Allow AKS to pull images from ACR
+az aks update \
+  --name myapp-aks \
+  --resource-group myapp-rg \
+  --attach-acr myappacr</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">System vs User Node Pools</div>
+            <p>The default node pool runs system pods (CoreDNS, AGIC). For production, add a separate user node pool for your app workloads — this lets you upgrade the system pool without disrupting your app.</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Infrastructure Overview</span></a>
+          <a href="./azure-sql.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Azure SQL</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

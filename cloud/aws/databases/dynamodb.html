@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon DynamoDB | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Databases</a></li><li aria-current="page">DynamoDB</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon DynamoDB</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Serverless NoSQL database with single-digit millisecond performance at any scale.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">When Do You Use DynamoDB Instead of SQL?</div>
+            <p>Use DynamoDB when you need: (1) <strong>massive scale</strong> — millions of reads/writes per second, (2) <strong>simple access patterns</strong> — always look up by user ID, order ID, etc., (3) <strong>zero ops</strong> — serverless, no cluster to manage. Avoid DynamoDB for complex SQL queries, JOINs, or ad-hoc analytics. If you're unsure, start with RDS.</p>
+          </div>
+
+          <h2>Core Concepts</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Concept</th><th>DynamoDB Term</th><th>SQL Equivalent</th></tr></thead>
+            <tbody>
+              <tr><td>Table</td><td>Table</td><td>Table</td></tr>
+              <tr><td>Row</td><td>Item</td><td>Row</td></tr>
+              <tr><td>Column</td><td>Attribute</td><td>Column</td></tr>
+              <tr><td>Primary Key</td><td>Partition Key (+ Sort Key)</td><td>PRIMARY KEY</td></tr>
+              <tr><td>Index</td><td>GSI / LSI</td><td>INDEX</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Basic Operations</h2>
+          <pre><code>import boto3
+from boto3.dynamodb.conditions import Key
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Users')
+
+# Create item
+table.put_item(Item={
+    'userId': 'user-123',
+    'email': 'alice@example.com',
+    'createdAt': '2024-01-15T10:00:00Z',
+    'plan': 'pro'
+})
+
+# Get item by primary key (fast!)
+response = table.get_item(Key={'userId': 'user-123'})
+user = response['Item']
+
+# Query all items with same partition key
+response = table.query(
+    KeyConditionExpression=Key('userId').eq('user-123')
+)</code></pre>
+
+          <h2>Capacity Modes</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">⚡</div><div class="feature-text"><h4>On-Demand</h4><p>Pay per request. No capacity planning. Great for unpredictable or spiky traffic. More expensive at steady-state load.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-text"><h4>Provisioned + Auto Scaling</h4><p>Set read/write capacity units. Use Auto Scaling to adjust. Up to 70% cheaper than on-demand for predictable traffic.</p></div></div>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./rds.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">RDS</span></a>
+          <a href="./elasticache.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">ElastiCache</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

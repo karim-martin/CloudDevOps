@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Blob Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li><a href="./">Storage</a></li><li aria-current="page">Blob Storage</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure Blob Storage</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">Massively scalable object storage for any type of unstructured data.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Blob Storage = Infinitely Scalable File Storage</div>
+            <p>Azure Blob Storage stores files as 'blobs' in 'containers' (not Docker containers — think of them as folders). It's similar to AWS S3 and GCP Cloud Storage. Azure Storage accounts have 16 nines of durability and automatically store 3 copies of your data by default (LRS — Locally Redundant Storage). Enable GRS and your data is replicated to a second Azure region 400+ miles away.</p>
+          </div>
+
+          <h2>Storage Access Tiers</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Tier</th><th>Use Case</th><th>Access Latency</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td>Hot</td><td>Frequently accessed data</td><td>Milliseconds</td><td>Higher storage, low access</td></tr>
+              <tr><td>Cool</td><td>Infrequently accessed (30+ days)</td><td>Milliseconds</td><td>Lower storage, higher access</td></tr>
+              <tr><td>Cold</td><td>Rarely accessed (90+ days)</td><td>Milliseconds</td><td>Very low storage</td></tr>
+              <tr><td>Archive</td><td>Long-term archive (180+ days)</td><td>Hours (rehydrate first)</td><td>Lowest storage cost</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Upload and Manage Blobs</h2>
+          <pre><code"># Azure CLI — upload a file
+az storage blob upload \
+  --account-name myappstorage \
+  --container-name uploads \
+  --name photos/photo.jpg \
+  --file ./photo.jpg \
+  --auth-mode login
+
+# Generate SAS URL for client-side upload (1 hour)
+az storage blob generate-sas \
+  --account-name myappstorage \
+  --container-name uploads \
+  --name photos/photo.jpg \
+  --permissions rw \
+  --expiry $(date -u -d '1 hour' '+%Y-%m-%dT%H:%MZ')</code></pre>
+          <pre><code">// .NET SDK — upload from stream
+var credential = new DefaultAzureCredential();  // Workload Identity
+var blobClient = new BlobClient(
+    new Uri("https://myappstorage.blob.core.windows.net/uploads/photo.jpg"),
+    credential);
+
+await blobClient.UploadAsync(fileStream, overwrite: true);</code></pre>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure Storage</span></a>
+          <a href="./acr.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Azure Container Registry</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

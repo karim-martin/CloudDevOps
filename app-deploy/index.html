@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deploy a React + .NET application to GCP GKE, AWS EKS, or Azure AKS. End-to-end guides with CI/CD, SSL, scaling, and monitoring.">
+  <title>App Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+</head>
+<body class="layout-landing">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../" class="logo"><img src="../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../devops/" class="nav-link">DevOps</a>
+        <a href="../cloud/" class="nav-link">Cloud</a>
+        <a href="../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions">
+        <button class="mobile-menu-toggle" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" aria-label="Mobile navigation">
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">App Deploy</h3>
+          <ul class="sidebar-links">
+            <li><a href="./">Overview</a></li>
+            <li><a href="./gcp/">Deploy to GCP</a></li>
+            <li><a href="./aws/">Deploy to AWS</a></li>
+            <li><a href="./azure/">Deploy to Azure</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main id="main-content" class="main-content">
+
+      <!-- Hero -->
+      <section class="hero">
+        <p class="hero-eyebrow">Full-Stack Deployment Guides</p>
+        <h1 class="hero-title">Deploy Your App to the Cloud</h1>
+        <p class="hero-subtitle">
+          End-to-end guides for deploying a React + .NET 8 application to Kubernetes on GCP, AWS, or Azure.
+          Each guide covers infrastructure, containers, CI/CD, SSL, security, and monitoring.
+        </p>
+      </section>
+
+      <!-- What You'll Build -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:1.5rem;">What You'll Build</h2>
+
+        <div class="arch-diagram">
+          <div class="arch-diagram-title">Production-Ready Full-Stack Architecture (Same Pattern on All Clouds)</div>
+          <div class="arch-flow">
+            <div class="arch-box arch-box-user">
+              <div class="arch-box-title">👤 User</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-box arch-box-internet">
+              <div class="arch-box-title">🌐 CDN + DNS</div>
+              <div class="arch-box-subtitle">CloudFront / Cloud CDN / Azure Front Door</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-box" style="border-color:#2563eb;">
+              <div class="arch-box-title">⚖️ Load Balancer + SSL</div>
+              <div class="arch-box-subtitle">ALB / Cloud LB / App Gateway — HTTPS terminated here</div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-cluster" style="width:100%;">
+              <span class="arch-cluster-label">Kubernetes (EKS / GKE / AKS)</span>
+              <div class="arch-row" style="margin-top:0.5rem;">
+                <div class="arch-box" style="border-color:#10b981;min-width:150px;">
+                  <div class="arch-box-title">⚛️ React Frontend</div>
+                  <div class="arch-box-subtitle">3 replicas</div>
+                </div>
+                <div class="arch-arrow-right">→</div>
+                <div class="arch-box" style="border-color:#10b981;min-width:150px;">
+                  <div class="arch-box-title">⚙️ .NET 8 API</div>
+                  <div class="arch-box-subtitle">3 replicas, HPA</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-arrow-down"></div>
+            <div class="arch-row">
+              <div class="arch-box arch-box-neutral" style="min-width:140px;">
+                <div class="arch-box-title">🗄️ Managed SQL</div>
+                <div class="arch-box-subtitle">RDS / Cloud SQL / Azure SQL</div>
+              </div>
+              <div style="width:1.5rem;"></div>
+              <div class="arch-box arch-box-neutral" style="min-width:140px;">
+                <div class="arch-box-title">📦 Object Storage</div>
+                <div class="arch-box-subtitle">S3 / GCS / Blob Storage</div>
+              </div>
+              <div style="width:1.5rem;"></div>
+              <div class="arch-box arch-box-neutral" style="min-width:140px;">
+                <div class="arch-box-title">🔒 Secrets</div>
+                <div class="arch-box-subtitle">Secrets Manager / Key Vault</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learning Path Steps -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:0.5rem;">What Every Guide Covers</h2>
+        <p style="text-align:center;color:#64748b;margin-bottom:2rem;">The same 6-phase approach, adapted for each cloud provider.</p>
+
+        <div class="steps-timeline">
+          <div class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Foundation</h4>
+              <p>Set up your cloud account, configure IAM permissions, and create the VPC networking that everything runs inside.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Infrastructure</h4>
+              <p>Provision the Kubernetes cluster, managed database, and object storage bucket using Terraform (Infrastructure as Code).</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Containerization &amp; Deployment</h4>
+              <p>Write Dockerfiles for the React frontend and .NET 8 backend, then deploy to Kubernetes with manifests and Helm charts.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Networking</h4>
+              <p>Configure Ingress controllers, create SSL/TLS certificates (auto-renewed), and set up URL-based routing between services.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h4>Security</h4>
+              <p>Use workload identity (IRSA / Workload Identity) for keyless authentication, store secrets in a vault, and configure WAF protection.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-number">6</div>
+            <div class="step-content">
+              <h4>Operations</h4>
+              <p>Set up CI/CD pipelines for automated deployments, configure HPA autoscaling, and connect monitoring dashboards and alerts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Provider Selection -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:0.5rem;">Choose Your Cloud Provider</h2>
+        <p style="text-align:center;color:#64748b;margin-bottom:2rem;">Select the provider you're deploying to. The React + .NET 8 application is the same — only the cloud services differ.</p>
+
+        <div class="provider-grid">
+          <!-- GCP -->
+          <a href="./gcp/" class="provider-card provider-card-gcp">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="#4285F4"/>
+              </svg>
+            </span>
+            <h3>App Deploy (GCP)</h3>
+            <p>Deploy to GKE using Cloud SQL, Cloud Storage, and Workload Identity. CI/CD with GitHub Actions and Cloud Build.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">GKE</span>
+              <span class="provider-service-tag">Cloud SQL</span>
+              <span class="provider-service-tag">Workload Identity</span>
+              <span class="provider-service-tag">Cloud Build</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-gcp">Google Cloud</span>
+            </div>
+          </a>
+
+          <!-- AWS -->
+          <a href="./aws/" class="provider-card provider-card-aws">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.064.056.128.056.184 0 .08-.048.16-.152.24l-.504.336c-.072.048-.144.072-.208.072-.08 0-.16-.04-.24-.112-.112-.12-.208-.248-.288-.376-.08-.136-.16-.288-.248-.472-.624.736-1.408 1.104-2.352 1.104-.672 0-1.208-.192-1.6-.576-.392-.384-.592-.896-.592-1.536 0-.68.24-1.232.728-1.648.488-.416 1.136-.624 1.96-.624.272 0 .552.024.848.064.296.04.6.104.92.176v-.584c0-.608-.128-1.032-.376-1.28-.256-.248-.688-.368-1.304-.368-.28 0-.568.032-.864.104-.296.072-.584.16-.864.272-.128.056-.224.088-.272.104-.048.016-.08.024-.104.024-.096 0-.144-.072-.144-.224v-.352c0-.12.016-.208.056-.264.04-.056.112-.112.224-.168.28-.144.616-.264 1.008-.36.392-.104.808-.152 1.248-.152.952 0 1.648.216 2.096.648.44.432.664 1.088.664 1.968v2.592zm-3.24 1.208c.264 0 .536-.048.824-.144.288-.096.544-.272.76-.512.128-.152.224-.32.272-.512.048-.192.08-.424.08-.696v-.336c-.232-.056-.48-.104-.736-.136-.256-.032-.504-.048-.752-.048-.536 0-.928.104-1.192.32-.264.216-.392.52-.392.92 0 .376.096.656.296.848.192.2.472.296.84.296z" fill="#FF9900"/>
+              </svg>
+            </span>
+            <h3>App Deploy (AWS)</h3>
+            <p>Deploy to EKS using RDS, S3, and IRSA. CI/CD with GitHub Actions and CodeBuild. CloudFront for global delivery.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">EKS</span>
+              <span class="provider-service-tag">RDS</span>
+              <span class="provider-service-tag">IRSA</span>
+              <span class="provider-service-tag">CodeBuild</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-aws">Amazon Web Services</span>
+            </div>
+          </a>
+
+          <!-- Azure -->
+          <a href="./azure/" class="provider-card provider-card-azure">
+            <span class="provider-logo">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.05 4.24L6.56 18.05l2.47.01 1.28-2.94h3.64l1.42 3h2.47L13.05 4.24zM11.98 8.56l1.8 4.16H11l.98-4.16z" fill="#0078D4"/>
+              </svg>
+            </span>
+            <h3>App Deploy (Azure)</h3>
+            <p>Deploy to AKS using Azure SQL, Blob Storage, and Workload Identity. CI/CD with Azure Pipelines and GitHub Actions.</p>
+            <div class="provider-card-services">
+              <span class="provider-service-tag">AKS</span>
+              <span class="provider-service-tag">Azure SQL</span>
+              <span class="provider-service-tag">Key Vault</span>
+              <span class="provider-service-tag">Azure Pipelines</span>
+            </div>
+            <div style="margin-top:1.5rem;">
+              <span class="provider-badge provider-badge-azure">Microsoft Azure</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Tech Stack -->
+      <section style="max-width:900px;margin:0 auto 3rem;">
+        <h2 style="text-align:center;margin-bottom:1.5rem;">Application Tech Stack</h2>
+        <div class="table-wrapper">
+          <table class="cheatsheet-table">
+            <thead><tr><th>Layer</th><th>Technology</th><th>GCP</th><th>AWS</th><th>Azure</th></tr></thead>
+            <tbody>
+              <tr><td>Frontend</td><td>React 18+</td><td colspan="3" style="text-align:center;color:#64748b;">Same across all clouds</td></tr>
+              <tr><td>Backend</td><td>.NET 8 Web API</td><td colspan="3" style="text-align:center;color:#64748b;">Same across all clouds</td></tr>
+              <tr><td>Containers</td><td>Docker</td><td colspan="3" style="text-align:center;color:#64748b;">Same across all clouds</td></tr>
+              <tr><td>Orchestration</td><td>Kubernetes</td><td>GKE</td><td>EKS</td><td>AKS</td></tr>
+              <tr><td>Database</td><td>Managed SQL</td><td>Cloud SQL</td><td>RDS</td><td>Azure SQL</td></tr>
+              <tr><td>Object Storage</td><td>Files/Images</td><td>Cloud Storage</td><td>S3</td><td>Blob Storage</td></tr>
+              <tr><td>Container Registry</td><td>Docker Images</td><td>Artifact Registry</td><td>ECR</td><td>ACR</td></tr>
+              <tr><td>Secrets</td><td>Credentials</td><td>Secret Manager</td><td>Secrets Manager</td><td>Key Vault</td></tr>
+              <tr><td>Pod Identity</td><td>Keyless Auth</td><td>Workload Identity</td><td>IRSA</td><td>Workload Identity</td></tr>
+              <tr><td>SSL</td><td>HTTPS</td><td>Google Managed</td><td>ACM</td><td>Let's Encrypt</td></tr>
+              <tr><td>CI/CD</td><td>Automation</td><td>GitHub Actions</td><td>GitHub Actions</td><td>Azure Pipelines</td></tr>
+              <tr><td>Monitoring</td><td>Observability</td><td>Cloud Monitoring</td><td>CloudWatch</td><td>Azure Monitor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="copyright">CloudDevOps — Deploy React + .NET to GCP, AWS, and Azure</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/navigation.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

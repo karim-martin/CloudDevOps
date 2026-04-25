@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Key Vault — Azure Deploy | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link active">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy (Azure)</h3><ul class="sidebar-links">
+        <li><a href=".././">Overview</a></li>
+        <li><a href=".././prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href=".././foundation/">Resource Group & VNet</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href=".././infrastructure/">Overview</a></li>
+        <li><a href=".././infrastructure/aks-cluster.html">AKS Cluster</a></li>
+        <li><a href=".././infrastructure/azure-sql.html">Azure SQL</a></li>
+        <li><a href=".././infrastructure/storage.html">Storage & ACR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href=".././deployment/">Overview</a></li>
+        <li><a href=".././deployment/containerize.html">Containerize Apps</a></li>
+        <li><a href=".././deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href=".././deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href=".././networking/">Overview</a></li>
+        <li><a href=".././networking/ingress.html">AGIC Ingress</a></li>
+        <li><a href=".././networking/ssl-https.html">SSL / HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href=".././security/">Overview</a></li>
+        <li><a href=".././security/workload-identity.html">Workload Identity</a></li>
+        <li><a href=".././security/key-vault.html" class="active">Key Vault</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href=".././operations/">Overview</a></li>
+        <li><a href=".././operations/ci-cd.html">CI/CD Pipeline</a></li>
+        <li><a href=".././operations/scaling.html">Scaling</a></li>
+        <li><a href=".././operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../../">Home</a></li><li><a href="../../">App Deploy</a></li>
+          <li><a href="../">Azure</a></li><li><a href="./">Security</a></li>
+          <li aria-current="page">Key Vault</li>
+        </ol></nav>
+        <header class="article-header">
+          <h1>Azure Key Vault</h1>
+          <p class="text-secondary text-lg">Central secrets store — connection strings, API keys, and certificates, retrieved at runtime.</p>
+        </header>
+        <div class="article-body">
+
+          <h2>Create Key Vault</h2>
+          <pre><code"># Create Key Vault
+az keyvault create \
+  --name myapp-kv \
+  --resource-group myapp-rg \
+  --location eastus \
+  --enable-rbac-authorization true
+
+# Store the database connection string
+az keyvault secret set \
+  --vault-name myapp-kv \
+  --name "ConnectionStrings--DefaultConnection" \
+  --value "Server=myapp-sql-server.database.windows.net;Database=myapp-db;..."</code></pre>
+
+          <h2>.NET 8 — Read from Key Vault</h2>
+          <pre><code"># Install NuGet packages
+dotnet add package Azure.Extensions.AspNetCore.Configuration.Secrets
+dotnet add package Azure.Identity</code></pre>
+          <pre><code">// Program.cs
+var keyVaultUri = new Uri(builder.Configuration["KeyVaultUri"]!);
+builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+// DefaultAzureCredential uses Workload Identity in AKS automatically</code></pre>
+
+          <h2>Key Vault CSI Driver (Mount as Files)</h2>
+          <pre><code"># SecretProviderClass — mount Key Vault secrets as files
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: myapp-secrets
+  namespace: myapp
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    clientID: "&lt;IDENTITY_CLIENT_ID&gt;"
+    keyvaultName: "myapp-kv"
+    objects: |
+      array:
+        - |
+          objectName: ConnectionStrings--DefaultConnection
+          objectType: secret
+    tenantId: "&lt;TENANT_ID&gt;"</code></pre>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">Use AddAzureKeyVault in .NET</div>
+            <p>For .NET apps, <code>AddAzureKeyVault()</code> is simpler than the CSI Driver — secrets appear as regular <code>IConfiguration</code> values with dashes replaced by double-dashes (<code>ConnectionStrings:DefaultConnection</code> → <code>ConnectionStrings--DefaultConnection</code> in Key Vault).</p>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./workload-identity.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Workload Identity</span></a>
+          <a href="../operations/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Operations</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

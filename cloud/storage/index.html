@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GCP Storage Services - Cloud Storage and Artifact Registry for container workloads.">
+  <title>Storage | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Cloud</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="../compute/">Overview</a></li>
+        <li><a href="../compute/gke.html">GKE</a></li>
+        <li><a href="../compute/cloud-run.html">Cloud Run</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="../databases/">Overview</a></li>
+        <li><a href="../databases/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../databases/firestore.html">Firestore</a></li>
+        <li><a href="../databases/memorystore.html">Memorystore</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./cloud-storage.html">Cloud Storage</a></li>
+        <li><a href="./artifact-registry.html">Artifact Registry</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/vpc.html">VPC</a></li>
+        <li><a href="../networking/load-balancing.html">Load Balancing</a></li>
+        <li><a href="../networking/cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="../networking/cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/iam.html">IAM</a></li>
+        <li><a href="../security/secret-manager.html">Secret Manager</a></li>
+        <li><a href="../security/cloud-armor.html">Cloud Armor</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="../devops/">Overview</a></li>
+        <li><a href="../devops/cloud-build.html">Cloud Build</a></li>
+        <li><a href="../devops/cloud-deploy.html">Cloud Deploy</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="../observability/">Overview</a></li>
+        <li><a href="../observability/cloud-monitoring.html">Cloud Monitoring</a></li>
+        <li><a href="../observability/cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">Cloud</a></li><li aria-current="page">Storage</li></ol></nav>
+        <header class="article-header"><h1>Storage Services</h1></header>
+
+        <div class="article-body">
+          <p>GCP storage services for container workloads - object storage for files and Artifact Registry for container images.</p>
+
+          <h2>Storage Options</h2>
+          <div class="card-grid">
+            <a href="./cloud-storage.html" class="card card-link">
+              <h3 class="card-title">Cloud Storage</h3>
+              <p class="card-description">Object storage for files, backups, static assets, and data lakes.</p>
+            </a>
+            <a href="./artifact-registry.html" class="card card-link">
+              <h3 class="card-title">Artifact Registry</h3>
+              <p class="card-description">Store and manage container images, packages, and build artifacts.</p>
+            </a>
+          </div>
+
+          <h2>Comparison</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Feature</th><th>Cloud Storage</th><th>Artifact Registry</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Purpose</strong></td><td>General object storage</td><td>Container/package registry</td></tr>
+                <tr><td><strong>Content</strong></td><td>Any files/objects</td><td>Docker images, npm, Maven, etc.</td></tr>
+                <tr><td><strong>Access</strong></td><td>gsutil, APIs, signed URLs</td><td>docker pull/push, package managers</td></tr>
+                <tr><td><strong>Versioning</strong></td><td>Object versioning</td><td>Image tags, digests</td></tr>
+                <tr><td><strong>Pricing</strong></td><td>Per GB stored + operations</td><td>Per GB stored</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Storage Classes (Cloud Storage)</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Class</th><th>Min Duration</th><th>Use Case</th><th>Cost</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Standard</strong></td><td>None</td><td>Frequently accessed data</td><td>$0.020/GB</td></tr>
+                <tr><td><strong>Nearline</strong></td><td>30 days</td><td>Monthly access</td><td>$0.010/GB</td></tr>
+                <tr><td><strong>Coldline</strong></td><td>90 days</td><td>Quarterly access</td><td>$0.004/GB</td></tr>
+                <tr><td><strong>Archive</strong></td><td>365 days</td><td>Yearly access</td><td>$0.0012/GB</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">GKE Image Pulling</div>
+            <p>GKE nodes automatically authenticate to Artifact Registry in the same project. No additional configuration needed for pulling images.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../databases/memorystore.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Memorystore</span></a>
+          <a href="./cloud-storage.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Cloud Storage</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

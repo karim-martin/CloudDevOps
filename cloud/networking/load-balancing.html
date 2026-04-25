@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Load Balancing for container workloads.">
+  <title>Load Balancing | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./vpc.html">VPC</a></li>
+        <li><a href="./load-balancing.html" class="active">Load Balancing</a></li>
+        <li><a href="./cloud-cdn.html">Cloud CDN</a></li>
+        <li><a href="./cloud-dns.html">Cloud DNS</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Load Balancing</h1></header>
+        <div class="article-body">
+          <p>GCP Load Balancing distributes traffic across instances globally or regionally.</p>
+
+          <h2>Types</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Type</th><th>Protocol</th><th>Scope</th><th>GKE Use</th></tr></thead>
+              <tbody>
+                <tr><td>Global HTTP(S)</td><td>HTTP/HTTPS</td><td>Global</td><td>Ingress</td></tr>
+                <tr><td>Regional External</td><td>TCP/UDP</td><td>Regional</td><td>LoadBalancer Service</td></tr>
+                <tr><td>Internal HTTP(S)</td><td>HTTP/HTTPS</td><td>Regional</td><td>Internal Ingress</td></tr>
+                <tr><td>Internal TCP/UDP</td><td>TCP/UDP</td><td>Regional</td><td>Internal Service</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>GKE Ingress</h2>
+          <pre><code class="language-yaml"># Creates Global HTTP(S) Load Balancer
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "my-ip"
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80</code></pre>
+
+          <h2>SSL Certificates</h2>
+          <pre><code class="language-bash"># Google-managed certificate
+gcloud compute ssl-certificates create my-cert \
+    --domains=app.example.com \
+    --global
+
+# List certificates
+gcloud compute ssl-certificates list</code></pre>
+
+          <h2>Health Checks</h2>
+          <pre><code class="language-bash"># Create health check
+gcloud compute health-checks create http my-check \
+    --port=8080 \
+    --request-path=/health
+
+# List health checks
+gcloud compute health-checks list</code></pre>
+
+          <h2>Common Commands</h2>
+          <pre><code class="language-bash"># List load balancer components
+gcloud compute forwarding-rules list
+gcloud compute backend-services list
+gcloud compute url-maps list
+
+# Check backend health
+gcloud compute backend-services get-health BACKEND --global</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

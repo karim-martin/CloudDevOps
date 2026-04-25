@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon S3 | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/eks.html">EKS</a></li><li><a href="../compute/fargate.html">Fargate / Lambda</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/rds.html">RDS</a></li><li><a href="../databases/dynamodb.html">DynamoDB</a></li><li><a href="../databases/elasticache.html">ElastiCache</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/s3.html">S3</a></li><li><a href="../storage/ecr.html">ECR</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vpc.html">VPC</a></li><li><a href="../networking/alb.html">ALB / NLB</a></li><li><a href="../networking/cloudfront.html">CloudFront</a></li><li><a href="../networking/route53.html">Route 53</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/iam.html">IAM</a></li><li><a href="../security/secrets-manager.html">Secrets Manager</a></li><li><a href="../security/waf.html">WAF &amp; Shield</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/codepipeline.html">CodePipeline</a></li><li><a href="../devops/codebuild.html">CodeBuild</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/cloudwatch.html">CloudWatch</a></li><li><a href="../observability/xray.html">X-Ray</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">AWS</a></li><li><a href="./">Storage</a></li><li aria-current="page">S3</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Amazon S3</h1>
+            <span class="provider-badge provider-badge-aws">AWS</span>
+          </div>
+          <p class="text-secondary text-lg">Infinitely scalable object storage — the foundation of cloud storage.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">S3 is Like Google Drive — But for Your App</div>
+            <p>S3 stores files as objects in buckets. An object is a file + metadata. A bucket is a container for objects. There's no folder structure (just key prefixes like <code>images/2024/photo.jpg</code>). S3 is designed for <strong>11 nines of durability</strong> (99.999999999%) — if you store 10 million files, you'd expect to lose one every 10,000 years.</p>
+          </div>
+
+          <h2>Common Use Cases</h2>
+          <div class="feature-grid">
+            <div class="feature-item"><div class="feature-icon">🖼️</div><div class="feature-text"><h4>Static Asset Hosting</h4><p>Host your React/Vue app's built files on S3 + CloudFront. Scale to millions of users with no servers.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">📤</div><div class="feature-text"><h4>User File Uploads</h4><p>Generate pre-signed URLs so users upload directly to S3 from their browser — bypassing your servers entirely.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">💾</div><div class="feature-text"><h4>Database Backups</h4><p>Export RDS snapshots to S3. Store application logs. Archive data to S3 Glacier for pennies per GB/month.</p></div></div>
+            <div class="feature-item"><div class="feature-icon">🔄</div><div class="feature-text"><h4>Data Lake / ML</h4><p>Store raw data in S3, process with Athena (SQL) or SageMaker. The foundation of every AWS data platform.</p></div></div>
+          </div>
+
+          <h2>CLI Operations</h2>
+          <pre><code># Create a bucket
+aws s3 mb s3://my-app-uploads --region us-east-1
+
+# Upload a file
+aws s3 cp ./photo.jpg s3://my-app-uploads/photos/photo.jpg
+
+# Sync a local folder to S3 (deploy React build)
+aws s3 sync ./build/ s3://my-app-static/ --delete
+
+# Generate a pre-signed URL (expires in 1 hour)
+aws s3 presign s3://my-app-uploads/photos/photo.jpg --expires-in 3600
+
+# Enable versioning
+aws s3api put-bucket-versioning \
+  --bucket my-app-uploads \
+  --versioning-configuration Status=Enabled</code></pre>
+
+          <h2>Storage Classes</h2>
+          <div class="table-wrapper"><table class="cheatsheet-table">
+            <thead><tr><th>Class</th><th>Use Case</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td>S3 Standard</td><td>Frequently accessed data</td><td>$0.023/GB/month</td></tr>
+              <tr><td>S3 Standard-IA</td><td>Infrequent access, quick retrieval</td><td>$0.0125/GB/month</td></tr>
+              <tr><td>S3 Glacier Instant</td><td>Archive, millisecond retrieval</td><td>$0.004/GB/month</td></tr>
+              <tr><td>S3 Glacier Deep Archive</td><td>Long-term archive, 12hr retrieval</td><td>$0.00099/GB/month</td></tr>
+              <tr><td>S3 Intelligent-Tiering</td><td>Unknown or changing access pattern</td><td>Auto-optimize</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <nav class="page-navigation">
+          <a href="./" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">AWS Storage</span></a>
+          <a href="./ecr.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">ECR</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

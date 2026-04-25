@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Configure Cloud Monitoring dashboards, alerts, and logging for GKE applications.">
+  <title>Monitoring | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./ci-cd.html">CI/CD</a></li>
+        <li><a href="./scaling.html">Scaling</a></li>
+        <li><a href="./monitoring.html" class="active">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Operations</a></li><li aria-current="page">Monitoring</li></ol></nav>
+        <header class="article-header"><h1>Monitoring</h1></header>
+
+        <div class="article-body">
+          <p>Set up Cloud Monitoring dashboards, alerting policies, and log queries to monitor your GKE application health and performance.</p>
+
+          <h2 id="gke-monitoring">GKE Built-in Monitoring</h2>
+          <p>GKE automatically sends metrics to Cloud Monitoring when enabled.</p>
+          <pre><code class="language-bash"># Verify monitoring is enabled on cluster
+gcloud container clusters describe app-cluster \
+    --region=us-central1 \
+    --format='yaml(loggingService,monitoringService)'
+
+# Should show:
+# loggingService: logging.googleapis.com/kubernetes
+# monitoringService: monitoring.googleapis.com/kubernetes
+
+# Enable if not already enabled
+gcloud container clusters update app-cluster \
+    --region=us-central1 \
+    --enable-stackdriver-kubernetes</code></pre>
+
+          <h2 id="key-metrics">Key Metrics to Monitor</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Category</th><th>Metric</th><th>Threshold</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Pod Health</strong></td><td>Restart count</td><td>&gt; 3 in 10 minutes</td></tr>
+                <tr><td><strong>Pod Health</strong></td><td>Ready pods vs desired</td><td>&lt; 100%</td></tr>
+                <tr><td><strong>Resources</strong></td><td>CPU utilization</td><td>&gt; 80%</td></tr>
+                <tr><td><strong>Resources</strong></td><td>Memory utilization</td><td>&gt; 85%</td></tr>
+                <tr><td><strong>HTTP</strong></td><td>Error rate (5xx)</td><td>&gt; 1%</td></tr>
+                <tr><td><strong>HTTP</strong></td><td>Latency (p99)</td><td>&gt; 2 seconds</td></tr>
+                <tr><td><strong>Database</strong></td><td>Connection count</td><td>&gt; 80% of max</td></tr>
+                <tr><td><strong>Database</strong></td><td>Query latency</td><td>&gt; 500ms</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="mql-queries">Monitoring Query Language (MQL)</h2>
+          <pre><code class="language-bash"># Pod CPU usage by container
+fetch k8s_container
+| metric 'kubernetes.io/container/cpu/core_usage_time'
+| filter resource.namespace_name == 'app'
+| align rate(1m)
+| group_by [resource.pod_name, resource.container_name], [value: mean(value)]
+
+# Pod memory usage
+fetch k8s_container
+| metric 'kubernetes.io/container/memory/used_bytes'
+| filter resource.namespace_name == 'app'
+| group_by [resource.pod_name], [value: mean(value)]
+
+# Pod restart count
+fetch k8s_container
+| metric 'kubernetes.io/container/restart_count'
+| filter resource.namespace_name == 'app'
+| group_by [resource.pod_name], [value: max(value)]
+
+# HTTP request count by response code
+fetch https_lb_rule
+| metric 'loadbalancing.googleapis.com/https/request_count'
+| group_by [resource.url_map_name, metric.response_code_class], [value: sum(value)]
+
+# HTTP latency percentiles
+fetch https_lb_rule
+| metric 'loadbalancing.googleapis.com/https/total_latencies'
+| group_by [resource.url_map_name], [value: percentile(value, 99)]</code></pre>
+
+          <h2 id="create-dashboard">Create Monitoring Dashboard</h2>
+          <pre><code class="language-bash"># Create dashboard via gcloud (JSON definition)
+cat > dashboard.json << 'EOF'
+{
+  "displayName": "App Dashboard",
+  "gridLayout": {
+    "columns": "2",
+    "widgets": [
+      {
+        "title": "Pod CPU Usage",
+        "xyChart": {
+          "dataSets": [{
+            "timeSeriesQuery": {
+              "timeSeriesFilter": {
+                "filter": "resource.type=\"k8s_container\" AND resource.labels.namespace_name=\"app\" AND metric.type=\"kubernetes.io/container/cpu/core_usage_time\"",
+                "aggregation": {
+                  "alignmentPeriod": "60s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              }
+            }
+          }]
+        }
+      },
+      {
+        "title": "Pod Memory Usage",
+        "xyChart": {
+          "dataSets": [{
+            "timeSeriesQuery": {
+              "timeSeriesFilter": {
+                "filter": "resource.type=\"k8s_container\" AND resource.labels.namespace_name=\"app\" AND metric.type=\"kubernetes.io/container/memory/used_bytes\"",
+                "aggregation": {
+                  "alignmentPeriod": "60s",
+                  "perSeriesAligner": "ALIGN_MEAN"
+                }
+              }
+            }
+          }]
+        }
+      }
+    ]
+  }
+}
+EOF
+
+gcloud monitoring dashboards create --config-from-file=dashboard.json</code></pre>
+
+          <h2 id="alerting">Create Alerting Policies</h2>
+
+          <h3>High CPU Alert</h3>
+          <pre><code class="language-bash"># Create alert for high CPU usage
+gcloud alpha monitoring policies create \
+    --display-name="High Pod CPU Usage" \
+    --condition-display-name="CPU > 80%" \
+    --condition-filter='resource.type="k8s_container" AND resource.labels.namespace_name="app" AND metric.type="kubernetes.io/container/cpu/limit_utilization"' \
+    --condition-threshold-value=0.8 \
+    --condition-threshold-comparison=COMPARISON_GT \
+    --condition-duration="300s" \
+    --notification-channels="CHANNEL_ID" \
+    --documentation="CPU usage exceeded 80% for 5 minutes in app namespace"</code></pre>
+
+          <h3>Pod Restart Alert</h3>
+          <pre><code class="language-bash"># Create alert for pod restarts
+gcloud alpha monitoring policies create \
+    --display-name="Pod Restarting" \
+    --condition-display-name="Restart count increasing" \
+    --condition-filter='resource.type="k8s_container" AND resource.labels.namespace_name="app" AND metric.type="kubernetes.io/container/restart_count"' \
+    --condition-threshold-value=1 \
+    --condition-threshold-comparison=COMPARISON_GT \
+    --condition-duration="60s" \
+    --notification-channels="CHANNEL_ID"</code></pre>
+
+          <h3>Create Notification Channel</h3>
+          <pre><code class="language-bash"># Create email notification channel
+gcloud alpha monitoring channels create \
+    --display-name="Ops Team Email" \
+    --type=email \
+    --channel-labels=email_address=ops@example.com
+
+# Create Slack notification channel (requires webhook)
+gcloud alpha monitoring channels create \
+    --display-name="Slack Alerts" \
+    --type=slack \
+    --channel-labels=channel_name=#alerts \
+    --channel-labels=auth_token=xoxb-xxx
+
+# List notification channels
+gcloud alpha monitoring channels list</code></pre>
+
+          <h2 id="log-queries">Cloud Logging Queries</h2>
+          <pre><code class="language-bash"># View application logs
+gcloud logging read 'resource.type="k8s_container" AND resource.labels.namespace_name="app" AND resource.labels.container_name="api"' \
+    --limit=50 \
+    --format="table(timestamp,jsonPayload.message)"
+
+# View error logs only
+gcloud logging read 'resource.type="k8s_container" AND resource.labels.namespace_name="app" AND severity>=ERROR' \
+    --limit=50
+
+# View GKE node logs
+gcloud logging read 'resource.type="gce_instance" AND logName:"kubelet"' \
+    --limit=50
+
+# View load balancer access logs
+gcloud logging read 'resource.type="http_load_balancer"' \
+    --limit=50 \
+    --format="table(timestamp,httpRequest.requestUrl,httpRequest.status)"</code></pre>
+
+          <h3>Useful Log Filters</h3>
+          <pre><code class="language-bash"># Application errors
+resource.type="k8s_container"
+resource.labels.namespace_name="app"
+severity>=ERROR
+
+# Slow requests (from app logs, assumes structured logging)
+resource.type="k8s_container"
+resource.labels.namespace_name="app"
+jsonPayload.duration_ms > 1000
+
+# 5xx errors from load balancer
+resource.type="http_load_balancer"
+httpRequest.status >= 500
+
+# Pod scheduling issues
+resource.type="k8s_cluster"
+protoPayload.methodName="io.k8s.core.v1.pods.create"
+severity>=WARNING
+
+# Container crash logs
+resource.type="k8s_container"
+resource.labels.namespace_name="app"
+textPayload:"OOMKilled" OR textPayload:"Error" OR textPayload:"panic"</code></pre>
+
+          <h2 id="log-based-metrics">Log-Based Metrics</h2>
+          <pre><code class="language-bash"># Create metric from log entries
+gcloud logging metrics create error_count \
+    --description="Count of error log entries" \
+    --log-filter='resource.type="k8s_container" AND resource.labels.namespace_name="app" AND severity>=ERROR'
+
+# Create metric with labels
+gcloud logging metrics create api_errors \
+    --description="API errors by endpoint" \
+    --log-filter='resource.type="k8s_container" AND resource.labels.namespace_name="app" AND jsonPayload.level="error"' \
+    --label-extractors='endpoint=EXTRACT(jsonPayload.endpoint)'
+
+# Use in alert
+# The metric will appear as: logging.googleapis.com/user/error_count</code></pre>
+
+          <h2 id="uptime-checks">Uptime Checks</h2>
+          <pre><code class="language-bash"># Create uptime check for your application
+gcloud monitoring uptime-checks create http \
+    --display-name="App Health Check" \
+    --uri="https://app.example.com/health" \
+    --check-interval="60s" \
+    --timeout="10s" \
+    --content-matchers="healthy"
+
+# List uptime checks
+gcloud monitoring uptime-checks list
+
+# Create alert for uptime check failure
+gcloud alpha monitoring policies create \
+    --display-name="App Down" \
+    --condition-display-name="Uptime check failing" \
+    --condition-filter='resource.type="uptime_url" AND metric.type="monitoring.googleapis.com/uptime_check/check_passed"' \
+    --condition-threshold-value=1 \
+    --condition-threshold-comparison=COMPARISON_LT \
+    --condition-duration="60s" \
+    --notification-channels="CHANNEL_ID"</code></pre>
+
+          <h2 id="kubectl-debugging">kubectl Debugging Commands</h2>
+          <pre><code class="language-bash"># View pod logs
+kubectl logs -l app=dotnet-api -n app --tail=100
+
+# Stream logs from all pods
+kubectl logs -l app=dotnet-api -n app -f --tail=50
+
+# View previous container logs (after crash)
+kubectl logs -l app=dotnet-api -n app --previous
+
+# View events
+kubectl get events -n app --sort-by='.lastTimestamp' | tail -30
+
+# Describe pod for detailed info
+kubectl describe pod -l app=dotnet-api -n app
+
+# View resource usage
+kubectl top pods -n app
+kubectl top nodes
+
+# Check HPA status
+kubectl get hpa -n app
+
+# View cluster-level events
+kubectl get events -A --sort-by='.lastTimestamp' | tail -30</code></pre>
+
+          <h2 id="structured-logging">.NET Structured Logging</h2>
+          <p>Configure .NET for structured JSON logging for better querying.</p>
+          <pre><code class="language-csharp">// Program.cs
+using Microsoft.Extensions.Logging;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure structured logging
+builder.Logging.ClearProviders();
+builder.Logging.AddJsonConsole(options =>
+{
+    options.JsonWriterOptions = new JsonWriterOptions
+    {
+        Indented = false  // Single line for log aggregation
+    };
+});
+
+// In your code, use structured logging
+public class OrderController : ControllerBase
+{
+    private readonly ILogger&lt;OrderController&gt; _logger;
+
+    [HttpPost]
+    public async Task&lt;IActionResult&gt; CreateOrder(Order order)
+    {
+        _logger.LogInformation(
+            "Order created: {OrderId} for {CustomerId} with {ItemCount} items",
+            order.Id, order.CustomerId, order.Items.Count);
+
+        // ...
+    }
+}</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Structured Logging</div>
+            <p>Use structured logging with named parameters (not string interpolation). This enables powerful log queries like <code>jsonPayload.OrderId="12345"</code> in Cloud Logging.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Log Retention</div>
+            <p>Default log retention is 30 days. Configure longer retention or export to Cloud Storage/BigQuery for compliance or analysis needs.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Monitoring Costs</div>
+            <p>Cloud Monitoring and Logging have free tiers. Monitor your usage to avoid unexpected costs. Consider sampling high-volume logs or reducing retention for non-critical logs.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./scaling.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Scaling</span></a>
+          <a href="../../" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Home</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Compute | CloudDevOps</title>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../../" class="logo"><img src="../../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../../devops/" class="nav-link">DevOps</a>
+        <a href="../../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Azure Cloud</h3><ul class="sidebar-links"><li><a href="../">Overview</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links"><li><a href="../compute/">Overview</a></li><li><a href="../compute/aks.html">AKS</a></li><li><a href="../compute/container-apps.html">Container Apps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links"><li><a href="../databases/">Overview</a></li><li><a href="../databases/azure-sql.html">Azure SQL</a></li><li><a href="../databases/cosmos-db.html">Cosmos DB</a></li><li><a href="../databases/azure-cache.html">Azure Cache for Redis</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links"><li><a href="../storage/">Overview</a></li><li><a href="../storage/blob-storage.html">Blob Storage</a></li><li><a href="../storage/acr.html">Container Registry</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links"><li><a href="../networking/">Overview</a></li><li><a href="../networking/vnet.html">VNet</a></li><li><a href="../networking/load-balancer.html">Load Balancer</a></li><li><a href="../networking/cdn.html">CDN / Front Door</a></li><li><a href="../networking/dns.html">Azure DNS</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links"><li><a href="../security/">Overview</a></li><li><a href="../security/entra-id.html">Entra ID</a></li><li><a href="../security/key-vault.html">Key Vault</a></li><li><a href="../security/ddos-protection.html">DDoS Protection</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links"><li><a href="../devops/">Overview</a></li><li><a href="../devops/azure-pipelines.html">Azure Pipelines</a></li><li><a href="../devops/azure-devops.html">Azure DevOps</a></li></ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links"><li><a href="../observability/">Overview</a></li><li><a href="../observability/azure-monitor.html">Azure Monitor</a></li><li><a href="../observability/log-analytics.html">Log Analytics</a></li></ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../../">Home</a></li><li><a href="../../">Cloud</a></li><li><a href="../">Azure</a></li><li aria-current="page">Compute</li></ol></nav>
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+            <h1 style="margin:0;">Azure Compute</h1>
+            <span class="provider-badge provider-badge-azure">Azure</span>
+          </div>
+          <p class="text-secondary text-lg">AKS and Container Apps — run containerized workloads on Microsoft Azure.</p>
+        </header>
+        <div class="article-body">
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">Azure Compute = Where Your Code Runs on Microsoft's Infrastructure</div>
+            <p>Azure offers multiple ways to run containers: <strong>AKS</strong> (Azure Kubernetes Service) for complex microservices, <strong>Container Apps</strong> for serverless containers with KEDA autoscaling, and <strong>App Service</strong> for traditional web apps. Most cloud-native teams use AKS for production workloads and Container Apps for lightweight, event-driven services.</p>
+          </div>
+
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">Azure Container Compute Options</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
+              <div class="arch-box arch-box-azure" style="text-align:center;border-width:3px;"><div class="arch-box-title">⚙️ AKS</div><div class="arch-box-subtitle">Full Kubernetes. Best for complex microservices.</div></div>
+              <div class="arch-box arch-box-azure" style="text-align:center;"><div class="arch-box-title">📦 Container Apps</div><div class="arch-box-subtitle">Serverless containers. KEDA scaling.</div></div>
+              <div class="arch-box arch-box-azure" style="text-align:center;"><div class="arch-box-title">🌐 App Service</div><div class="arch-box-subtitle">PaaS for web apps. Simpler than K8s.</div></div>
+              <div class="arch-box arch-box-azure" style="text-align:center;"><div class="arch-box-title">⚡ Azure Functions</div><div class="arch-box-subtitle">Event-driven serverless functions.</div></div>
+            </div>
+          </div>
+          <div class="card-grid">
+            <a href="./aks.html" class="card card-link"><h3 class="card-title">AKS</h3><p class="card-description">Azure Kubernetes Service — managed Kubernetes with Entra ID integration, Key Vault secrets, and Azure Monitor.</p></a>
+            <a href="./container-apps.html" class="card card-link"><h3 class="card-title">Container Apps</h3><p class="card-description">Serverless containers with KEDA autoscaling. Scale to zero, run microservices without managing nodes or Kubernetes.</p></a>
+          </div>
+        </div>
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Azure Overview</span></a>
+          <a href="./aks.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AKS</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../../assets/js/navigation.js"></script>
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

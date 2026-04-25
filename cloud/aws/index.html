@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AWS Cloud Services — EKS, Lambda, RDS, S3, IAM, CloudWatch and more on Amazon Web Services.">
+  <title>Cloud (AWS) | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a>
+      <nav class="main-nav">
+        <a href="../../devops/" class="nav-link">DevOps</a>
+        <a href="../../cloud/" class="nav-link active">Cloud</a>
+        <a href="../../app-deploy/" class="nav-link">App Deploy</a>
+      </nav>
+      <div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">AWS Cloud</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Compute</h3><ul class="sidebar-links">
+        <li><a href="./compute/">Overview</a></li>
+        <li><a href="./compute/eks.html">EKS</a></li>
+        <li><a href="./compute/fargate.html">Fargate / Lambda</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Databases</h3><ul class="sidebar-links">
+        <li><a href="./databases/">Overview</a></li>
+        <li><a href="./databases/rds.html">RDS</a></li>
+        <li><a href="./databases/dynamodb.html">DynamoDB</a></li>
+        <li><a href="./databases/elasticache.html">ElastiCache</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Storage</h3><ul class="sidebar-links">
+        <li><a href="./storage/">Overview</a></li>
+        <li><a href="./storage/s3.html">S3</a></li>
+        <li><a href="./storage/ecr.html">ECR</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="./networking/">Overview</a></li>
+        <li><a href="./networking/vpc.html">VPC</a></li>
+        <li><a href="./networking/alb.html">ALB / NLB</a></li>
+        <li><a href="./networking/cloudfront.html">CloudFront</a></li>
+        <li><a href="./networking/route53.html">Route 53</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="./security/">Overview</a></li>
+        <li><a href="./security/iam.html">IAM</a></li>
+        <li><a href="./security/secrets-manager.html">Secrets Manager</a></li>
+        <li><a href="./security/waf.html">WAF &amp; Shield</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">DevOps</h3><ul class="sidebar-links">
+        <li><a href="./devops/">Overview</a></li>
+        <li><a href="./devops/codepipeline.html">CodePipeline</a></li>
+        <li><a href="./devops/codebuild.html">CodeBuild</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="./observability/">Overview</a></li>
+        <li><a href="./observability/cloudwatch.html">CloudWatch</a></li>
+        <li><a href="./observability/xray.html">X-Ray</a></li>
+      </ul></div>
+    </nav></aside>
+
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../">Cloud</a></li>
+          <li aria-current="page">AWS</li>
+        </ol></nav>
+
+        <header class="article-header">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+            <h1 style="margin:0;">AWS Cloud Services</h1>
+            <span class="provider-badge provider-badge-aws">Amazon Web Services</span>
+          </div>
+          <p class="text-secondary text-lg">The world's most widely used cloud platform with the broadest service selection.</p>
+        </header>
+
+        <div class="article-body">
+
+          <div class="callout-beginner">
+            <div class="callout-beginner-title">New to AWS?</div>
+            <p>Amazon Web Services (AWS) launched in 2006 and is the <strong>largest cloud provider by market share</strong>. It offers 200+ services covering everything from virtual machines to AI. AWS is widely used in startups and enterprises alike. New accounts get a <strong>12-month free tier</strong> with generous limits for core services like EC2, S3, and RDS.</p>
+          </div>
+
+          <!-- AWS Global Infrastructure Diagram -->
+          <div class="arch-diagram">
+            <div class="arch-diagram-title">AWS Global Infrastructure</div>
+            <div class="arch-flow">
+              <div class="arch-box arch-box-user">
+                <div class="arch-box-title">👤 User / Browser</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws">
+                <div class="arch-box-title">🌐 Route 53 + CloudFront</div>
+                <div class="arch-box-subtitle">DNS routing + global CDN</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-box arch-box-aws">
+                <div class="arch-box-title">⚖️ Application Load Balancer</div>
+                <div class="arch-box-subtitle">HTTP/HTTPS routing + SSL termination</div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-cluster" style="width:100%;">
+                <span class="arch-cluster-label">AWS VPC — us-east-1 (Private Subnets)</span>
+                <div class="arch-row" style="margin-top:0.5rem;">
+                  <div class="arch-box arch-box-aws">
+                    <div class="arch-box-title">⚙️ EKS Cluster</div>
+                    <div class="arch-box-subtitle">Managed Kubernetes</div>
+                  </div>
+                  <div class="arch-arrow-right">→</div>
+                  <div class="arch-box arch-box-aws">
+                    <div class="arch-box-title">📦 ECR</div>
+                    <div class="arch-box-subtitle">Container Images</div>
+                  </div>
+                </div>
+              </div>
+              <div class="arch-arrow-down"></div>
+              <div class="arch-row">
+                <div class="arch-box arch-box-aws" style="min-width:130px;">
+                  <div class="arch-box-title">🗄️ RDS</div>
+                  <div class="arch-box-subtitle">MySQL / PostgreSQL</div>
+                </div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:130px;">
+                  <div class="arch-box-title">📦 S3</div>
+                  <div class="arch-box-subtitle">Object Storage</div>
+                </div>
+                <div style="width:2rem;"></div>
+                <div class="arch-box arch-box-aws" style="min-width:130px;">
+                  <div class="arch-box-title">🔑 Secrets Manager</div>
+                  <div class="arch-box-subtitle">Credentials</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Compute</h2>
+          <p>Run containers, functions, and virtual machines on AWS global infrastructure.</p>
+          <div class="card-grid">
+            <a href="./compute/eks.html" class="card card-link">
+              <h3 class="card-title">EKS</h3>
+              <p class="card-description">Elastic Kubernetes Service — managed Kubernetes. Run Kubernetes workloads without managing the control plane.</p>
+            </a>
+            <a href="./compute/fargate.html" class="card card-link">
+              <h3 class="card-title">Fargate &amp; Lambda</h3>
+              <p class="card-description">Serverless compute. Fargate runs containers without managing EC2 nodes. Lambda runs code in response to events.</p>
+            </a>
+          </div>
+
+          <h2>Databases</h2>
+          <p>Managed database services for every data model — relational, NoSQL, and in-memory caching.</p>
+          <div class="card-grid">
+            <a href="./databases/rds.html" class="card card-link">
+              <h3 class="card-title">RDS</h3>
+              <p class="card-description">Relational Database Service — managed MySQL, PostgreSQL, MariaDB, Oracle, and SQL Server with Multi-AZ failover.</p>
+            </a>
+            <a href="./databases/dynamodb.html" class="card card-link">
+              <h3 class="card-title">DynamoDB</h3>
+              <p class="card-description">Serverless NoSQL key-value and document database. Single-digit millisecond latency at any scale.</p>
+            </a>
+            <a href="./databases/elasticache.html" class="card card-link">
+              <h3 class="card-title">ElastiCache</h3>
+              <p class="card-description">Managed Redis and Memcached. Cache database query results, session data, and hot objects for speed.</p>
+            </a>
+          </div>
+
+          <h2>Storage</h2>
+          <p>Industry-standard object storage and container registries.</p>
+          <div class="card-grid">
+            <a href="./storage/s3.html" class="card card-link">
+              <h3 class="card-title">S3</h3>
+              <p class="card-description">Simple Storage Service — store any file, any size, with 99.999999999% durability. The backbone of cloud storage.</p>
+            </a>
+            <a href="./storage/ecr.html" class="card card-link">
+              <h3 class="card-title">ECR</h3>
+              <p class="card-description">Elastic Container Registry — private Docker registry deeply integrated with EKS and Fargate.</p>
+            </a>
+          </div>
+
+          <h2>Networking</h2>
+          <p>Secure, scalable networking for cloud applications.</p>
+          <div class="card-grid">
+            <a href="./networking/vpc.html" class="card card-link">
+              <h3 class="card-title">VPC</h3>
+              <p class="card-description">Virtual Private Cloud — your isolated network inside AWS. Control subnets, routing, security groups, and internet access.</p>
+            </a>
+            <a href="./networking/alb.html" class="card card-link">
+              <h3 class="card-title">ALB / NLB</h3>
+              <p class="card-description">Application Load Balancer (HTTP/HTTPS routing) and Network Load Balancer (ultra-low latency TCP/UDP). Used with EKS Ingress.</p>
+            </a>
+            <a href="./networking/cloudfront.html" class="card card-link">
+              <h3 class="card-title">CloudFront</h3>
+              <p class="card-description">AWS CDN with 600+ edge locations worldwide. Serve static assets, APIs, and video from the nearest point to your user.</p>
+            </a>
+            <a href="./networking/route53.html" class="card card-link">
+              <h3 class="card-title">Route 53</h3>
+              <p class="card-description">Highly available DNS service. Register domains, route traffic, and set up health-check-based failover.</p>
+            </a>
+          </div>
+
+          <h2>Security</h2>
+          <p>Identity management, secrets storage, and threat protection.</p>
+          <div class="card-grid">
+            <a href="./security/iam.html" class="card card-link">
+              <h3 class="card-title">IAM</h3>
+              <p class="card-description">Identity and Access Management — control who and what can access AWS resources. Includes IRSA for Kubernetes pod-level auth.</p>
+            </a>
+            <a href="./security/secrets-manager.html" class="card card-link">
+              <h3 class="card-title">Secrets Manager</h3>
+              <p class="card-description">Store and automatically rotate database credentials, API keys, and certificates. Apps retrieve secrets at runtime.</p>
+            </a>
+            <a href="./security/waf.html" class="card card-link">
+              <h3 class="card-title">WAF &amp; Shield</h3>
+              <p class="card-description">Web Application Firewall blocks SQL injection, XSS, and bot traffic. Shield provides DDoS protection at no extra cost.</p>
+            </a>
+          </div>
+
+          <h2>DevOps</h2>
+          <p>AWS developer tools for continuous integration and delivery.</p>
+          <div class="card-grid">
+            <a href="./devops/codepipeline.html" class="card card-link">
+              <h3 class="card-title">CodePipeline</h3>
+              <p class="card-description">Visual CI/CD pipeline orchestration. Connect source (GitHub), build (CodeBuild), test, and deploy stages.</p>
+            </a>
+            <a href="./devops/codebuild.html" class="card card-link">
+              <h3 class="card-title">CodeBuild</h3>
+              <p class="card-description">Managed build service — compile code, run tests, build Docker images, and push to ECR without managing servers.</p>
+            </a>
+          </div>
+
+          <h2>Observability</h2>
+          <p>Monitor and troubleshoot your AWS workloads.</p>
+          <div class="card-grid">
+            <a href="./observability/cloudwatch.html" class="card card-link">
+              <h3 class="card-title">CloudWatch</h3>
+              <p class="card-description">Unified observability — collect metrics, logs, and traces. Set alarms, build dashboards, and auto-scale based on metrics.</p>
+            </a>
+            <a href="./observability/xray.html" class="card card-link">
+              <h3 class="card-title">X-Ray</h3>
+              <p class="card-description">Distributed tracing service. Visualize request flows across microservices to find bottlenecks and errors.</p>
+            </a>
+          </div>
+
+          <!-- AWS vs GCP comparison callout -->
+          <div class="callout callout-info">
+            <div class="callout-title">Comparing with GCP?</div>
+            <p>See the <a href="../">provider comparison table</a> for a side-by-side mapping of GCP, AWS, and Azure services. The concepts are identical — only the names differ.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../" class="nav-prev"><span class="nav-label">Back</span><span class="nav-title">Cloud Overview</span></a>
+          <a href="./compute/" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">AWS Compute</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

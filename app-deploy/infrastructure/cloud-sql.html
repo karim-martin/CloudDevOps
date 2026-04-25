@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud SQL setup - MySQL or MSSQL database with private IP for .NET applications.">
+  <title>Cloud SQL | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="./cloud-sql.html" class="active">Cloud SQL</a></li>
+        <li><a href="./storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="../operations/">Overview</a></li>
+        <li><a href="../operations/ci-cd.html">CI/CD</a></li>
+        <li><a href="../operations/scaling.html">Scaling</a></li>
+        <li><a href="../operations/monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li><a href="./">Infrastructure</a></li><li aria-current="page">Cloud SQL</li></ol></nav>
+        <header class="article-header"><h1>Cloud SQL Database</h1></header>
+
+        <div class="article-body">
+          <p>Set up a managed Cloud SQL database with private IP connectivity for your .NET 8 application.</p>
+
+          <h2 id="database-choice">Database Choice</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Database</th><th>Best For</th><th>.NET Package</th></tr></thead>
+              <tbody>
+                <tr><td><strong>MySQL 8.0</strong></td><td>Open source, cost-effective</td><td>MySql.EntityFrameworkCore</td></tr>
+                <tr><td><strong>SQL Server</strong></td><td>Enterprise .NET apps, familiar to .NET devs</td><td>Microsoft.EntityFrameworkCore.SqlServer</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="mysql-setup">Option 1: MySQL Setup</h2>
+          <pre><code class="language-bash"># Create MySQL instance with private IP
+gcloud sql instances create app-db-mysql \
+    --database-version=MYSQL_8_0 \
+    --tier=db-custom-2-4096 \
+    --region=$REGION \
+    --network=projects/$PROJECT_ID/global/networks/app-vpc \
+    --no-assign-ip \
+    --storage-size=20GB \
+    --storage-auto-increase \
+    --backup-start-time=02:00 \
+    --maintenance-window-day=SUN \
+    --maintenance-window-hour=03
+
+# This takes 10-15 minutes...</code></pre>
+
+          <h3>Create Database and User</h3>
+          <pre><code class="language-bash"># Create database
+gcloud sql databases create appdb --instance=app-db-mysql
+
+# Generate secure password
+export DB_PASSWORD=$(openssl rand -base64 24)
+echo "Save this password: $DB_PASSWORD"
+
+# Create user
+gcloud sql users create appuser \
+    --instance=app-db-mysql \
+    --password=$DB_PASSWORD
+
+# Get private IP
+export DB_HOST=$(gcloud sql instances describe app-db-mysql \
+    --format="get(ipAddresses[0].ipAddress)")
+echo "Database IP: $DB_HOST"</code></pre>
+
+          <h3>MySQL Connection String for .NET</h3>
+          <pre><code class="language-csharp">// appsettings.json format
+"ConnectionStrings": {
+    "DefaultConnection": "Server=DB_HOST;Database=appdb;User=appuser;Password=DB_PASSWORD;SslMode=Required;"
+}
+
+// Environment variable format
+Server=${DB_HOST};Database=appdb;User=appuser;Password=${DB_PASSWORD};SslMode=Required;</code></pre>
+
+          <h2 id="sqlserver-setup">Option 2: SQL Server Setup</h2>
+          <pre><code class="language-bash"># Create SQL Server instance with private IP
+gcloud sql instances create app-db-sqlserver \
+    --database-version=SQLSERVER_2019_STANDARD \
+    --tier=db-custom-2-4096 \
+    --region=$REGION \
+    --network=projects/$PROJECT_ID/global/networks/app-vpc \
+    --no-assign-ip \
+    --storage-size=20GB \
+    --storage-auto-increase \
+    --root-password=$(openssl rand -base64 24)
+
+# This takes 10-15 minutes...</code></pre>
+
+          <h3>Create Database and User</h3>
+          <pre><code class="language-bash"># Create database
+gcloud sql databases create appdb --instance=app-db-sqlserver
+
+# Generate secure password
+export DB_PASSWORD=$(openssl rand -base64 24)
+echo "Save this password: $DB_PASSWORD"
+
+# Create user (SQL Server uses different syntax)
+gcloud sql users create appuser \
+    --instance=app-db-sqlserver \
+    --password=$DB_PASSWORD
+
+# Get private IP
+export DB_HOST=$(gcloud sql instances describe app-db-sqlserver \
+    --format="get(ipAddresses[0].ipAddress)")
+echo "Database IP: $DB_HOST"</code></pre>
+
+          <h3>SQL Server Connection String for .NET</h3>
+          <pre><code class="language-csharp">// appsettings.json format
+"ConnectionStrings": {
+    "DefaultConnection": "Server=DB_HOST;Database=appdb;User Id=appuser;Password=DB_PASSWORD;TrustServerCertificate=True;"
+}
+
+// Environment variable format
+Server=${DB_HOST};Database=appdb;User Id=appuser;Password=${DB_PASSWORD};TrustServerCertificate=True;</code></pre>
+
+          <h2 id="kubernetes-secret">Create Kubernetes Secret</h2>
+          <p>Store the connection string as a Kubernetes secret:</p>
+          <pre><code class="language-bash"># For MySQL
+kubectl create secret generic db-credentials \
+    --namespace=app \
+    --from-literal=connection-string="Server=${DB_HOST};Database=appdb;User=appuser;Password=${DB_PASSWORD};SslMode=Required;"
+
+# For SQL Server
+kubectl create secret generic db-credentials \
+    --namespace=app \
+    --from-literal=connection-string="Server=${DB_HOST};Database=appdb;User Id=appuser;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+
+# Verify secret created
+kubectl get secret db-credentials -n app</code></pre>
+
+          <h3>Alternative: YAML Secret Definition</h3>
+          <pre><code class="language-yaml"># k8s/secrets/db-credentials.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: app
+type: Opaque
+stringData:
+  connection-string: "Server=10.x.x.x;Database=appdb;User=appuser;Password=SECURE_PASSWORD;SslMode=Required;"</code></pre>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Never Commit Secrets</div>
+            <p>Don't commit secrets.yaml with real passwords to Git. Use kubectl create secret or external secret management (like Google Secret Manager).</p>
+          </div>
+
+          <h2 id="verify-connection">Verify Database Connection</h2>
+          <pre><code class="language-bash"># Test connection from a pod in the cluster
+kubectl run db-test \
+    --image=mysql:8.0 \
+    --namespace=app \
+    --rm -it --restart=Never \
+    -- mysql -h $DB_HOST -u appuser -p$DB_PASSWORD -e "SELECT 1;"
+
+# For SQL Server
+kubectl run db-test \
+    --image=mcr.microsoft.com/mssql-tools \
+    --namespace=app \
+    --rm -it --restart=Never \
+    -- /opt/mssql-tools/bin/sqlcmd -S $DB_HOST -U appuser -P $DB_PASSWORD -Q "SELECT 1"</code></pre>
+
+          <h2 id="cloud-sql-commands">Cloud SQL Commands Reference</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Command</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>gcloud sql instances list</code></td><td>List all instances</td></tr>
+                <tr><td><code>gcloud sql instances describe INSTANCE</code></td><td>Instance details</td></tr>
+                <tr><td><code>gcloud sql databases list --instance=INSTANCE</code></td><td>List databases</td></tr>
+                <tr><td><code>gcloud sql users list --instance=INSTANCE</code></td><td>List users</td></tr>
+                <tr><td><code>gcloud sql connect INSTANCE --user=USER</code></td><td>Connect via Cloud SQL Proxy</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="high-availability">High Availability (Production)</h2>
+          <p>For production, enable high availability:</p>
+          <pre><code class="language-bash"># Create with high availability
+gcloud sql instances create app-db-mysql \
+    --database-version=MYSQL_8_0 \
+    --tier=db-custom-2-4096 \
+    --region=$REGION \
+    --availability-type=REGIONAL \
+    --network=projects/$PROJECT_ID/global/networks/app-vpc \
+    --no-assign-ip
+
+# Or patch existing instance
+gcloud sql instances patch app-db-mysql \
+    --availability-type=REGIONAL</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-title">Private IP Benefits</div>
+            <p>Using private IP (--no-assign-ip) means traffic stays within Google's network, providing better security and lower latency. No Cloud SQL Proxy needed when connecting from GKE in the same VPC.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="./gke-cluster.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">GKE Cluster</span></a>
+          <a href="./storage.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">Storage</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

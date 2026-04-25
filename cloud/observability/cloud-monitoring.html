@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cloud Monitoring - Metrics and alerting for GCP.">
+  <title>Cloud Monitoring | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link active">Cloud</a><a href="../../app-deploy/" class="nav-link">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Observability</h3><ul class="sidebar-links">
+        <li><a href="./">Overview</a></li>
+        <li><a href="./cloud-monitoring.html" class="active">Cloud Monitoring</a></li>
+        <li><a href="./cloud-logging.html">Cloud Logging</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <header class="article-header"><h1>Cloud Monitoring</h1></header>
+        <div class="article-body">
+          <p>Cloud Monitoring provides visibility into GKE clusters, Cloud Run services, and GCP resources.</p>
+
+          <h2>GKE Metrics</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Metric</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>kubernetes.io/container/cpu/core_usage_time</td><td>CPU usage</td></tr>
+                <tr><td>kubernetes.io/container/memory/used_bytes</td><td>Memory usage</td></tr>
+                <tr><td>kubernetes.io/container/restart_count</td><td>Container restarts</td></tr>
+                <tr><td>kubernetes.io/pod/network/received_bytes_count</td><td>Network in</td></tr>
+                <tr><td>kubernetes.io/pod/network/sent_bytes_count</td><td>Network out</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>MQL Queries</h2>
+          <pre><code class="language-sql"># CPU usage by container
+fetch k8s_container
+| metric 'kubernetes.io/container/cpu/core_usage_time'
+| filter resource.namespace_name == 'production'
+| align rate(1m)
+| group_by [resource.container_name], [value_core_usage_time_aggregate: aggregate(value.core_usage_time)]
+
+# Memory usage percentage
+fetch k8s_container
+| metric 'kubernetes.io/container/memory/used_bytes'
+| filter resource.namespace_name == 'production'
+| group_by [resource.pod_name], [value_used_bytes_mean: mean(value.used_bytes)]
+
+# Container restarts
+fetch k8s_container
+| metric 'kubernetes.io/container/restart_count'
+| filter resource.namespace_name == 'production'
+| align delta(1h)
+| group_by [resource.pod_name], [value_restart_count_aggregate: aggregate(value.restart_count)]</code></pre>
+
+          <h2>Cloud Run Metrics</h2>
+          <pre><code class="language-sql"># Request latency
+fetch cloud_run_revision
+| metric 'run.googleapis.com/request_latencies'
+| filter resource.service_name == 'my-service'
+| align delta(1m)
+| group_by [], [value_request_latencies_percentile: percentile(value.request_latencies, 99)]
+
+# Request count
+fetch cloud_run_revision
+| metric 'run.googleapis.com/request_count'
+| filter resource.service_name == 'my-service'
+| align rate(1m)
+| group_by [metric.response_code_class], [value_request_count_aggregate: aggregate(value.request_count)]
+
+# Instance count
+fetch cloud_run_revision
+| metric 'run.googleapis.com/container/instance_count'
+| filter resource.service_name == 'my-service'
+| group_by [], [value_instance_count_mean: mean(value.instance_count)]</code></pre>
+
+          <h2>Alerting Policies</h2>
+          <pre><code class="language-bash"># Create alert policy via gcloud
+gcloud alpha monitoring policies create \
+    --policy-from-file=alert-policy.json</code></pre>
+
+          <pre><code class="language-json">// alert-policy.json - High CPU Alert
+{
+  "displayName": "GKE High CPU Alert",
+  "conditions": [{
+    "displayName": "CPU > 80%",
+    "conditionThreshold": {
+      "filter": "resource.type=\"k8s_container\" AND metric.type=\"kubernetes.io/container/cpu/limit_utilization\"",
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 0.8,
+      "duration": "300s",
+      "aggregations": [{
+        "alignmentPeriod": "60s",
+        "perSeriesAligner": "ALIGN_MEAN"
+      }]
+    }
+  }],
+  "notificationChannels": ["projects/PROJECT/notificationChannels/CHANNEL_ID"],
+  "alertStrategy": {
+    "autoClose": "604800s"
+  }
+}</code></pre>
+
+          <h2>Notification Channels</h2>
+          <pre><code class="language-bash"># Create email channel
+gcloud alpha monitoring channels create \
+    --type=email \
+    --display-name="Team Alerts" \
+    --channel-labels=email_address=team@example.com
+
+# Create Slack channel
+gcloud alpha monitoring channels create \
+    --type=slack \
+    --display-name="Slack Alerts" \
+    --channel-labels=channel_name=#alerts \
+    --channel-labels=auth_token=xoxb-...
+
+# List channels
+gcloud alpha monitoring channels list</code></pre>
+
+          <h2>Uptime Checks</h2>
+          <pre><code class="language-bash"># Create HTTP uptime check
+gcloud alpha monitoring uptime create my-check \
+    --display-name="API Health Check" \
+    --resource-type=uptime-url \
+    --hostname="api.example.com" \
+    --path="/health" \
+    --http-method=GET \
+    --timeout=10s \
+    --period=60s</code></pre>
+
+          <h2>Custom Metrics</h2>
+          <pre><code class="language-csharp">// .NET - Export custom metrics
+using Google.Cloud.Monitoring.V3;
+
+var client = MetricServiceClient.Create();
+var projectName = new ProjectName(projectId);
+
+var timeSeries = new TimeSeries
+{
+    Metric = new Metric
+    {
+        Type = "custom.googleapis.com/my_app/requests_processed"
+    },
+    Resource = new MonitoredResource
+    {
+        Type = "global",
+        Labels = { { "project_id", projectId } }
+    },
+    Points = { new Point
+    {
+        Interval = new TimeInterval { EndTime = Timestamp.FromDateTime(DateTime.UtcNow) },
+        Value = new TypedValue { Int64Value = 42 }
+    }}
+};
+
+client.CreateTimeSeries(projectName, new[] { timeSeries });</code></pre>
+
+          <h2>Dashboard JSON</h2>
+          <pre><code class="language-bash"># Export dashboard
+gcloud monitoring dashboards describe DASHBOARD_ID --format=json > dashboard.json
+
+# Import dashboard
+gcloud monitoring dashboards create --config-from-file=dashboard.json</code></pre>
+
+          <h2>Common Commands</h2>
+          <pre><code class="language-bash"># List dashboards
+gcloud monitoring dashboards list
+
+# List alert policies
+gcloud alpha monitoring policies list
+
+# Describe alert policy
+gcloud alpha monitoring policies describe POLICY_ID
+
+# List metric descriptors
+gcloud monitoring metrics list --filter="metric.type:kubernetes.io/container"</code></pre>
+        </div>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>

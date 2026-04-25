@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GKE Operations - CI/CD, scaling, and monitoring for production workloads.">
+  <title>Operations | CloudDevOps</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/logo.svg">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header"><div class="header-container"><a href="../../" class="logo"><img src="../../assets/images/logo.svg" alt=""><span>CloudDevOps</span></a><nav class="main-nav"><a href="../../devops/" class="nav-link">DevOps</a><a href="../../cloud/" class="nav-link">Cloud</a><a href="../" class="nav-link active">App Deploy</a></nav><div class="header-actions"><button class="mobile-menu-toggle" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button></div></div></header>
+  <div class="sidebar-overlay"></div>
+
+  <div class="page-wrapper">
+    <aside class="sidebar"><nav class="sidebar-nav">
+      <div class="sidebar-section"><h3 class="sidebar-section-title">App Deploy</h3><ul class="sidebar-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../prerequisites.html">Prerequisites</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Foundation</h3><ul class="sidebar-links">
+        <li><a href="../foundation/">Overview</a></li>
+        <li><a href="../foundation/project-setup.html">Project Setup</a></li>
+        <li><a href="../foundation/networking.html">Networking</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Infrastructure</h3><ul class="sidebar-links">
+        <li><a href="../infrastructure/">Overview</a></li>
+        <li><a href="../infrastructure/gke-cluster.html">GKE Cluster</a></li>
+        <li><a href="../infrastructure/cloud-sql.html">Cloud SQL</a></li>
+        <li><a href="../infrastructure/storage.html">Storage</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Deployment</h3><ul class="sidebar-links">
+        <li><a href="../deployment/">Overview</a></li>
+        <li><a href="../deployment/containerize.html">Containerize</a></li>
+        <li><a href="../deployment/react-frontend.html">React Frontend</a></li>
+        <li><a href="../deployment/dotnet-backend.html">.NET Backend</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Networking</h3><ul class="sidebar-links">
+        <li><a href="../networking/">Overview</a></li>
+        <li><a href="../networking/ingress.html">Ingress</a></li>
+        <li><a href="../networking/ssl-https.html">SSL/HTTPS</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Security</h3><ul class="sidebar-links">
+        <li><a href="../security/">Overview</a></li>
+        <li><a href="../security/workload-identity.html">Workload Identity</a></li>
+        <li><a href="../security/cloud-armor-iap.html">Cloud Armor & IAP</a></li>
+      </ul></div>
+      <div class="sidebar-section"><h3 class="sidebar-section-title">Operations</h3><ul class="sidebar-links">
+        <li><a href="./" class="active">Overview</a></li>
+        <li><a href="./ci-cd.html">CI/CD</a></li>
+        <li><a href="./scaling.html">Scaling</a></li>
+        <li><a href="./monitoring.html">Monitoring</a></li>
+      </ul></div>
+    </nav></aside>
+    <main id="main-content" class="main-content">
+      <article class="content-article">
+        <nav class="breadcrumbs"><ol><li><a href="../../">Home</a></li><li><a href="../">App Deploy</a></li><li aria-current="page">Operations</li></ol></nav>
+        <header class="article-header"><h1>Operations</h1></header>
+
+        <div class="article-body">
+          <p>Automate deployments with CI/CD pipelines, scale your application based on demand, and monitor health and performance with Cloud Monitoring.</p>
+
+          <h2>What You'll Configure</h2>
+          <div class="card-grid">
+            <a href="./ci-cd.html" class="card card-link">
+              <h3 class="card-title">CI/CD</h3>
+              <p class="card-description">GitHub Actions pipeline with Workload Identity Federation for keyless authentication.</p>
+            </a>
+            <a href="./scaling.html" class="card card-link">
+              <h3 class="card-title">Scaling</h3>
+              <p class="card-description">Horizontal Pod Autoscaler and GKE Cluster Autoscaler for automatic scaling.</p>
+            </a>
+            <a href="./monitoring.html" class="card card-link">
+              <h3 class="card-title">Monitoring</h3>
+              <p class="card-description">Cloud Monitoring dashboards, alerts, and log-based metrics.</p>
+            </a>
+          </div>
+
+          <h2>Operations Architecture</h2>
+          <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     GitHub Repository                           │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  Push to main branch                                      │  │
+│  └──────────────────────────┬────────────────────────────────┘  │
+└─────────────────────────────┼───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     GitHub Actions                              │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  1. Build Docker images                                   │  │
+│  │  2. Push to Artifact Registry                             │  │
+│  │  3. Deploy to GKE (kubectl apply)                         │  │
+│  └──────────────────────────┬────────────────────────────────┘  │
+│                              │                                  │
+│  Workload Identity Federation (no keys!)                        │
+└─────────────────────────────┼───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         GKE Cluster                             │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   Deployment Rollout                      │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐          │   │
+│  │  │  Pod v2    │  │  Pod v2    │  │  Pod v1    │          │   │
+│  │  │  (new)     │  │  (new)     │  │  (draining)│          │   │
+│  │  └────────────┘  └────────────┘  └────────────┘          │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              Horizontal Pod Autoscaler                    │   │
+│  │  Scale based on CPU/memory/custom metrics                 │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Cloud Monitoring                            │
+│  ┌────────────────┐  ┌────────────────┐  ┌─────────────────┐   │
+│  │  Dashboards    │  │    Alerts      │  │    Logging      │   │
+│  │  (Metrics)     │  │  (PagerDuty)   │  │  (Queries)      │   │
+│  └────────────────┘  └────────────────┘  └─────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+          <h2>Key Components</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>GitHub Actions</strong></td><td>CI/CD workflow automation</td></tr>
+                <tr><td><strong>Workload Identity Federation</strong></td><td>Keyless auth from GitHub to GCP</td></tr>
+                <tr><td><strong>Artifact Registry</strong></td><td>Docker image storage</td></tr>
+                <tr><td><strong>Rolling Updates</strong></td><td>Zero-downtime deployments</td></tr>
+                <tr><td><strong>HPA</strong></td><td>Auto-scale pods based on metrics</td></tr>
+                <tr><td><strong>Cluster Autoscaler</strong></td><td>Auto-scale nodes based on demand</td></tr>
+                <tr><td><strong>Cloud Monitoring</strong></td><td>Metrics, dashboards, alerting</td></tr>
+                <tr><td><strong>Cloud Logging</strong></td><td>Centralized log management</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Deployment Strategy</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Strategy</th><th>Description</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Rolling Update</strong></td><td>Gradual replacement of pods</td><td>Default, zero-downtime</td></tr>
+                <tr><td><strong>Recreate</strong></td><td>Kill all, then create new</td><td>When versions can't coexist</td></tr>
+                <tr><td><strong>Blue/Green</strong></td><td>Two environments, switch traffic</td><td>Instant rollback needed</td></tr>
+                <tr><td><strong>Canary</strong></td><td>Small % of traffic to new version</td><td>Test in production</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Quick Operations Commands</h2>
+          <pre><code class="language-bash"># View deployment status
+kubectl rollout status deployment/dotnet-api -n app
+
+# View rollout history
+kubectl rollout history deployment/dotnet-api -n app
+
+# Rollback to previous version
+kubectl rollout undo deployment/dotnet-api -n app
+
+# Scale deployment manually
+kubectl scale deployment/dotnet-api --replicas=5 -n app
+
+# View HPA status
+kubectl get hpa -n app
+
+# View pod resource usage
+kubectl top pods -n app
+
+# View cluster node usage
+kubectl top nodes
+
+# View recent events
+kubectl get events -n app --sort-by='.lastTimestamp' | tail -20
+
+# Stream logs from all pods
+kubectl logs -l app=dotnet-api -n app -f --tail=100</code></pre>
+
+          <h2>Operational Checklist</h2>
+          <div class="table-wrapper">
+            <table class="cheatsheet-table">
+              <thead><tr><th>Task</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>CI/CD pipeline deploying successfully</td><td>[ ]</td></tr>
+                <tr><td>HPA configured and tested</td><td>[ ]</td></tr>
+                <tr><td>Cluster autoscaler enabled</td><td>[ ]</td></tr>
+                <tr><td>Monitoring dashboard created</td><td>[ ]</td></tr>
+                <tr><td>Alerts configured for critical metrics</td><td>[ ]</td></tr>
+                <tr><td>Log queries for common issues saved</td><td>[ ]</td></tr>
+                <tr><td>Rollback procedure tested</td><td>[ ]</td></tr>
+                <tr><td>Runbook documented</td><td>[ ]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-title">GitOps Alternative</div>
+            <p>For more advanced deployments, consider GitOps tools like ArgoCD or Flux. They continuously sync your cluster state with Git, providing audit trails and easier rollbacks.</p>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-title">Resource Requests</div>
+            <p>HPA requires resource requests defined in your Deployment. Without CPU/memory requests, HPA cannot calculate utilization percentages for scaling decisions.</p>
+          </div>
+        </div>
+
+        <nav class="page-navigation">
+          <a href="../security/cloud-armor-iap.html" class="nav-prev"><span class="nav-label">Previous</span><span class="nav-title">Cloud Armor & IAP</span></a>
+          <a href="./ci-cd.html" class="nav-next"><span class="nav-label">Next</span><span class="nav-title">CI/CD</span></a>
+        </nav>
+      </article>
+    </main>
+  </div>
+  <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
+  <script src="../../assets/js/navigation.js"></script><script src="../../assets/js/main.js"></script>
+</body>
+</html>
