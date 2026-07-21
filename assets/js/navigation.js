@@ -72,7 +72,12 @@ function initDropdownNav() {
       a.href = item.href;
       a.className = 'nav-dropdown-item';
       a.setAttribute('role', 'menuitem');
-      a.innerHTML = `<span class="provider-dot provider-dot-${item.provider}"></span>${item.label}`;
+      // Build with DOM APIs (not innerHTML) so label/provider values can never
+      // be interpreted as markup.
+      const dot = document.createElement('span');
+      dot.className = `provider-dot provider-dot-${item.provider}`;
+      a.appendChild(dot);
+      a.appendChild(document.createTextNode(item.label));
       menu.appendChild(a);
     });
 
@@ -175,17 +180,34 @@ function initMobileNav() {
 }
 
 /**
+ * Normalize a URL to a comparable path: resolve it against the current
+ * document (so relative "../cloud/" hrefs become absolute), drop any
+ * trailing "index.html", and ensure a trailing slash on directory paths.
+ * This works regardless of the base path the site is served under
+ * (e.g. GitHub Pages "/simcloud/"), which the previous raw-string
+ * comparisons did not.
+ */
+function normalizePath(url) {
+  let path;
+  try {
+    path = new URL(url, window.location.href).pathname;
+  } catch (e) {
+    return url;
+  }
+  path = path.replace(/index\.html$/, '');
+  if (!path.endsWith('/') && !/\.[a-z0-9]+$/i.test(path)) path += '/';
+  return path;
+}
+
+/**
  * Highlight current page in sidebar navigation
  */
 function highlightCurrentPage() {
-  const currentPath = window.location.pathname;
+  const currentPath = normalizePath(window.location.href);
   const sidebarLinks = document.querySelectorAll('.sidebar-links a');
 
   sidebarLinks.forEach(link => {
-    const linkPath = link.getAttribute('href');
-    if (linkPath === currentPath ||
-        (currentPath.endsWith('/') && linkPath === currentPath + 'index.html') ||
-        (currentPath.endsWith('index.html') && linkPath === currentPath.replace('index.html', ''))) {
+    if (normalizePath(link.href) === currentPath) {
       link.classList.add('active');
       const parentSection = link.closest('.sidebar-section');
       if (parentSection) parentSection.classList.add('is-expanded');
@@ -194,31 +216,20 @@ function highlightCurrentPage() {
 }
 
 /**
- * Initialize collapsible sidebar sections
- */
-function initCollapsibleSections() {
-  const sectionToggles = document.querySelectorAll('.sidebar-section-toggle');
-  sectionToggles.forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const section = toggle.closest('.sidebar-section');
-      section.classList.toggle('is-expanded');
-      toggle.setAttribute('aria-expanded', section.classList.contains('is-expanded'));
-    });
-  });
-}
-
-/**
  * Highlight active section in main navigation
  */
 function highlightMainNav() {
-  const currentPath = window.location.pathname;
+  const currentPath = normalizePath(window.location.href);
   const mainNavLinks = document.querySelectorAll('.main-nav .nav-link');
 
   mainNavLinks.forEach(link => {
-    const linkPath = link.getAttribute('href');
-    if (currentPath.startsWith(linkPath) && linkPath !== '/') {
+    const linkPath = normalizePath(link.href);
+    // Section root (e.g. ".../cloud/") is active when the current page lives
+    // under it; the site root is active only on an exact match.
+    const isRoot = linkPath === normalizePath(window.location.origin + '/');
+    if (!isRoot && currentPath.startsWith(linkPath)) {
       link.classList.add('active');
-    } else if (linkPath === '/' && currentPath === '/') {
+    } else if (isRoot && currentPath === linkPath) {
       link.classList.add('active');
     }
   });
@@ -228,6 +239,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initDropdownNav();
   initMobileNav();
   highlightCurrentPage();
-  initCollapsibleSections();
   highlightMainNav();
 });

@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Prerequisites for deploying applications to GCP GKE - tools, accounts, and prior knowledge.">
   <title>Prerequisites | CloudDevOps</title>
-  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/utilities.css">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
 </head>
 <body>
@@ -66,8 +70,8 @@
             <table class="cheatsheet-table">
               <thead><tr><th>Account</th><th>Purpose</th><th>Link</th></tr></thead>
               <tbody>
-                <tr><td>Google Cloud</td><td>GKE, Cloud SQL, Storage</td><td><a href="https://cloud.google.com" target="_blank">cloud.google.com</a></td></tr>
-                <tr><td>GitHub</td><td>Source code, CI/CD</td><td><a href="https://github.com" target="_blank">github.com</a></td></tr>
+                <tr><td>Google Cloud</td><td>GKE, Cloud SQL, Storage</td><td><a href="https://cloud.google.com" target="_blank" rel="noopener noreferrer">cloud.google.com</a></td></tr>
+                <tr><td>GitHub</td><td>Source code, CI/CD</td><td><a href="https://github.com" target="_blank" rel="noopener noreferrer">github.com</a></td></tr>
               </tbody>
             </table>
           </div>
@@ -84,10 +88,10 @@
             <table class="cheatsheet-table">
               <thead><tr><th>Tool</th><th>Purpose</th><th>Install Command</th></tr></thead>
               <tbody>
-                <tr><td>gcloud CLI</td><td>GCP management</td><td>See <a href="https://cloud.google.com/sdk/docs/install" target="_blank">install guide</a></td></tr>
+                <tr><td>gcloud CLI</td><td>GCP management</td><td>See <a href="https://cloud.google.com/sdk/docs/install" target="_blank" rel="noopener noreferrer">install guide</a></td></tr>
                 <tr><td>kubectl</td><td>Kubernetes CLI</td><td><code>gcloud components install kubectl</code></td></tr>
-                <tr><td>Docker</td><td>Container builds</td><td>See <a href="https://docs.docker.com/get-docker/" target="_blank">install guide</a></td></tr>
-                <tr><td>Git</td><td>Version control</td><td><code>apt install git</code> or <a href="https://git-scm.com" target="_blank">git-scm.com</a></td></tr>
+                <tr><td>Docker</td><td>Container builds</td><td>See <a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener noreferrer">install guide</a></td></tr>
+                <tr><td>Git</td><td>Version control</td><td><code>apt install git</code> or <a href="https://git-scm.com" target="_blank" rel="noopener noreferrer">git-scm.com</a></td></tr>
               </tbody>
             </table>
           </div>
@@ -216,6 +220,6 @@ git clone https://github.com/your-org/sample-dotnet-api.git</code></pre>
     </main>
   </div>
   <footer class="site-footer"><div class="footer-container"><p class="copyright">CloudDevOps - Learning Journey</p></div></footer>
-  <script src="../assets/js/navigation.js"></script><script src="../assets/js/main.js"></script>
+  <script src="../assets/js/navigation.js" defer></script><script src="../assets/js/main.js" defer></script>
 </body>
 </html>

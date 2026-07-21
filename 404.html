@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Page not found - CloudDevOps">
   <title>404 - Page Not Found | CloudDevOps</title>
-  <link rel="stylesheet" href="/CloudDevOps/assets/css/main.css">
-  <link rel="icon" type="image/svg+xml" href="/CloudDevOps/assets/images/logo.svg">
+  <link rel="stylesheet" href="/simcloud/assets/css/base.css">
+  <link rel="stylesheet" href="/simcloud/assets/css/layout.css">
+  <link rel="stylesheet" href="/simcloud/assets/css/components.css">
+  <link rel="stylesheet" href="/simcloud/assets/css/utilities.css">
+  <link rel="icon" type="image/svg+xml" href="/simcloud/assets/images/logo.svg">
   <style>
     .error-page {
       min-height: calc(100vh - 64px - 60px);
@@ -57,8 +61,12 @@
       background-color: var(--color-primary);
       color: white;
       text-decoration: none;
+      border: none;
       border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: inherit;
       font-weight: 500;
+      cursor: pointer;
       transition: background-color 0.2s;
     }
 
@@ -119,14 +127,14 @@
 <body>
   <header class="site-header">
     <div class="header-container">
-      <a href="/CloudDevOps/" class="logo">
-        <img src="/CloudDevOps/assets/images/logo.svg" alt="">
+      <a href="/simcloud/" class="logo">
+        <img src="/simcloud/assets/images/logo.svg" alt="">
         <span>CloudDevOps</span>
       </a>
       <nav class="main-nav">
-        <a href="/CloudDevOps/devops/" class="nav-link">DevOps</a>
-        <a href="/CloudDevOps/cloud/" class="nav-link">Cloud</a>
-        <a href="/CloudDevOps/app-deploy/" class="nav-link">App Deploy</a>
+        <a href="/simcloud/devops/" class="nav-link">DevOps</a>
+        <a href="/simcloud/cloud/" class="nav-link">Cloud</a>
+        <a href="/simcloud/app-deploy/" class="nav-link">App Deploy</a>
       </nav>
     </div>
   </header>
@@ -141,29 +149,29 @@
       </p>
 
       <div class="error-actions">
-        <a href="/CloudDevOps/" class="error-link">
+        <a href="/simcloud/" class="error-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
           Go Home
         </a>
-        <a href="javascript:history.back()" class="error-link secondary">
+        <button type="button" data-action="history-back" class="error-link secondary">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
           Go Back
-        </a>
+        </button>
       </div>
 
       <div class="error-suggestions">
         <h2>Popular Pages</h2>
         <ul>
-          <li><a href="/CloudDevOps/devops/">DevOps Learning Path</a></li>
-          <li><a href="/CloudDevOps/devops/docker/">Docker Guide</a></li>
-          <li><a href="/CloudDevOps/devops/kubernetes/">Kubernetes Guide</a></li>
-          <li><a href="/CloudDevOps/cloud/gcp-gke/">GCP GKE End-to-End</a></li>
+          <li><a href="/simcloud/devops/">DevOps Learning Path</a></li>
+          <li><a href="/simcloud/devops/docker/">Docker Guide</a></li>
+          <li><a href="/simcloud/devops/kubernetes/">Kubernetes Guide</a></li>
+          <li><a href="/simcloud/cloud/gcp-gke/">GCP GKE End-to-End</a></li>
         </ul>
       </div>
     </div>
@@ -174,5 +182,6 @@
       <p class="copyright">CloudDevOps - Learning Journey</p>
     </div>
   </footer>
+  <script src="/simcloud/assets/js/main.js" defer></script>
 </body>
 </html>

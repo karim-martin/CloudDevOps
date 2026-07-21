@@ -47,85 +47,6 @@ function initCodeCopy() {
 }
 
 /**
- * Generate table of contents from headings
- */
-function initTableOfContents() {
-  const article = document.querySelector('.article-body, .content-article');
-  const tocContainer = document.querySelector('.toc-list');
-
-  if (!article || !tocContainer) return;
-
-  const headings = article.querySelectorAll('h2, h3');
-
-  if (headings.length === 0) {
-    // Hide TOC if no headings
-    const tocWrapper = tocContainer.closest('.toc');
-    if (tocWrapper) {
-      tocWrapper.style.display = 'none';
-    }
-    return;
-  }
-
-  const tocItems = [];
-
-  headings.forEach((heading, index) => {
-    // Add ID if missing
-    if (!heading.id) {
-      heading.id = `heading-${index}`;
-    }
-
-    tocItems.push({
-      level: heading.tagName.toLowerCase(),
-      text: heading.textContent,
-      id: heading.id
-    });
-  });
-
-  // Generate TOC HTML
-  tocContainer.innerHTML = tocItems.map(item => `
-    <li class="toc-${item.level}">
-      <a href="#${item.id}">${item.text}</a>
-    </li>
-  `).join('');
-
-  // Initialize scroll spy
-  initScrollSpy(headings);
-}
-
-/**
- * Scroll spy - highlight TOC item based on scroll position
- */
-function initScrollSpy(headings) {
-  const tocLinks = document.querySelectorAll('.toc-list a');
-
-  if (!tocLinks.length) return;
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Remove active class from all links
-          tocLinks.forEach(link => link.classList.remove('active'));
-
-          // Add active class to current section's link
-          const id = entry.target.id;
-          const activeLink = document.querySelector(`.toc-list a[href="#${id}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
-          }
-        }
-      });
-    },
-    {
-      rootMargin: '-20% 0px -80% 0px',
-      threshold: 0
-    }
-  );
-
-  headings.forEach(heading => observer.observe(heading));
-}
-
-/**
  * Smooth scroll for anchor links
  */
 function initSmoothScroll() {
@@ -174,62 +95,22 @@ function initExternalLinks() {
 }
 
 /**
- * Back to top button
+ * Wire up "go back" controls (e.g. the 404 page) without an inline
+ * javascript: URL, so the site stays compatible with a strict CSP.
  */
-function initBackToTop() {
-  const backToTop = document.querySelector('.back-to-top');
-
-  if (!backToTop) return;
-
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-      backToTop.classList.add('is-visible');
-    } else {
-      backToTop.classList.remove('is-visible');
-    }
-  });
-
-  backToTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+function initHistoryBack() {
+  document.querySelectorAll('[data-action="history-back"]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      history.back();
     });
-  });
-}
-
-/**
- * Initialize reading progress indicator
- */
-function initReadingProgress() {
-  const progressBar = document.querySelector('.reading-progress');
-
-  if (!progressBar) return;
-
-  window.addEventListener('scroll', () => {
-    const article = document.querySelector('.content-article');
-    if (!article) return;
-
-    const articleTop = article.offsetTop;
-    const articleHeight = article.offsetHeight;
-    const windowHeight = window.innerHeight;
-    const scrollPosition = window.pageYOffset;
-
-    const progress = Math.min(
-      100,
-      Math.max(0, ((scrollPosition - articleTop + windowHeight) / articleHeight) * 100)
-    );
-
-    progressBar.style.width = `${progress}%`;
   });
 }
 
 // Initialize all functionality
 document.addEventListener('DOMContentLoaded', () => {
   initCodeCopy();
-  initTableOfContents();
   initSmoothScroll();
   initExternalLinks();
-  initBackToTop();
-  initReadingProgress();
+  initHistoryBack();
 });
